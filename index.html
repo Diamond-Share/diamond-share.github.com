@@ -479,6 +479,35 @@
             50% { transform: rotate(45deg) translateY(-20px); }
         }
         
+        /* Стиль для сообщения об ошибке WRONG_DOMAIN */
+.domain-error-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 0, 0, 0.9);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.domain-error-message {
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid white;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+        
         /* Стиль для скрытого SEO-текста */
         .seo-text {
             position: absolute;
@@ -551,7 +580,7 @@
         
         <div class="hero-bg"></div>
         <h1>Твой мессенджер —<br>твой алмаз</h1>
-        <p class="subtitle">Безопасность, стиль и скорость. Общайся без границ с Diamond Share.</p>
+        <p class="subtitle">Безопасность, стиль и скорость. Общайся без границ с Diamond Share!</p>
         <a href="2.html" class="cta-btn">
             <span>Установить приложение</span>
             <span>→</span>
@@ -718,6 +747,16 @@
         <p>Если вы ищете быстрый, безопасный и многофункциональный мессенджер, Diamond Share – лучший выбор. Он превосходит конкурентов по всем параметрам, а статистика только подтверждает это.</p>
         <p>Попробуйте Diamond Share сегодня – и вы больше не захотите возвращаться к другим мессенджерам!</p>
     </div>
+    
+    <!-- Сообщение об ошибке WRONG_DOMAIN -->
+    <div class="domain-error-overlay" id="domainError">
+        <div class="domain-error-message">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+            <h2>ОШИБКА ДОМЕНА</h2>
+            <p>Текущий домен не разрешен для отображения контента. Обратитесь в поддержку.</p>
+            <p style="font-size: 16px; margin-top: 20px;">Код ошибки: WRONG_DOMAIN</p>
+        </div>
+    </div>
 
     <!-- Скрипты -->
     <script>
@@ -786,6 +825,41 @@
         }
         
         createDiamonds();
+        
+        // Отслеживание ошибки WRONG_DOMAIN
+        (function() {
+            // Перехватываем ошибки консоли
+            const originalError = console.error;
+            console.error = function() {
+                if (arguments[0] && arguments[0].includes('WRONG_DOMAIN')) {
+                    showDomainError();
+                }
+                originalError.apply(console, arguments);
+            };
+
+            // Функция показа ошибки
+            function showDomainError() {
+                const errorOverlay = document.getElementById('domainError');
+                if (errorOverlay) {
+                    errorOverlay.style.display = 'flex';
+                    // Блокируем прокрутку
+                    document.body.style.overflow = 'hidden';
+            
+                    // Делаем сообщение постоянным (нельзя закрыть)
+                    setTimeout(() => {
+                        errorOverlay.style.opacity = '1';
+                        errorOverlay.style.transition = 'opacity 0.5s';
+                    }, 100);
+                }
+            }
+
+            // Также проверяем наличие ошибки при загрузке
+            window.addEventListener('error', function(e) {
+                if (e.error && e.error.message && e.error.message.includes('WRONG_DOMAIN')) {
+                    showDomainError();
+                }
+            });
+        })();
     </script>
 </body>
 </html>
