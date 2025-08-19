@@ -1,1 +1,1 @@
-# diamond-share.github.com
+# diamgond-share.github.com
