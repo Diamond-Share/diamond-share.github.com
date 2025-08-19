@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Diamond Share</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --out-bg: #dbeafe;
+      --in-bg: #ffffff;
+      --error: #ef4444;
+      --success: #10b981;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      padding: 14px 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 60px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-weight: 600;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background-color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon i {
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-btn {
+      background: none;
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Auth screens */
+    .auth-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .auth-box {
+      background: var(--card);
+      padding: 24px;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-title {
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 22px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 16px;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .auth-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .switch-auth {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .switch-auth a {
+      color: var(--primary);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      background-color: rgba(239, 68, 68, 0.1);
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Chats list */
+    .chats-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      background-color: var(--bg);
+    }
+
+    .chat-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      background-color: var(--card);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .chat-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .chat-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-last-msg {
+      font-size: 13px;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-time {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    .online-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--success);
+      border-radius: 50%;
+      margin-left: 8px;
+    }
+
+    /* Chat view */
+    .chat-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      background-color: var(--bg);
+    }
+
+    .chat-header {
+      padding: 14px 16px;
+      background-color: var(--card);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      min-height: 60px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      margin-right: 12px;
+      cursor: pointer;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-title {
+      font-weight: 600;
+    }
+
+    .chat-status {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      word-break: break-word;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .outgoing {
+      background-color: var(--out-bg);
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+
+    .incoming {
+      background-color: var(--in-bg);
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-meta {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .message-sender {
+      margin-right: auto;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Input area */
+    .input-area {
+      padding: 12px 16px;
+      background-color: var(--card);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .message-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 24px;
+      background-color: var(--bg);
+      font-family: inherit;
+      resize: none;
+      max-height: 120px;
+      line-height: 1.5;
+    }
+
+    .message-input:focus {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--primary-light);
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--text-light);
+    }
+
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background-color: var(--card);
+      width: 100%;
+      max-width: 400px;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-secondary {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    /* Floating action button */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      background-color: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .empty-icon i {
+      font-size: 32px;
+      color: var(--primary-light);
+    }
+
+    .empty-title {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+        --text-light: #94a3b8;
+        --out-bg: #1e40af;
+        --in-bg: #334155;
+      }
+
+      .auth-input,
+      .message-input {
+        background-color: #334155;
+        color: white;
+      }
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth screens -->
+  <div class="auth-screen" id="login-screen">
+    <div class="auth-box">
+      <h2 class="auth-title">Вход в Diamond Share</h2>
+      <div class="error-message" id="login-error"></div>
+      <input type="text" class="auth-input" id="login-username" placeholder="@username" autocomplete="off">
+      <input type="password" class="auth-input" id="login-password" placeholder="Пароль" autocomplete="off">
+      <button class="auth-btn" id="login-btn">Войти</button>
+      <p class="switch-auth">Нет аккаунта? <a href="#" id="show-register">Зарегистрироваться</a></p>
+    </div>
+  </div>
+
+  <div class="auth-screen" id="register-screen" style="display: none;">
+    <div class="auth-box">
+      <h2 class="auth-title">Регистрация</h2>
+      <div class="error-message" id="register-error"></div>
+      <input type="text" class="auth-input" id="register-name" placeholder="Ваше имя" autocomplete="off">
+      <input type="text" class="auth-input" id="register-username" placeholder="@username" autocomplete="off">
+      <input type="password" class="auth-input" id="register-password" placeholder="Пароль" autocomplete="off">
+      <input type="password" class="auth-input" id="register-confirm" placeholder="Подтвердите пароль" autocomplete="off">
+      <button class="auth-btn" id="register-btn">Зарегистрироваться</button>
+      <p class="switch-auth">Уже есть аккаунт? <a href="#" id="show-login">Войти</a></p>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="app" style="display: none;">
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <span>Diamond Share</span>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" id="settings-btn">
+          <i class="fas fa-cog"></i>
+        </button>
+        <div class="user-avatar" id="user-avatar">
+          <span id="user-avatar-text">U</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Chats list -->
+      <div class="chats-list" id="chats-list">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="empty-title">Нет чатов</div>
+          <p>Добавьте контакты, чтобы начать общение</p>
+        </div>
+      </div>
+
+      <!-- Chat view -->
+      <div class="chat-view" id="chat-view">
+        <div class="chat-header">
+          <button class="back-btn" id="back-btn">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <div class="chat-info">
+            <div class="chat-title" id="chat-title">Чат</div>
+            <div class="chat-status" id="chat-status">Онлайн</div>
+          </div>
+        </div>
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+          <textarea class="message-input" id="message-input" placeholder="Сообщение..." rows="1"></textarea>
+          <button class="send-btn" id="send-btn" disabled>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating action button -->
+    <div class="fab" id="fab-btn">
+      <i class="fas fa-plus"></i>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="add-contact-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Добавить контакт</h3>
+      <input type="text" class="modal-input" id="contact-username" placeholder="@username">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-add-contact">Отмена</button>
+        <button class="btn btn-primary" id="confirm-add-contact">Добавить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="create-group-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Создать группу</h3>
+      <input type="text" class="modal-input" id="group-name" placeholder="Название группы">
+      <input type="text" class="modal-input" id="group-members" placeholder="@user1, @user2">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-create-group">Отмена</button>
+        <button class="btn btn-primary" id="confirm-create-group">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="share-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Поделиться профилем</h3>
+      <p>Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: <strong id="share-username"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="copy-share-link">
+          <i class="fas fa-copy"></i> Копировать
+        </button>
+        <button class="btn btn-primary" id="share-telegram">
+          <i class="fab fa-telegram"></i> Telegram
+        </button>
+        <button class="btn btn-primary" id="share-whatsapp">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="settings-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Настройки</h3>
+      
+      <div style="margin-bottom: 24px;">
+        <h4 style="margin-bottom: 12px; font-weight: 600;">Профиль</h4>
+        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+          <div class="user-avatar" style="width: 48px; height: 48px; margin-right: 12px;">
+            <span id="settings-avatar-text">U</span>
+          </div>
+          <div>
+            <div style="font-weight: 600;" id="settings-username"></div>
+            <div style="color: var(--text-light);" id="settings-nickname"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 24px;">
+        <h4 style="margin-bottom: 12px; font-weight: 600;">Приложение</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span>Темная тема</span>
+          <label class="switch">
+            <input type="checkbox" id="dark-mode-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Уведомления</span>
+          <label class="switch">
+            <input type="checkbox" id="notifications-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" id="logout-btn" style="width: 100%;">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase and app script -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0ca3id5sWRk4a49s6OnYhpGQEtpi_h9Q",
+      authDomain: "diamond-russia-8e454.firebaseapp.com",
+      databaseURL: "https://diamond-russia-8e454-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "diamond-russia-8e454",
+      storageBucket: "diamond-russia-8e454.appspot.com",
+      messagingSenderId: "735387033487",
+      appId: "1:735387033487:web:7ec3ff71a2aaed612775fa",
+      measurementId: "G-5QQE8WH2SC"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // DOM elements
+    const loginScreen = document.getElementById('login-screen');
+    const registerScreen = document.getElementById('register-screen');
+    const loginUsernameInput = document.getElementById('login-username');
+    const loginPasswordInput = document.getElementById('login-password');
+    const loginBtn = document.getElementById('login-btn');
+    const registerNameInput = document.getElementById('register-name');
+    const registerUsernameInput = document.getElementById('register-username');
+    const registerPasswordInput = document.getElementById('register-password');
+    const registerConfirmInput = document.getElementById('register-confirm');
+    const registerBtn = document.getElementById('register-btn');
+    const showRegister = document.getElementById('show-register');
+    const showLogin = document.getElementById('show-login');
+    const loginError = document.getElementById('login-error');
+    const registerError = document.getElementById('register-error');
+    
+    const appDiv = document.getElementById('app');
+    const chatsList = document.getElementById('chats-list');
+    const chatView = document.getElementById('chat-view');
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const backBtn = document.getElementById('back-btn');
+    const chatTitle = document.getElementById('chat-title');
+    const chatStatus = document.getElementById('chat-status');
+    const userAvatar = document.getElementById('user-avatar');
+    const userAvatarText = document.getElementById('user-avatar-text');
+    const fabBtn = document.getElementById('fab-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    
+    // Modals
+    const addContactModal = document.getElementById('add-contact-modal');
+    const contactUsernameInput = document.getElementById('contact-username');
+    const confirmAddContact = document.getElementById('confirm-add-contact');
+    const cancelAddContact = document.getElementById('cancel-add-contact');
+    
+    const createGroupModal = document.getElementById('create-group-modal');
+    const groupNameInput = document.getElementById('group-name');
+    const groupMembersInput = document.getElementById('group-members');
+    const confirmCreateGroup = document.getElementById('confirm-create-group');
+    const cancelCreateGroup = document.getElementById('cancel-create-group');
+    
+    const shareModal = document.getElementById('share-modal');
+    const shareUsername = document.getElementById('share-username');
+    const copyShareLink = document.getElementById('copy-share-link');
+    const shareTelegramBtn = document.getElementById('share-telegram');
+    const shareWhatsappBtn = document.getElementById('share-whatsapp');
+    
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsUsername = document.getElementById('settings-username');
+    const settingsNickname = document.getElementById('settings-nickname');
+    const settingsAvatarText = document.getElementById('settings-avatar-text');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const notificationsToggle = document.getElementById('notifications-toggle');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // App state
+    let currentUser = null;
+    let currentChat = null;
+    let contacts = [];
+    let groups = [];
+    let chatListeners = {};
+
+    // Initialize the app
+    function init() {
+      setupEventListeners();
+      checkAuthState();
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Auth
+      showRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginScreen.style.display = 'none';
+        registerScreen.style.display = 'flex';
+        clearAuthErrors();
+      });
+      
+      showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        registerScreen.style.display = 'none';
+        loginScreen.style.display = 'flex';
+        clearAuthErrors();
+      });
+      
+      loginBtn.addEventListener('click', handleLogin);
+      registerBtn.addEventListener('click', handleRegister);
+      
+      // Chat
+      messageInput.addEventListener('input', () => {
+        sendBtn.disabled = messageInput.value.trim() === '';
+      });
+      
+      messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      sendBtn.addEventListener('click', sendMessage);
+      backBtn.addEventListener('click', showChatsList);
+      
+      // Modals
+      fabBtn.addEventListener('click', () => {
+        addContactModal.style.display = 'flex';
+      });
+      
+      userAvatar.addEventListener('click', () => {
+        shareUsername.textContent = currentUser.nickname;
+        shareModal.style.display = 'flex';
+      });
+      
+      settingsBtn.addEventListener('click', () => {
+        settingsUsername.textContent = currentUser.username;
+        settingsNickname.textContent = currentUser.nickname;
+        settingsAvatarText.textContent = currentUser.username.charAt(0).toUpperCase();
+        settingsModal.style.display = 'flex';
+      });
+      
+      // Add contact
+      confirmAddContact.addEventListener('click', addContact);
+      cancelAddContact.addEventListener('click', () => {
+        addContactModal.style.display = 'none';
+      });
+      
+      // Create group
+      confirmCreateGroup.addEventListener('click', createGroup);
+      cancelCreateGroup.addEventListener('click', () => {
+        createGroupModal.style.display = 'none';
+      });
+      
+      // Share
+      copyShareLink.addEventListener('click', () => {
+        const text = `Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: ${currentUser.nickname}`;
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Ссылка скопирована в буфер обмена');
+        });
+      });
+      
+      shareTelegramBtn.addEventListener('click', () => {
+        const text = `Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: ${currentUser.nickname}`;
+        window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`, '_blank');
+      });
+      
+      shareWhatsappBtn.addEventListener('click', () => {
+        const text = `Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: ${currentUser.nickname}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      });
+      
+      // Settings
+      logoutBtn.addEventListener('click', handleLogout);
+      
+      // Close modals when clicking outside
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    function clearAuthErrors() {
+      loginError.style.display = 'none';
+      registerError.style.display = 'none';
+    }
+
+    // Check if user is already logged in
+    function checkAuthState() {
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        currentUser = JSON.parse(user);
+        userAvatarText.textContent = currentUser.username.charAt(0).toUpperCase();
+        loginScreen.style.display = 'none';
+        appDiv.style.display = 'flex';
+        loadContacts();
+      }
+    }
+
+    // Handle login
+    async function handleLogin() {
+      const username = loginUsernameInput.value.trim();
+      const password = loginPasswordInput.value.trim();
+      
+      if (!username || !password) {
+        showError(loginError, 'Введите имя пользователя и пароль');
+        return;
+      }
+      
+      try {
+        const snapshot = await db.ref(`users/${username}`).once('value');
+        if (!snapshot.exists()) {
+          showError(loginError, 'Пользователь не найден');
+          return;
+        }
+        
+        const user = snapshot.val();
+        if (user.password !== password) {
+          showError(loginError, 'Неверный пароль');
+          return;
+        }
+        
+        currentUser = {
+          username: user.username,
+          nickname: username
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        userAvatarText.textContent = currentUser.username.charAt(0).toUpperCase();
+        loginScreen.style.display = 'none';
+        appDiv.style.display = 'flex';
+        loadContacts();
+      } catch (error) {
+        showError(loginError, 'Ошибка входа. Попробуйте позже');
+        console.error('Login error:', error);
+      }
+    }
+
+    // Handle registration
+    async function handleRegister() {
+      const name = registerNameInput.value.trim();
+      const username = registerUsernameInput.value.trim();
+      const password = registerPasswordInput.value.trim();
+      const confirm = registerConfirmInput.value.trim();
+      
+      if (!name || !username || !password || !confirm) {
+        showError(registerError, 'Заполните все поля');
+        return;
+      }
+      
+      if (!username.startsWith('@')) {
+        showError(registerError, 'Никнейм должен начинаться с @');
+        return;
+      }
+      
+      if (username.length < 4) {
+        showError(registerError, 'Никнейм должен содержать минимум 4 символа');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError(registerError, 'Пароль должен содержать минимум 6 символов');
+        return;
+      }
+      
+      if (password !== confirm) {
+        showError(registerError, 'Пароли не совпадают');
+        return;
+      }
+      
+      try {
+        const snapshot = await db.ref(`users/${username}`).once('value');
+        if (snapshot.exists()) {
+          showError(registerError, 'Этот никнейм уже занят');
+          return;
+        }
+        
+        // Создаем пользователя с правильной структурой данных
+        await db.ref(`users/${username}`).set({
+          username: name,
+          password: password,
+          nickname: username,  // Добавляем nickname согласно правилам БД
+          createdAt: Date.now(),  // Добавляем timestamp создания
+          contacts: {
+            'general': true
+          }
+        });
+        
+        currentUser = {
+          username: name,
+          nickname: username
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        userAvatarText.textContent = currentUser.username.charAt(0).toUpperCase();
+        registerScreen.style.display = 'none';
+        appDiv.style.display = 'flex';
+        loadContacts();
+      } catch (error) {
+        showError(registerError, 'Ошибка регистрации. Попробуйте позже');
+        console.error('Registration error:', error);
+      }
+    }
+
+    function showError(element, message) {
+      element.textContent = message;
+      element.style.display = 'block';
+    }
+
+    // Load user contacts
+    async function loadContacts() {
+      if (!currentUser) return;
+      
+      try {
+        const snapshot = await db.ref(`users/${currentUser.nickname}/contacts`).once('value');
+        contacts = snapshot.val() ? Object.keys(snapshot.val()) : ['general'];
+        loadChatsList();
+      } catch (error) {
+        console.error('Error loading contacts:', error);
+      }
+    }
+
+    // Load chats list
+    async function loadChatsList() {
+      if (!currentUser) return;
+      
+      try {
+        const usersSnapshot = await db.ref('users').once('value');
+        const users = usersSnapshot.val() || {};
+        
+        chatsList.innerHTML = '';
+        
+        // Add general chat
+        addChatToList('general', 'Общий чат', 'Групповой чат для всех пользователей');
+        
+        // Add contacts
+        for (const contactId of contacts) {
+          if (contactId !== 'general' && users[contactId]) {
+            const user = users[contactId];
+            addChatToList(contactId, user.username, 'Нажмите чтобы начать чат');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading chats:', error);
+      }
+    }
+
+    function addChatToList(id, name, lastMessage) {
+      const chatItem = document.createElement('div');
+      chatItem.className = 'chat-item';
+      chatItem.dataset.chatId = id;
+      chatItem.innerHTML = `
+        <div class="chat-avatar">${name.charAt(0).toUpperCase()}</div>
+        <div class="chat-info">
+          <div class="chat-name">${name}</div>
+          <div class="chat-last-msg">${lastMessage}</div>
+        </div>
+      `;
+      
+      chatItem.addEventListener('click', () => openChat(id, name));
+      chatsList.appendChild(chatItem);
+    }
+
+    // Open chat
+    function openChat(chatId, chatName) {
+      if (currentChat === chatId) return;
+      
+      // Unsubscribe from previous chat
+      if (currentChat && chatListeners[currentChat]) {
+        chatListeners[currentChat]();
+      }
+      
+      currentChat = chatId;
+      chatTitle.textContent = chatName;
+      chatStatus.textContent = 'Онлайн';
+      messagesDiv.innerHTML = '';
+      
+      // Show chat view
+      chatView.style.display = 'flex';
+      chatsList.style.display = 'none';
+      
+      // Subscribe to messages
+      let messagesRef;
+      if (chatId === 'general') {
+        messagesRef = db.ref('messages/general');
+      } else {
+        const chatRef = [currentUser.nickname, chatId].sort().join('_');
+        messagesRef = db.ref(`messages/private/${chatRef}`);
+      }
+      
+      chatListeners[chatId] = messagesRef.on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        addMessage(msg.text, msg.user, msg.user === currentUser.username);
+      });
+    }
+
+    function addMessage(text, sender, isOutgoing) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
+      
+      messageDiv.innerHTML = `
+        <div class="message-content">${text}</div>
+        <div class="message-meta">
+          ${!isOutgoing ? `<span class="message-sender">${sender}</span>` : ''}
+          <span>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+        </div>
+      `;
+      
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Show chats list
+    function showChatsList() {
+      chatView.style.display = 'none';
+      chatsList.style.display = 'block';
+      currentChat = null;
+    }
+
+    // Send message
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text || !currentChat) return;
+      
+      const message = {
+        text: text,
+        user: currentUser.username,
+        timestamp: Date.now()
+      };
+      
+      try {
+        if (currentChat === 'general') {
+          await db.ref('messages/general').push(message);
+        } else {
+          const chatRef = [currentUser.nickname, currentChat].sort().join('_');
+          await db.ref(`messages/private/${chatRef}`).push(message);
+        }
+        
+        messageInput.value = '';
+        sendBtn.disabled = true;
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    }
+
+    // Add contact
+    async function addContact() {
+      const contactId = contactUsernameInput.value.trim();
+      if (!contactId) return;
+      
+      try {
+        // Check if contact exists
+        const snapshot = await db.ref(`users/${contactId}`).once('value');
+        if (!snapshot.exists()) {
+          alert('Пользователь не найден');
+          return;
+        }
+        
+        // Check if already in contacts
+        if (contacts.includes(contactId)) {
+          alert('Этот пользователь уже в ваших контактах');
+          return;
+        }
+        
+        // Add to contacts
+        await db.ref(`users/${currentUser.nickname}/contacts/${contactId}`).set(true);
+        await db.ref(`users/${contactId}/contacts/${currentUser.nickname}`).set(true);
+        
+        // Update UI
+        addContactModal.style.display = 'none';
+        contactUsernameInput.value = '';
+        loadContacts();
+      } catch (error) {
+        console.error('Error adding contact:', error);
+        alert('Ошибка добавления контакта');
+      }
+    }
+
+    // Create group
+    async function createGroup() {
+      const name = groupNameInput.value.trim();
+      const members = groupMembersInput.value.trim();
+      
+      if (!name) {
+        alert('Введите название группы');
+        return;
+      }
+      
+      if (!members) {
+        alert('Добавьте участников группы');
+        return;
+      }
+      
+      try {
+        // Create group in database
+        const groupRef = db.ref('groups').push();
+        const groupId = groupRef.key;
+        
+        // Add members to group
+        const membersList = members.split(',').map(m => m.trim()).filter(m => m);
+        const membersData = {};
+        
+        for (const member of membersList) {
+          membersData[member] = true;
+        }
+        
+        // Add current user as admin
+        membersData[currentUser.nickname] = true;
+        
+        await groupRef.set({
+          name: name,
+          members: membersData,
+          createdBy: currentUser.nickname,
+          createdAt: Date.now()
+        });
+        
+        // Add group to users' contacts
+        const updates = {};
+        for (const member of Object.keys(membersData)) {
+          updates[`users/${member}/contacts/group_${groupId}`] = true;
+        }
+        
+        await db.ref().update(updates);
+        
+        // Update UI
+        createGroupModal.style.display = 'none';
+        groupNameInput.value = '';
+        groupMembersInput.value = '';
+        loadContacts();
+      } catch (error) {
+        console.error('Error creating group:', error);
+        alert('Ошибка создания группы');
+      }
+    }
+
+    // Handle logout
+    async function handleLogout() {
+      try {
+        if (currentUser) {
+          await db.ref(`users/${currentUser.nickname}/isOnline`).set(false);
+        }
+        
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        location.reload();
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
+    }
+
+    // Initialize the app
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

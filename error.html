@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Share: Обновление</title>
+    <!-- Подключаем Google Font для красивой типографики -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Определение переменных для цветов для легкой смены */
+            --background-color: #f8f8f8; /* Очень светлый серый, почти белый */
+            --card-background: #ffffff; /* Чисто белый для карточки контента */
+            --error-color: #e74c3c; /* Красный, но не ядовитый */
+            --text-color-primary: #34495e; /* Темный сине-серый для основного текста */
+            --text-color-secondary: #7f8c8d; /* Более светлый серый для дополнительного текста */
+            --shadow-color: rgba(0, 0, 0, 0.08); /* Легкая тень */
+            /* Новые переменные для градиента */
+            --gradient-start-color: #00C6FF; /* Яркий голубой */
+            --gradient-end-color: #0072FF;   /* Глубокий синий */
+        }
+
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Занимает всю высоту видимой области */
+            margin: 0;
+            font-family: 'Inter', sans-serif; /* Применяем красивый шрифт */
+            color: var(--text-color-primary);
+            overflow: hidden; /* Убираем возможные скроллы */
+        }
+
+        .container {
+            background: var(--card-background);
+            padding: 40px 60px; /* Большой внутренний отступ */
+            border-radius: 15px; /* Скругленные углы */
+            box-shadow: 0 10px 30px var(--shadow-color); /* Мягкая, глубокая тень */
+            text-align: center;
+            max-width: 500px; /* Ограничиваем ширину для лучшей читаемости */
+            box-sizing: border-box; /* Учитываем padding в ширине */
+
+            /* Анимация появления */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 3em; /* Крупный размер для акцента */
+            font-weight: 700; /* Жирный */
+            margin-bottom: 20px; /* Отступ от следующей строки */
+            letter-spacing: -0.02em; /* Немного уменьшаем межбуквенный интервал для больших шрифтов */
+            line-height: 1.2; /* Межстрочный интервал */
+        }
+
+        .error-message .emoji {
+            /* Можно добавить легкий эффект, если хочется */
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .update-message {
+            color: var(--text-color-secondary);
+            font-size: 1.4em; /* Размер для информационного сообщения */
+            font-weight: 400; /* Обычный */
+            line-height: 1.5;
+        }
+
+        /* Стиль для текста с градиентом */
+        .gradient-text {
+            /* Применяем градиент как фон */
+            background-image: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color));
+                        /* Обрезаем фон по форме текста */
+            -webkit-background-clip: text; /* Для Webkit-браузеров (Chrome, Safari) */
+            background-clip: text;
+            /* Делаем сам текст прозрачным, чтобы был виден фон */
+            -webkit-text-fill-color: transparent; /* Для Webkit-браузеров */
+            color: transparent; /* Fallback для других браузеров */
+            font-weight: 700; /* Можно сделать его жирнее, чтобы градиент был заметнее */
+        }
+
+        /* Медиа-запросы для адаптивности на маленьких экранах */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 40px;
+                margin: 0 20px; /* Отступы по бокам на мобильных */
+            }
+            .error-message {
+                font-size: 2.2em;
+            }
+            .update-message {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="error-message">
+            Ошибка :( <span class="emoji"></span> <span class="emoji"></span>
+        </p>
+        <p class="update-message">
+            <span class="gradient-text">Diamond Share</span> обновляется
+        </p>
+    </div>
+</body>
+</html>

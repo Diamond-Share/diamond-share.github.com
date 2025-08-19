@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">	  	  
+<!-- www.check-domains.com sitemap generator -->
+
+<url>
+   <loc>http://f1138033.xsph.ru/</loc>
+   <lastmod>2025-08-07T19:54:39+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>1.0000</priority>
+</url>
+<url>
+   <loc>http://f1138033.xsph.ru/2.html</loc>
+   <lastmod>2025-07-09T16:02:24+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://f1138033.xsph.ru/policy.html</loc>
+   <lastmod>2025-07-08T07:54:51+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>http://f1138033.xsph.ru/3.html</loc>
+   <lastmod>2025-07-09T16:02:25+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+</urlset>
