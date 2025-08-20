@@ -2,7 +2,6 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; URL='http://f1138033.xsph.ru/index.php'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Скачать Diamond Share</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,6 +26,17 @@
             font-family: 'Montserrat', sans-serif;
         }
         
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Блокируем скролл */
+            position: fixed; /* Фиксируем положение */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        
         body {
             background: var(--dark);
             color: var(--light);
@@ -39,6 +49,7 @@
             text-align: center;
             padding: 20px;
             position: relative;
+            overscroll-behavior: none; /* Предотвращает pull-to-refresh и эффект упругости */
         }
         
         .container {
@@ -115,6 +126,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent; /* Убирает подсветку при клике на мобильных */
         }
         
         .btn-primary {
@@ -194,6 +206,12 @@
             100% { opacity: 0.1; }
         }
         
+        .countdown {
+            margin-top: 20px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 30px 20px;
@@ -253,6 +271,10 @@
                 Скачать с сайта
             </a>
         </div>
+        
+        <div class="countdown" id="countdown">
+            Перенаправление через: 5 секунд
+        </div>
     </div>
     
     <script>
@@ -280,6 +302,39 @@
             const x = e.clientX / window.innerWidth * 20 - 10;
             const y = e.clientY / window.innerHeight * 20 - 10;
             bg.style.transform = `translate(${x}px, ${y}px)`;
+        });
+        
+        // Таймер перенаправления
+        let seconds = 5;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            seconds--;
+            countdownElement.textContent = `Перенаправление через: ${seconds} секунд`;
+            
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = 'http://f1138033.xsph.ru/index.php';
+            }
+        }, 1000);
+        
+        // Блокировка скролла и перемещения страницы
+        document.addEventListener('touchmove', function(e) {
+            // Разрешаем скролл только внутри элементов с классом .container
+            if (!e.target.closest('.container')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Дополнительные меры для блокировки скролла
+        document.addEventListener('wheel', function(e) {
+            if (!e.target.closest('.container')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Блокировка контекстного меню
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
         });
     </script>
 </body>
