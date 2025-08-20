@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт с рекламой</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .ad-container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        
+        .refresh-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #90caf9;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin: 20px 0 10px 0;
+            font-size: 1.4rem;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .time-display {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .countdown {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e74c3c;
+            background: #fff3f3;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            .content {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .ad-container {
+                margin: 15px auto;
+                padding: 12px;
+            }
+            
+            .refresh-info {
+                margin-top: 20px;
+                padding: 12px;
+            }
+            
+            .time-display {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            p {
+                font-size: 0.9rem;
+            }
+            
+            .countdown {
+                font-size: 1.1rem;
+                padding: 6px 12px;
+            }
+            
+            .content, .header, .ad-container {
+                border-radius: 10px;
+            }
+        }
+        
+        /* Анимации */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Мобильный сайт с рекламой</h1>
+            <p>Адаптирован для удобного просмотра на телефоне</p>
+        </div>
+
+        <div class="content">
+            <h2>✨ Основной контент</h2>
+            <p>Добро пожаловать на наш адаптивный сайт! Здесь вы найдете полезную информацию и рекламные предложения.</p>
+            
+            <div class="info-box">
+                <p>📊 <strong>Статистика просмотров:</strong> Страница оптимизирована для мобильных устройств и автоматически обновляется для показа новой рекламы.</p>
+            </div>
+            
+            <div class="time-display">
+                <p>🕒 Текущее время: <strong><span id="current-time"></span></strong></p>
+                <p>⏰ Следующее обновление через: <span class="countdown" id="countdown">7</span> секунд</p>
+            </div>
+        </div>
+
+        <div class="ad-container">
+            <h3>📢 Рекламный блок</h3>
+            <!-- Рекламный блок -->
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag"
+                style="display:block;width:300px;height:250px;margin:0 auto;"
+                data-ad-client="ad-1886256"
+                data-ad-slot="1886256">
+            </ins>
+            <script>
+                (MRGtag = window.MRGtag || []).push({});
+            </script>
+            <p style="font-size: 0.8rem; color: #999; margin-top: 8px;">Реклама от Mail.ru</p>
+        </div>
+
+        <div class="content">
+            <h2>📋 Дополнительная информация</h2>
+            <p>Этот сайт специально разработан для мобильных устройств с учетом всех современных требований:</p>
+            <ul style="padding-left: 20px; margin: 15px 0;">
+                <li>Адаптивный дизайн</li>
+                <li>Удобная навигация</li>
+                <li>Быстрая загрузка</li>
+                <li>Оптимизированные рекламные блоки</li>
+            </ul>
+        </div>
+
+        <div class="refresh-info">
+            <p class="pulse">🔄 Страница автоматически обновится через <span class="countdown">7</span> секунд</p>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Для принудительного обновления потяните экран вниз</p>
+        </div>
+    </div>
+
+    <script>
+        // Функция для обновления времени
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+
+        // Функция для обратного отсчета
+        function startCountdown(seconds) {
+            let counter = seconds;
+            const countdownElement = document.getElementById('countdown');
+            const countdownElements = document.querySelectorAll('.countdown');
+            
+            const interval = setInterval(() => {
+                countdownElements.forEach(el => {
+                    el.textContent = counter;
+                });
+                
+                if (counter <= 3) {
+                    countdownElement.style.color = '#ff0000';
+                    countdownElement.style.animation = 'pulse 0.5s infinite';
+                }
+                
+                counter--;
+                
+                if (counter < 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            startCountdown(7);
+            
+            // Установка таймера на обновление страницы
+            setTimeout(() => {
+                window.location.reload();
+            }, 7000);
+            
+            // Обновление времени каждую секунду
+            setInterval(updateTime, 1000);
+            
+            // Добавляем обработчик для touch-событий (мобильные)
+            document.addEventListener('touchstart', function() {
+                document.body.style.backgroundColor = '#f8f9fa';
+                setTimeout(() => {
+                    document.body.style.backgroundColor = '#f0f0f0';
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
