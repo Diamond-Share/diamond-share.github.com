@@ -60,12 +60,36 @@
             font-weight: bold;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
+        
+        /* Фиксированные размеры для рекламных контейнеров */
+        #vk_ads, #mail_ads {
+            min-height: 50px;
+            overflow: hidden;
+        }
+        
+        /* Гарантия что рекламные блоки не сдвинут контент */
+        .mrg-tag {
+            display: block !important;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Баннер VK/MAIL по центру -->
-        <div class="banner">VK/MAIL</div>
+        <div class="banner">
+            VK/MAIL
+            <!-- Код баннера Mail.ru -->
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag"
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256"
+                data-ad-slot="1886256">
+            </ins>  
+            <script>
+                (MRGtag = window.MRGtag || []).push({});
+            </script>
+        </div>
         
         <div class="header">
             <h1>📱 Мобильный сайт с рекламой</h1>
