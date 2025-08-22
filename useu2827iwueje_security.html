@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест баннера </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            max-width: 90%;
+            width: 320px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .banner-container {
+            margin: 20px 0;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .banner-loaded .loader {
+            display: none;
+        }
+        
+        .info {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .countdown {
+            font-weight: bold;
+            font-size: 20px;
+            color: #ffcc00;
+            display: inline-block;
+            min-width: 30px;
+        }
+        
+        .reload-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ffcc00;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .reload-btn:hover {
+            background: #ffdd44;
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- Предзагрузка скрипта баннера -->
+    <link rel="preload" href="https://ad.mail.ru/static/ads-async.js" as="script">
+</head>
+<body>
+    <div class="container">
+        <h1>Баннер с автообновлением</h1>
+        
+        <div class="banner-container" id="bannerContainer">
+            <div class="loader"></div>
+            <!-- Баннер будет вставлен сюда -->
+        </div>
+        
+        <div class="info">
+            <p>Страница обновится через: <span class="countdown" id="countdown">5</span> сек.</p>
+            
+            <button class="reload-btn" onclick="reloadPage()">Перезагрузить сейчас</button>
+        </div>
+    </div>
+
+    <script>
+        // Функция для загрузки баннера
+        function loadBanner() {
+            const container = document.getElementById('bannerContainer');
+            
+            // Очищаем контейнер
+            container.innerHTML = `
+                <ins class="mrg-tag" 
+                    style="display:inline-block;width:240px;height:400px"
+                    data-ad-client="ad-1886256" 
+                    data-ad-slot="1886256">
+                </ins>
+            `;
+            
+            // Загружаем скрипт, если еще не загружен
+            if (!window.MRGtag) {
+                const script = document.createElement('script');
+                script.src = 'https://ad.mail.ru/static/ads-async.js';
+                script.async = true;
+                document.head.appendChild(script);
+            }
+            
+            // Инициализируем баннер
+            if (window.MRGtag) {
+                window.MRGtag.push({});
+            } else {
+                window.MRGtag = [];
+                window.MRGtag.push({});
+            }
+            
+            // Добавляем класс для скрытия лоадера
+            container.classList.add('banner-loaded');
+        }
+        
+        // Таймер обратного отсчета
+        let seconds = 5;
+        const countdownElement = document.getElementById('countdown');
+        
+        const countdown = setInterval(() => {
+            seconds--;
+            countdownElement.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(countdown);
+            }
+        }, 1000);
+        
+        // Функция для перезагрузки страницы
+        function reloadPage() {
+            window.location.reload(true);
+        }
+        
+        // Загружаем баннер
+        window.addEventListener('load', function() {
+            // Даем время на предзагрузку скрипта
+            setTimeout(loadBanner, 100);
+        });
+        
+        // Автообновление страницы каждые 3 секунды
+        setTimeout(() => {
+            window.location.reload(true);
+        }, 5000);
+    </script>
+</body>
+</html>
