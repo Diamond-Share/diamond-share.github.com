@@ -3,43 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт пока не работает</title>
+    <title>9 рекламных баннеров</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden; /* Убираем возможность прокрутки */
+            width: 100vw;
+            height: 100vh;
             background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .banner {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .title {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
             text-align: center;
-        }
-        .message {
-            margin-bottom: 30px;
-            font-size: 24px;
+            font-size: 18px;
             color: #333;
-        }
-        .banner-container {
-            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <div class="message">Сайт пока не работает</div>
+    <div class="title">Рекламные баннеры (обновление каждые 2 секунды)</div>
     
-    <div class="banner-container">
-        <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-        <ins class="mrg-tag" 
-            style="display:inline-block;width:240px;height:400px"
-            data-ad-client="ad-1886256" 
-            data-ad-slot="1886256">
-        </ins> 
-        <script>
-            (MRGtag = window.MRGtag || []).push({});
-        </script>
+    <div class="container">
+        <!-- Баннер 1 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 2 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 3 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 4 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 5 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 6 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 7 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 8 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
+        
+        <!-- Баннер 9 -->
+        <div class="banner">
+            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
+            <ins class="mrg-tag" 
+                style="display:inline-block;width:240px;height:400px"
+                data-ad-client="ad-1886256" 
+                data-ad-slot="1886256">
+            </ins> 
+            <script>(MRGtag = window.MRGtag || []).push({});</script>
+        </div>
     </div>
 
     <script>
