@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технические работы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .overlay h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .overlay p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+        
+        .blur-effect {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+        
+        .header {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .timer {
+            background-color: #ff5722;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 8px;
+            padding: 10px;
+            overflow: hidden;
+        }
+        
+        .banner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 5px;
+            opacity: 0.7;
+        }
+        
+        .banner-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            width: 80%;
+            max-width: 500px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff5722, #ff9800);
+            width: 65%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .date {
+            color: #ff9800;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Наложение с сообщением -->
+    <div class="overlay">
+        <h2>🛠️ Страница в разработке</h2>
+        <p>На данный момент эта страница находится на процессе создания</p>
+        <p>Приносим извинения за временные неудобства</p>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        <p>Примерная дата завершения: <span class="date">12.9.2025</span></p>
+    </div>
+    
+    <!-- Основное содержимое с эффектом размытия -->
+    <div class="blur-effect">
+        <div class="header">
+            <h1>Найди друга по близости!</h1>
+            <p>Страница автоматически обновляется каждые 7 секунд</p>
+        </div>
+        
+        <div class="timer" id="timer">До обновления: 7 секунд</div>
+        
+        <div class="container">
+            <!-- 25 баннеров -->
+            <!-- Ряд 1 -->
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            
+            <!-- Ряд 2 -->
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            
+            <!-- Ряд 3 -->
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            
+            <!-- Ряд 4 -->
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            
+            <!-- Ряд 5 -->
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+            <div class="banner"><div class="banner-content"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:120px;height:100px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag = window.MRGtag || []).push({});</script></div></div>
+        </div>
+        
+        <div class="footer">
+            <p>Страница автоматически обновляется каждые 7 секунд</p>
+        </div>
+    </div>
+
+    <script>
+        // Автоматическое обновление страницы каждые 7 секунд
+        let timeLeft = 7;
+        const timerElement = document.getElementById('timer');
+        
+        const countdown = setInterval(function() {
+            timeLeft--;
+            timerElement.textContent = `До обновления: ${timeLeft} секунд`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                window.location.reload();
+            }
+        }, 1000);
+        
+        // Основной таймер обновления страницы
+        setTimeout(function() {
+            window.location.reload();
+        }, 7000);
+        
+        // Случайное изменение прогресс-бара
+        setInterval(function() {
+            const progress = document.querySelector('.progress');
+            const currentWidth = parseInt(progress.style.width || '65%');
+            const newWidth = Math.max(65, Math.min(95, currentWidth + (Math.random() * 5 - 2)));
+            progress.style.width = `${newWidth}%`;
+        }, 3000);
+    </script>
+</body>
+</html>
