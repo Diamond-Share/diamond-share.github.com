@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Баннер</title>
+    <title>Ошибка 404</title>
     <style>
         body {
             margin: 0;
@@ -13,26 +13,43 @@
             align-items: center;
             min-height: 100vh;
             background-color: white;
-        }
-        
-        .banner-container {
-            text-align: center;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
-    <div class="banner-container" id="bannerContainer">
-        <ins class="mrg-tag" 
-            style="display:inline-block;width:240px;height:400px"
-            data-ad-client="ad-1886256" 
-            data-ad-slot="1886256">
-        </ins>
+    <div id="content">
+        <!-- Контент будет подставлен в зависимости от IP -->
     </div>
 
     <script>
+        // Разрешенные IP-адреса
+        const allowedIPs = ['62.33.72.39'];
+        
+        // Функция для получения IP пользователя
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Ошибка получения IP:', error);
+                return null;
+            }
+        }
+        
         // Функция для загрузки баннера
         function loadBanner() {
-            // Загружаем скрипт, если еще не загружен
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <ins class="mrg-tag" 
+                    style="display:inline-block;width:240px;height:400px"
+                    data-ad-client="ad-1886256" 
+                    data-ad-slot="1886256">
+                </ins>
+            `;
+            
+            // Загружаем скрипт баннера
             if (!window.MRGtag) {
                 const script = document.createElement('script');
                 script.src = 'https://ad.mail.ru/static/ads-async.js';
@@ -40,7 +57,6 @@
                 document.head.appendChild(script);
             }
             
-            // Инициализируем баннер
             if (window.MRGtag) {
                 window.MRGtag.push({});
             } else {
@@ -49,11 +65,28 @@
             }
         }
         
-        // Загружаем баннер
-        window.addEventListener('load', function() {
-            setTimeout(loadBanner, 100);
-        });
-
+        // Функция для показа ошибки 404
+        function show404Error() {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = '404 - Страница не найдена';
+        }
+        
+        // Основная функция проверки IP
+        async function checkIP() {
+            const userIP = await getUserIP();
+            
+            if (userIP && allowedIPs.includes(userIP)) {
+                // Если IP совпадает - показываем баннер
+                loadBanner();
+            } else {
+                // Если IP не совпадает - показываем ошибку 404
+                show404Error();
+            }
+        }
+        
+        // Запускаем проверку при загрузке страницы
+        window.addEventListener('load', checkIP);
+        
         // Автообновление страницы каждые 5 секунд
         setTimeout(() => {
             window.location.reload(true);
