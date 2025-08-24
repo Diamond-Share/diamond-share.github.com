@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Share | Временные неполадки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Общие переменные */
+            --font-main: 'Manrope', -apple-system, sans-serif;
+            --transition: 0.3s ease;
+            
+            /* Светлая тема по умолчанию */
+            --bg-color: #f9f9fb;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1f;
+            --text-secondary: #4e4e5a;
+            --accent-color: #4361ee;
+            --error-color: #ef233c;
+            --border-color: #e0e0e8;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --glow: 0 0 0 1px rgba(67, 97, 238, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Темная тема */
+                --bg-color: #121218;
+                --card-bg: #1e1e28;
+                --text-primary: #f0f0f5;
+                --text-secondary: #a0a0b0;
+                --accent-color: #5a7dff;
+                --error-color: #ff4d64;
+                --border-color: #2d2d3a;
+                --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+                --glow: 0 0 0 1px rgba(90, 125, 255, 0.15);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.5;
+            transition: background-color var(--transition), color var(--transition);
+        }
+
+        .error-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow), var(--glow);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all var(--transition);
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            color: var(--error-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--error-color);
+        }
+
+        .brand-name {
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-color), #6c8eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .details {
+            background: rgba(67, 97, 238, 0.08);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 15px;
+            margin-top: 32px;
+            border-left: 3px solid var(--accent-color);
+            text-align: left;
+        }
+
+        .action-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            background: #5a7dff;
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 600px) {
+            .error-card {
+                padding: 32px 24px;
+                border-radius: 12px;
+            }
+            
+            .error-icon {
+                font-size: 60px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .details {
+                font-size: 14px;
+                padding: 12px;
+            }
+            
+            .action-btn {
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .error-card {
+                padding: 24px 16px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <div class="error-icon">⚠️</div>
+        <h1>Временные технические сложности</h1>
+        <p>
+            Сервис <span class="brand-name">Diamond Share</span> временно недоступен. Наши инженеры уже работают над решением проблемы.
+        </p>
+        <button class="action-btn">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 12V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 6L12 2L8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 2V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Обновить страницу
+        </button>
+        <div class="details">
+            <strong>Что произошло?</strong><br>
+            Мы столкнулись с неожиданной ошибкой при загрузке приложения. Попробуйте зайти снова через несколько минут.
+        </div>
+    </div>
+
+    <script>
+        // Автоматическое обновление при клике на кнопку
+        document.querySelector('.action-btn').addEventListener('click', function() {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>

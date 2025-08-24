@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачать новую версию | Diamond Share</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gradient: linear-gradient(135deg, #8A2BE2 0%, #00CED1 100%);
+            --dark: #343a40;
+            --light: #f8f9fa;
+            --pink: #FF2D75;
+            --blue: #007bff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient);
+            z-index: -1;
+            border-radius: 32px;
+            opacity: 0.1;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .version-info {
+            background: rgba(0, 0, 0, 0.03);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .version-info h3 {
+            color: #8A2BE2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .version-info ul {
+            list-style-type: none;
+            padding-left: 5px;
+        }
+        
+        .version-info li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .version-info li::before {
+            content: '✓';
+            color: #00CED1;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        p {
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        .download-options {
+            margin: 40px 0;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .option-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+        
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 45%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 55%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .btn {
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-gem"></i>
+            DIAMOND SHARE
+        </div>
+        
+        <h1>Новая версия приложения</h1>
+        <p>Скачайте последнюю версию Diamond Share с улучшенной производительностью и новыми функциями</p>
+        
+        <div class="version-info">
+            <h3><i class="fas fa-star"></i> Что нового в версии 2.2</h3>
+            <ul>
+                <li>Улучшена стабильность и скорость работы</li>
+                <li>Новый современный интерфейс</li>
+                <li>Исправлены все известные ошибки</li>
+                <li>Добавлена поддержка новых устройств</li>
+                <li>Улучшена безопасность передачи данных</li>
+            </ul>
+        </div>
+        
+        <div class="download-options">
+            <h2>Способы загрузки</h2>
+            <p>Выберите удобный вариант установки обновления</p>
+            
+            <div class="options-grid">
+                <div class="option-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>RuStore</h3>
+                    <p>Официальный магазин приложений с автоматическими обновлениями</p>
+                    <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="btn btn-primary" style="margin-top: 15px;">
+                        <i class="fas fa-external-link-alt"></i>
+                        Открыть RuStore
+                    </a>
+                </div>
+                
+                <div class="option-card">
+                    <i class="fas fa-download"></i>
+                    <h3>Прямая загрузка</h3>
+                    <p>APK-файл для ручной установки (Android)</p>
+                    <a href="#" class="btn btn-secondary" style="margin-top: 15px;" id="direct-download">
+                        <i class="fas fa-download"></i>
+                        Скачать APK
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <a href="errorapp.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Вернуться назад
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Обработчик для прямой загрузки
+        document.getElementById('direct-download').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Здесь можно добавить логику загрузки
+            alert('Ошибка! Скачивания APK-файла на данный  момент не доступна');
+            // window.location.href = 'путь_к_файлу/app.apk';
+        });
+        
+        // Анимация загрузки при клике на кнопку
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-download', 'fa-external-link-alt');
+                    icon.classList.add('fa-spinner', 'fa-spin');
+                    setTimeout(() => {
+                        icon.classList.remove('fa-spinner', 'fa-spin');
+                        icon.classList.add('fa-check');
+                    }, 2000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

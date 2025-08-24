@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Diamond Share</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="welcome-screen" id="welcome-screen">
+   <div class="welcome-header">
+      <h1 class="welcome-title animate__animated animate__fadeInDown">Diamond Share</h1>
+    </div>
+
+    <div class="welcome-content">
+      <div class="welcome-logo-container">
+        <img src="diamond-logo.png" alt="Diamond Share Logo" class="welcome-logo" style="width: 350px; height: 350px;">
+      </div>
+      <p class="welcome-subtitle animate__animated animate__fadeInUp">Быстрый и безопасный обмен сообщениями</p>
+
+      <div class="welcome-btn-container animate__animated animate__fadeInUp animate__delay-1s">
+        <button class="welcome-btn" id="welcome-continue-btn">
+          Начать
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="terms-text animate__animated animate__fadeIn animate__delay-1-5s">
+      <p>Нажимая "Начать", вы соглашаетесь с нашими <a href="policy.html">Условиями использования</a></p>
+    </div>
+  </div>
+
+  <!-- Auth screens -->
+  <div class="auth-screen" id="username-screen">
+    <div class="auth-container animate__animated animate__fadeIn">
+      <div class="auth-header">
+        <div class="auth-logo animate__animated animate__zoomIn">
+          <i class="fas fa-share-alt" style="font-size: 40px; color: var(--primary);"></i>
+        </div>
+        <h2>Вход в Diamond</h2>
+      </div>
+      
+      <div class="auth-form">
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-1s">
+          <i class="fas fa-at"></i>
+          <input type="text" id="login-username" placeholder="@username" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <button class="auth-btn animate__animated animate__fadeInUp animate__delay-1-5s" id="login-continue-btn" disabled>
+          Продолжить
+          <i class="fas fa-arrow-right"></i>
+        </button>
+        
+        <div class="auth-footer animate__animated animate__fadeIn animate__delay-2s">
+          <p>Нет аккаунта? <a href="#" id="switch-to-register">Зарегистрироваться</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-screen" id="password-screen">
+    <div class="auth-container animate__animated animate__fadeIn">
+      <div class="auth-header">
+        <button class="back-btn" id="back-to-username">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Введите пароль</h2>
+      </div>
+      
+      <div class="auth-form">
+        <div class="input-field animate__animated animate__fadeInUp">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="login-password" placeholder="Пароль" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <button class="auth-btn animate__animated animate__fadeInUp animate__delay-1s" id="login-btn">
+          Войти
+        </button>
+        
+        <div class="auth-footer animate__animated animate__fadeIn animate__delay-1-5s">
+          <p>Забыли пароль? <a href="#">Восстановить</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-screen" id="register-screen">
+    <div class="auth-container animate__animated animate__fadeIn">
+      <div class="auth-header">
+        <button class="back-btn" id="back-to-login">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Регистрация</h2>
+      </div>
+      
+      <div class="auth-form">
+        <div class="input-field animate__animated animate__fadeInUp">
+          <i class="fas fa-user"></i>
+          <input type="text" id="register-name" placeholder="Ваше имя" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-1s">
+          <i class="fas fa-at"></i>
+          <input type="text" id="register-username" placeholder="@username" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-1-5s">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="register-password" placeholder="Пароль" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-2s">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="register-confirm" placeholder="Подтвердите пароль" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <button class="auth-btn animate__animated animate__fadeInUp animate__delay-2-5s" id="register-btn">
+          Зарегистрироваться
+        </button>
+        
+        <div class="auth-footer animate__animated animate__fadeIn animate__delay-3s">
+          <p>Уже есть аккаунт? <a href="#" id="switch-to-login">Войти</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="app" style="display: none;">
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <span>Diamond Share</span>
+      </div>
+      <div class="header-actions">
+        <button class="add-chat-btn" id="add-chat-btn">
+          <i class="fas fa-plus"></i> Чат
+        </button>
+        <div class="user-avatar" id="user-avatar">
+          <span id="user-avatar-text">U</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="search-container" id="search-container" style="display: none;">
+      <div class="search-header">
+        <button class="back-btn" id="search-back-btn">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="search-input-wrapper">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-input" placeholder="Поиск пользователей..." autocomplete="off">
+          <button class="clear-search" id="clear-search" style="display: none;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="search-results" id="search-results">
+        <div class="search-empty-state">
+          <i class="fas fa-search"></i>
+          <p>Введите имя пользователя для поиска</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Chats list -->
+      <div class="chats-list" id="chats-list">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="empty-title">Нет чатов</div>
+          <p>Добавьте контакты, чтобы начать общение</p>
+        </div>
+      </div>
+
+      <!-- Chat view -->
+      <div class="chat-view" id="chat-view">
+        <div class="chat-header">
+          <div class="chat-header-content">
+            <button class="back-btn" id="back-btn">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="chat-header-info">
+              <div class="chat-header-avatar" id="chat-header-avatar">
+                <span id="chat-header-avatar-text">C</span>
+              </div>
+              <div class="chat-header-text">
+                <div class="chat-title" id="chat-title">Чат</div>
+                <div class="chat-status" id="chat-status">Онлайн</div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="chat-action-btn" id="chat-info-btn">
+              <i class="fas fa-info-circle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="messages-container">
+          <div class="messages" id="messages"></div>
+          <div class="typing-indicator" id="typing-indicator" style="display: none;">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+        <div class="input-area">
+          <button class="attachment-btn" id="attachment-btn">
+            <i class="fas fa-paperclip"></i>
+          </button>
+          <div class="attachment-menu" id="attachment-menu">
+            <div class="attachment-option" id="attach-sticker">
+              <i class="fas fa-sticky-note"></i>
+              <span>Стикер</span>
+            </div>
+          </div>
+          <div class="upload-preview" id="upload-preview">
+            <div class="upload-preview-header">
+              <div class="upload-preview-title">Отправить файл</div>
+              <button class="upload-preview-close" id="upload-preview-close">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="upload-preview-content" id="upload-preview-content"></div>
+            <div class="upload-preview-actions">
+              <button class="btn btn-secondary" id="cancel-upload">Отмена</button>
+              <button class="btn btn-primary" id="send-upload">Отправить</button>
+            </div>
+          </div>
+          <button class="emoji-btn" id="emoji-btn">
+            <i class="far fa-smile"></i>
+          </button>
+          <div class="message-input-container">
+            <textarea class="message-input" id="message-input" placeholder="Сообщение..." rows="1"></textarea>
+          </div>
+          <button class="send-btn" id="send-btn" disabled>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <div class="bottom-nav">
+      <div class="nav-item active" data-screen="chats">
+        <div class="nav-icon"><i class="fas fa-comment-dots"></i></div>
+        <div class="nav-text">Чаты</div>
+      </div>
+      <div class="nav-item" data-screen="contacts">
+        <div class="nav-icon"><i class="fas fa-user-friends"></i></div>
+        <div class="nav-text">Контакты</div>
+      </div>
+      <div class="nav-item" data-screen="settings">
+        <div class="nav-icon"><i class="fas fa-cog"></i></div>
+        <div class="nav-text">Настройки</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings screen -->
+  <div class="settings-screen" id="settings-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="settings-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Профиль</div>
+      <button class="settings-qr-btn" id="settings-qr-btn">
+        <i class="fas fa-qrcode"></i>
+      </button>
+    </div>
+    
+    <div class="settings-profile">
+      <div class="settings-avatar" id="settings-avatar">
+        <img id="settings-avatar-img" src="" alt="Avatar">
+        <span id="settings-avatar-text">U</span>
+      </div>
+      <div class="settings-name" id="settings-profile-name">
+        Имя пользователя
+        <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+      </div>
+      <div class="settings-username" id="settings-profile-username">@username</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Учётная запись</div>
+      <div class="tiles-container">
+        <div class="settings-tile" id="notifications-settings-btn">
+          <div class="tile-icon"><i class="fas fa-bell"></i></div>
+          <div class="tile-text">Уведомления</div>
+        </div>
+        <div class="settings-tile" id="privacy-settings-btn">
+          <div class="tile-icon"><i class="fas fa-lock"></i></div>
+          <div class="tile-text">Приватность</div>
+        </div>
+        <div class="settings-tile" id="appearance-settings-btn">
+          <div class="tile-icon"><i class="fas fa-palette"></i></div>
+          <div class="tile-text">Оформление</div>
+        </div>
+        <div class="settings-tile" id="help-settings-btn">
+          <div class="tile-icon"><i class="fas fa-question-circle"></i></div>
+          <div class="tile-text">Помощь</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">О приложении</div>
+      <div class="settings-item">
+        <div class="settings-item-text">Версия приложения</div>
+        <div class="settings-item-text">2.4</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Разработчик</div>
+        <div class="settings-item-text">StarPriks Company</div>
+      </div>
+    </div>
+    
+    <div class="settings-tile" onclick="showPreferences()">
+      <div class="tile-icon"><i class="fas fa-heart"></i></div>
+      <div class="tile-text">Предпочтения</div>
+    </div>
+
+    
+    <div class="settings-actions">
+      <button class="settings-logout-btn" id="settings-logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+      <button class="settings-delete-btn" id="settings-delete-btn">
+        Удалить профиль
+      </button>
+    </div>
+  </div>
+
+  <!-- Notifications settings screen -->
+  <div class="settings-screen" id="notifications-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="notifications-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Уведомления</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Общие настройки</div>
+      <div class="notification-item">
+        <div class="notification-label">Включить уведомления</div>
+        <label class="switch">
+          <input type="checkbox" id="notifications-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Типы уведомлений</div>
+      <div class="notification-item">
+        <div class="notification-label">Личные чаты</div>
+        <label class="switch">
+          <input type="checkbox" id="private-chats-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Группы</div>
+        <label class="switch">
+          <input type="checkbox" id="groups-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Каналы</div>
+        <label class="switch">
+          <input type="checkbox" id="channels-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Прочие</div>
+        <label class="switch">
+          <input type="checkbox" id="other-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Настройки уведомлений</div>
+      <div class="notification-item">
+        <div class="notification-label">Звук</div>
+        <label class="switch">
+          <input type="checkbox" id="sounds-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Вибрация</div>
+        <label class="switch">
+          <input type="checkbox" id="vibration-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Подсветка экрана</div>
+        <label class="switch">
+          <input type="checkbox" id="lights-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy settings screen -->
+  <div class="settings-screen" id="privacy-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="privacy-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Приватность</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Кто может...</div>
+      <div class="settings-item">
+        <div class="settings-item-text">Видеть мой номер телефона</div>
+        <select class="settings-select" id="phone-privacy">
+          <option value="all">Все</option>
+          <option value="contacts">Только контакты</option>
+          <option value="none">Никто</option>
+        </select>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Видеть мой статус</div>
+        <select class="settings-select" id="status-privacy">
+          <option value="all">Все</option>
+          <option value="contacts">Только контакты</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appearance settings screen -->
+  <div class="settings-screen" id="appearance-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="appearance-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Оформление</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Тема</div>
+      <div class="theme-options">
+        <div class="theme-option active" data-theme="light">
+          <div class="theme-preview light"></div>
+          <div class="theme-name">Светлая</div>
+        </div>
+        <div class="theme-option" data-theme="dark">
+          <div class="theme-preview dark"></div>
+          <div class="theme-name">Темная</div>
+        </div>
+        <div class="theme-option" data-theme="blue">
+          <div class="theme-preview blue"></div>
+          <div class="theme-name">Синяя</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help settings screen -->
+  <div class="settings-screen" id="help-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="help-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Помощь</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-text">Частые вопросы</div>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Связаться с поддержкой</div>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR modal -->
+  <div class="qr-modal" id="qr-modal">
+    <div class="qr-content">
+      <button class="qr-close" id="qr-close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="qr-title">Мой QR-код</div>
+      <div class="qr-code" id="qr-code">
+        QR-код будет здесь
+      </div>
+      <div class="qr-username" id="qr-username">@username</div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="delete-modal" id="delete-modal">
+    <div class="delete-content">
+      <div class="delete-title">Удалить профиль?</div>
+      <div class="delete-text">Вы уверены, что хотите удалить свой профиль? Это действие нельзя отменить.</div>
+      <div class="delete-actions">
+        <button class="delete-cancel" id="delete-cancel">Отмена</button>
+        <button class="delete-confirm" id="delete-confirm">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="add-chat-modal">
+    <div class="modal-content">
+      <div class="tabs">
+        <div class="tab active" data-tab="contact">Личный чат</div>
+        <div class="tab" data-tab="group"></div>
+      </div>
+      
+      <div id="contact-tab-content">
+        <h3 class="modal-title">Добавить контакт</h3>
+        <input type="text" class="modal-input" id="contact-username" placeholder="@username">
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancel-add-contact">Отмена</button>
+          <button class="btn btn-primary" id="confirm-add-contact">Добавить</button>
+        </div>
+      </div>
+      
+      <div id="group-tab-content" style="display: none;">
+        <h3 class="modal-title">Создать группу BETA</h3>
+        <input type="text" class="modal-input" id="group-name" placeholder="Название группы" required>
+        <input type="text" class="modal-input" id="group-members" placeholder="@user1, @user2" required>
+        <p class="hint-text">Введите никнеймы участников через запятую</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancel-create-group">Отмена</button>
+          <button class="btn btn-primary" id="confirm-create-group">Создать</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="share-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Поделиться профилем</h3>
+      <p>Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: <strong id="share-username"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="copy-share-link">
+          <i class="fas fa-copy"></i> Копировать
+        </button>
+        <button class="btn btn-primary" id="share-telegram">
+          <i class="fab fa-telegram"></i> Telegram
+        </button>
+        <button class="btn btn-primary" id="share-whatsapp">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image preview modal -->
+  <div class="image-preview-modal" id="image-preview-modal">
+    <div class="image-preview-content">
+      <button class="close-preview" id="close-preview">
+        <i class="fas fa-times"></i>
+      </button>
+      <img id="preview-image" src="" alt="Preview">
+    </div>
+  </div>
+
+  <!-- Stickers modal -->
+  <div class="modal" id="stickers-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Стикеры</h3>
+      <div class="stickers-tabs">
+        <div class="sticker-tab active" data-pack="panda">Панда</div>
+        <div class="sticker-tab" data-pack="cat">Акулёнок</div>
+        <div class="sticker-tab" data-pack="dog">Котик</div>
+        <div class="sticker-tab" data-pack="bigi">Биги</div>
+        <div class="sticker-tab" data-pack="akio">Акио</div>
+        <div class="sticker-tab" data-pack="rebi">Реби</div>
+        <div class="sticker-tab" data-pack="work">Работяга</div>
+        <div class="sticker-tab" data-pack="belka">Белка</div>
+      </div>
+      <div class="stickers-container" id="stickers-container">
+        <!-- Stickers will be loaded here -->
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="close-stickers">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message context menu -->
+  <div class="message-context-menu" id="message-context-menu">
+    <div class="context-menu-item" id="copy-message">
+      <i class="fas fa-copy"></i> Копировать
+    </div>
+    <div class="context-menu-item" id="reply-message">
+      <i class="fas fa-reply"></i> Ответить
+    </div>
+    <div class="context-menu-item" id="forward-message">
+      <i class="fas fa-share"></i> Переслать
+    </div>
+    <div class="context-menu-item" id="delete-message">
+      <i class="fas fa-trash"></i> Удалить
+    </div>
+  </div>
+
+  <!-- Forward modal -->
+  <div class="forward-modal" id="forward-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Переслать сообщение</h3>
+      <div class="chats-list" id="forward-chats-list"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-forward">Отмена</button>
+        <button class="btn btn-primary" id="confirm-forward">Отправить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Modal Component -->
+  <div class="custom-modal" id="custom-modal">
+    <div class="custom-modal-content">
+      <div class="custom-modal-header">
+        <h3 class="custom-modal-title" id="custom-modal-title">Title</h3>
+        <button class="custom-modal-close" id="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body" id="custom-modal-body">
+        Message content
+      </div>
+      <div class="custom-modal-footer" id="custom-modal-footer">
+        <button class="btn btn-secondary" id="custom-modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="custom-modal-confirm">OK</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Avatar Selection Modal -->
+  <div class="modal" id="avatar-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Выберите аватар</h3>
+      <div class="avatar-carousel" id="avatar-carousel">
+        <!-- Avatars will be loaded here -->
+      </div>
+      <div class="avatar-carousel-nav" id="avatar-carousel-nav">
+        <!-- Navigation dots will be loaded here -->
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-avatar-select">Отмена</button>
+        <button class="btn btn-primary" id="confirm-avatar-select">Выбрать</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-container loading-xyzqwe">
+      <div class="loading-logo loading-abc123">
+        <div class="loading-diamond loading-djdjdjjdkd"></div>
+      </div>
+      <div class="loading-text loading-asdfgh">
+        Diamond Share
+        <div class="loading-dots loading-zzzzzz">
+          <span class="loading-dot loading-dot1"></span>
+          <span class="loading-dot loading-dot2"></span>
+          <span class="loading-dot loading-dot3"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Preferences Screen -->
+  <div class="settings-screen" id="preferences-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" onclick="showScreen('settings')">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Мои предпочтения</div>
+    </div>
+
+    <div class="preferences-container">
+    <!-- вместо <select id="pref-color"> -->
+    <div class="preference-group">
+      <label>Любимый цвет</label>
+      <select id="pref-color">
+        <option value="">Выберите...</option>
+        <option>Красный</option><option>Синий</option><option>Зеленый</option>
+        <option>Желтый</option><option>Фиолетовый</option><option>Розовый</option>
+        <option>Черный</option><option>Белый</option><option>Оранжевый</option>
+        <option>Серый</option><option>Бирюзовый</option><option>Бордовый</option>
+        <option>Голубой</option><option>Салатовый</option><option>Сиреневый</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимый вкус</label>
+      <select id="pref-flavor">
+        <option value="">Выберите…</option>
+        <option>Сладкий</option><option>Солёный</option><option>Кислый</option>
+        <option>Горький</option><option>Шоколадный</option><option>Мятный</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимый стиль музыки</label>
+      <select id="pref-music">
+        <option value="">Выберите…</option>
+        <option>Поп</option><option>Рок</option><option>Хип-хоп</option>
+        <option>Джаз</option><option>Классика</option><option>Электронная</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимое время года</label>
+      <select id="pref-season">
+        <option value="">Выберите…</option>
+        <option>Весна</option><option>Лето</option><option>Осень</option><option>Зима</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимое хобби</label>
+      <select id="pref-hobby">
+        <option value="">Выберите…</option>
+        <option>Чтение книг</option><option>Спорт</option><option>Рисование</option>
+        <option>Путешествия</option><option>Кулинария</option><option>Музыка</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="savePreferences()">Сохранить</button>
+  </div>
+  
+  <div class="qr-modal" id="qr-modal">
+    <div class="qr-content">
+      <button class="qr-close" id="qr-close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="qr-title">Мой QR-код</div>
+      <div class="qr-code" id="qr-code"></div>
+      <div class="qr-username" id="qr-username"></div>
+      <div class="qr-actions">
+        <button class="qr-btn share" onclick="shareQR()">
+          <i class="fas fa-share-alt"></i> Поделиться
+        </button>
+        <button class="qr-btn save" onclick="saveQR()">
+          <i class="fas fa-download"></i> Сохранить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden file inputs -->
+  <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
+
+  <!-- Firebase and app script -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="app.js"></script>
+  
+  <style>
+  /* Telegram-like message styles */
+  .messages-container {
+    flex: 1;
+    padding: 8px 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: var(--chat-bg, #e6ebee);
+    background-image: url('pattern.png');
+    background-attachment: fixed;
+  }
+
+  .message {
+    display: flex;
+    max-width: 80%;
+    margin: 2px 0;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .message.incoming {
+    align-self: flex-start;
+    margin-right: auto;
+  }
+
+  .message.outgoing {
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
+  .message-bubble {
+    padding: 8px 12px;
+    border-radius: 7.5px;
+    position: relative;
+    word-break: break-word;
+    line-height: 1.4;
+    font-size: 15px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+  }
+
+  .message.incoming .message-bubble {
+    background: #ffffff;
+    border-top-left-radius: 0;
+    color: #000000;
+  }
+
+  .message.outgoing .message-bubble {
+    background: #ffffff; /* Белый фон */
+    border-top-right-radius: 0;
+    color: #000000;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.08); /* Легкая тень как у входящих */
+  }
+
+  /* Message triangle */
+  .message-bubble:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .message.incoming .message-bubble:before {
+    left: -8px;
+    top: 0;
+    border-width: 0 8px 8px 0;
+    border-color: transparent #ffffff transparent transparent;
+  }
+
+  .message.outgoing .message-bubble:before {
+    right: -8px;
+    top: 0;
+    border-width: 0 0 8px 8px;
+    border-color: transparent transparent transparent #ffffff; /* Белый треугольник */
+  }
+
+  /* Message meta */
+  .message-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .message-time {
+    font-size: 11px;
+    opacity: 0.6;
+    color: #707579;
+  }
+
+  .message.outgoing .message-time {
+    font-size: 11px;
+    opacity: 0.6;
+    color: #707579; /* Серый цвет как у входящих */
+  }
+
+  .message-status {
+    font-size: 11px;
+    color: #707579;
+  }
+
+  /* Reply */
+  .message-reply {
+    padding: 8px 12px 6px 12px;
+    background: rgba(0,0,0,0.03);
+    border-left: 2px solid var(--primary);
+    margin: -4px -12px 6px -12px;
+    border-radius: 7.5px 7.5px 0 0;
+  }
+
+  .message.outgoing .message-reply {
+    background: rgba(0,0,0,0.05);
+  }
+
+  .reply-header {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    color: var(--primary);
+  }
+
+  .reply-text {
+    font-size: 13px;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Stickers */
+  .message-sticker {
+    max-width: 180px;
+    max-height: 180px;
+    border-radius: 8px;
+  }
+
+  /* Input area */
+  .input-area {
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    position: relative;
+  }
+
+  [data-theme="dark"] .input-area {
+    background: #1f1f1f;
+    border-color: #333;
+  }
+
+  .message-input-container {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 8px 16px;
+    min-height: 40px;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  [data-theme="dark"] .message-input-container {
+    background: #333;
+  }
+
+  .message-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #000;
+  }
+
+  [data-theme="dark"] .message-input {
+    color: #e0e0e0;
+  }
+
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 12px;
+    align-self: flex-start;
+    margin-bottom: 8px;
+  }
+
+  [data-theme="dark"] .typing-indicator {
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* Dark theme adjustments */
+  [data-theme="dark"] .messages-container {
+    background-color: #0e1216;
+  }
+  
+  /* Добавим в существующие стили */
+  .message-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .message-image:hover {
+    transform: scale(1.02);
+  }
+  
+  .image-preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .image-preview-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+  }
+  
+  .image-preview-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+  
+  .close-preview {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  [data-theme="dark"] .message.incoming .message-bubble {
+    background: #1e2a32;
+    color: #e0e0e0;
+  }
+
+  [data-theme="dark"] .message.outgoing .message-bubble {
+    background: #1d3b26;
+  }
+
+  [data-theme="dark"] .message.incoming .message-bubble:before {
+    border-color: transparent #1e2a32 transparent transparent;
+  }
+
+  [data-theme="dark"] .message.outgoing .message-bubble:before {
+    border-color: transparent transparent transparent #1d3b26;
+  }
+  
+  [data-theme="dark"] .message.outgoing .message-bubble {
+    background: #1e2a32; /* Такой же как у входящих в темной теме */
+    color: #e0e0e0;
+  }
+
+  [data-theme="dark"] .message.outgoing .message-bubble:before {
+    border-color: transparent transparent transparent #1e2a32; /* Совпадает с фоном */
+  }
+  
+
+  [data-theme="dark"] .message.outgoing .message-time,
+  [data-theme="dark"] .message.outgoing .message-status {
+    color: #a0a0a0; /* Серый цвет в темной теме */
+  }
+</style>
+</body>
+</html>
