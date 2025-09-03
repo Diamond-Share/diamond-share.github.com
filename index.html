@@ -10,10 +10,6 @@
     <link rel="icon" href="/favicon-180x180.png" sizes="180x180">
     <link rel="apple-touch-icon" href="/favicon-180x180.png">
     <meta name="theme-color" content="#8A2BE2">
-    <link rel="icon" href="/favicon.ico" sizes="32x32">
-    <link rel="icon" href="/favicon-180x180.png" sizes="180x180">
-    <link rel="apple-touch-icon" href="/favicon-180x180.png">
-    <meta name="theme-color" content="#8A2BE2">
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -267,7 +263,7 @@
                 inset 0 0 40px rgba(0, 206, 209, 0.3);
         }
         
-        /* Блоки преимуществ */
+        /* Преимущества */
         .features {
             padding: 100px 5%;
             max-width: 1200px;
@@ -333,6 +329,125 @@
         
         .feature p {
             color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Блок миграции */
+        .migration-section {
+            padding: 100px 5%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(0, 206, 209, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .migration-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .migration-title {
+            font-size: 36px;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .migration-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+        
+        .migration-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .migration-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient);
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0.1;
+        }
+        
+        .timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .timer-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .timer-number {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .timer-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .migration-warning {
+            background: rgba(255, 45, 117, 0.1);
+            border: 1px solid rgba(255, 45, 117, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .migration-warning i {
+            color: var(--pink);
+            margin-right: 10px;
+        }
+        
+        .migration-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--gradient);
+            color: #000;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .migration-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
         }
         
         /* Новый блок с отзывами */
@@ -500,33 +615,33 @@
         }
         
         /* Стиль для сообщения об ошибке WRONG_DOMAIN */
-.domain-error-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 0, 0, 0.9);
-    color: white;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    padding: 20px;
-    backdrop-filter: blur(10px);
-}
+        .domain-error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
 
-.domain-error-message {
-    max-width: 600px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 40px;
-    border-radius: 20px;
-    border: 3px solid white;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-}
+        .domain-error-message {
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
         
         /* Стиль для скрытого SEO-текста */
         .seo-text {
@@ -557,6 +672,21 @@
                 transform: translateX(50%);
                 padding: 8px 15px;
                 font-size: 14px;
+            }
+            
+            /* Таймер на мобильных */
+            .timer {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .timer-item {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .timer-number {
+                font-size: 24px;
             }
             
             /* Мобильный вид: оставляем один ряд, но перенос при необходимости */
@@ -683,6 +813,45 @@
         </div>
     </section>
     
+    <!-- Блок миграции -->
+    <section class="migration-section">
+        <div class="migration-container">
+            <h2 class="migration-title">Мигрируй свой аккаунт быстрее!</h2>
+            <p class="migration-subtitle">Обновите пароль до защищенной версии до 31 сентября 2025 года, чтобы не потерять доступ к аккаунту</p>
+            
+            <div class="migration-card">
+                <div class="timer" id="migrationTimer">
+                    <div class="timer-item">
+                        <div class="timer-number" id="days">00</div>
+                        <div class="timer-label">дней</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="hours">00</div>
+                        <div class="timer-label">часов</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="minutes">00</div>
+                        <div class="timer-label">минут</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="seconds">00</div>
+                        <div class="timer-label">секунд</div>
+                    </div>
+                </div>
+                
+                <div class="migration-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Внимание! После 31 сентября 2025 года все незашифрованные пароли будут удалены из системы для обеспечения безопасности.</span>
+                </div>
+                
+                <a href="password.html" class="migration-btn">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Мигрировать аккаунт</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
     <!-- Отзывы -->
     <section class="testimonials">
         <h2>Что говорят пользователи</h2>
@@ -768,127 +937,87 @@
         <ul>
             <li>98% опрошенных назвали Diamond Share самым удобным мессенджером.</li>
             <li>95% отметили, что он быстрее конкурентов.</li>
-            <li>Количество ошибок передачи данных – 0,001% (у WhatsApp – 0,5%, у Telegram – 0,3%).</li>
-            <li>Среднее время доставки сообщения – 0,2 секунды (у других – от 0,5 до 2 секунд).</li>
+            <li>Количество ошибок и сбоев в Diamond Share – 0,1%, тогда как в Telegram – 2,5%, а в WhatsApp – 3%.</li>
         </ul>
         
-        <h2>Заключение: Diamond Share – это мессенджер будущего</h2>
-        <p>Если вы ищете быстрый, безопасный и многофункциональный мессенджер, Diamond Share – лучший выбор. Он превосходит конкурентов по всем параметрам, а статистика только подтверждает это.</p>
-        <p>Попробуйте Diamond Share сегодня – и вы больше не захотите возвращаться к другим мессенджерам!</p>
-    </div>
-    
-    <!-- Сообщение об ошибке WRONG_DOMAIN -->
-    <div class="domain-error-overlay" id="domainError">
-        <div class="domain-error-message">
-            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
-            <h2>ОШИБКА ДОМЕНА</h2>
-            <p>Текущий домен не разрешен для отображения контента. Обратитесь в поддержку.</p>
-            <p style="font-size: 16px; margin-top: 20px;">Код ошибки: WRONG_DOMAIN</p>
-        </div>
+        <h2>Сравнение с конкурентами</h2>
+        <p>Telegram, WhatsApp, Viber и Signal – все они хороши по-своему, но Diamond Share объединил лучшие черты каждого, устранив их недостатки.</p>
+        
+        <h3>Diamond Share vs. Telegram</h3>
+        <p>Telegram известен скоростью, но Diamond Share ещё быстрее. Кроме того, в Telegram нет полноценного end-to-end шифрования для всех чатов, а в Diamond Share оно есть.</p>
+        
+        <h3>Diamond Share vs. WhatsApp</h3>
+        <p>WhatsApp принадлежит Meta, что вызывает вопросы о конфиденциальности. Diamond Share – независимый проект с открытым кодом, что гарантирует прозрачность.</p>
+        
+        <h3>Diamond Share vs. Signal</h3>
+        <p>Signal – эталон безопасности, но ему не хватает функций. Diamond Share совмещает безопасность Signal с функциональностью Telegram.</p>
+        
+        <h2>Заключение</h2>
+        <p>Diamond Share – это не просто мессенджер, а революция в общении. Он сочетает скорость, безопасность и удобство, превосходя всех конкурентов. Если вы ищете лучший мессенджер – выбор очевиден: Diamond Share.</p>
     </div>
 
-    <!-- Скрипты -->
     <script>
-        // Начальные параметры счетчика
-        const INITIAL_COUNT = 66; // Начальное значение
-        const INITIAL_DATE = new Date('2025-07-08T00:00:00'); // Дата начала отсчета
-        const INCREMENT_HOURS = 18 + 56/60; // 4 часа 56 минут в часах
-        
-        // Функция для расчета текущего значения счетчика
-        function calculateDownloads() {
-            const now = new Date();
-            const diffHours = (now - INITIAL_DATE) / (1000 * 60 * 60);
-            const increments = Math.floor(diffHours / INCREMENT_HOURS);
-            return INITIAL_COUNT + increments;
-        }
-        
-        // Функция для форматирования числа с пробелами
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-        }
-        
-        // Обновление счетчика
-        function updateCounter() {
-            const counter = calculateDownloads();
-            counterElement.textContent = formatNumber(counter);
+        // Анимация счётчика скачиваний
+        function animateCounter() {
+            let counter = document.getElementById('downloadCounter');
+            let count = parseInt(counter.innerText);
+            let target = 129 + Math.floor(Math.random() * 100);
+            let increment = Math.ceil((target - count) / 50);
             
-            // Анимация
-            counterElement.style.transform = 'scale(1.2)';
-            counterElement.style.color = '#FF2D75';
-            setTimeout(() => {
-                counterElement.style.transform = 'scale(1)';
-                counterElement.style.color = '';
-            }, 300);
+            let timer = setInterval(() => {
+                count += increment;
+                if (count >= target) {
+                    count = target;
+                    clearInterval(timer);
+                }
+                counter.innerText = count;
+            }, 50);
         }
         
-        const counterElement = document.getElementById('downloadCounter');
+        // Запускаем анимацию счётчика при загрузке
+        window.addEventListener('load', animateCounter);
         
-        // Инициализация
-        updateCounter();
+        // Таймер миграции
+        function updateMigrationTimer() {
+            const targetDate = new Date('September 31, 2025 23:59:59').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            if (distance < 0) {
+                document.getElementById('days').innerText = '00';
+                document.getElementById('hours').innerText = '00';
+                document.getElementById('minutes').innerText = '00';
+                document.getElementById('seconds').innerText = '00';
+                return;
+            }
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        }
         
-        // Обновляем каждую минуту (чтобы счетчик был актуальным)
-        setInterval(updateCounter, 60000);
+        // Обновляем таймер каждую секунду
+        setInterval(updateMigrationTimer, 1000);
+        updateMigrationTimer(); // Инициализация
         
-        // Параллакс-эффект для фона
-        document.addEventListener('mousemove', (e) => {
-            const heroBg = document.querySelector('.hero-bg');
-            const x = e.clientX / window.innerWidth * 20 - 10;
-            const y = e.clientY / window.innerHeight * 20 - 10;
-            heroBg.style.transform = `translate(${x}px, ${y}px)`;
-        });
-        
-        // Создаем алмазные частицы
-        function createDiamonds() {
-            const heroSection = document.querySelector('.hero');
-            for (let i = 0; i < 10; i++) {
-                const diamond = document.createElement('div');
-                diamond.className = 'diamond';
-                diamond.style.width = `${Math.random() * 10 + 5}px`;
-                diamond.style.height = diamond.style.width;
-                diamond.style.top = `${Math.random() * 100}%`;
-                diamond.style.left = `${Math.random() * 100}%`;
-                diamond.style.animationDelay = `${Math.random() * 5}s`;
-                diamond.style.opacity = Math.random() * 0.5 + 0.3;
-                heroSection.appendChild(diamond);
+        // Проверка домена (оставлена для совместимости)
+        function checkDomain() {
+            const allowedDomains = ['example.com', 'diamond-share.ru', 'localhost'];
+            const currentDomain = window.location.hostname;
+            
+            if (!allowedDomains.includes(currentDomain)) {
+                document.getElementById('domainErrorOverlay').style.display = 'flex';
             }
         }
         
-        createDiamonds();
-        
-        // Отслеживание ошибки WRONG_DOMAIN
-        (function() {
-            // Перехватываем ошибки консоли
-            const originalError = console.error;
-            console.error = function() {
-                if (arguments[0] && arguments[0].includes('WRONG_DOMAIN')) {
-                    showDomainError();
-                }
-                originalError.apply(console, arguments);
-            };
-
-            // Функция показа ошибки
-            function showDomainError() {
-                const errorOverlay = document.getElementById('domainError');
-                if (errorOverlay) {
-                    errorOverlay.style.display = 'flex';
-                    // Блокируем прокрутку
-                    document.body.style.overflow = 'hidden';
-            
-                    // Делаем сообщение постоянным (нельзя закрыть)
-                    setTimeout(() => {
-                        errorOverlay.style.opacity = '1';
-                        errorOverlay.style.transition = 'opacity 0.5s';
-                    }, 100);
-                }
-            }
-            
-            // Также проверяем наличие ошибки при загрузке
-            window.addEventListener('error', function(e) {
-                if (e.error && e.error.message && e.error.message.includes('WRONG_DOMAIN')) {
-                    showDomainError();
-                }
-            });
-        })();
+        // Запускаем проверку домена
+        window.addEventListener('load', checkDomain);
     </script>
 </body>
 </html>
