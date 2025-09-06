@@ -728,7 +728,7 @@
     <div class="download-counter">
         <i class="fas fa-download"></i>
         <span class="counter-number" id="downloadCounter">29</span>
-        <span class="counter-text">скачиваний</span>
+        <span class="counter-text">Аккаунтов</span>
     </div>
 
     <!-- Главный экран -->
@@ -912,7 +912,7 @@
     <!-- Скрытый SEO-текста -->
     <div class="seo-text">
         <h1>Diamond Share – лучший мессенджер в мире: статистика доказывает его превосходство</h1>
-        <p>В мире цифровых коммуникаций мессенджеры играют ключевую роль, и пользователи постоянно ищут самый удобный, безопасный и функциональный вариант. Сравнивая популярные приложения, такие как WhatsApp, Telegram, Signal и Viber, можно с уверенностью сказать: Diamond Share – это лучший мессенджер из всех существующих. И это не просто громкое заявление – статистика и факты подтверждают его лидерство.</p>
+        <p>В мире цифровых коммуникаций мессенджеры играют ключевую роль, и пользователи постоянно ищет самый удобный, безопасный и функциональный вариант. Сравнивая популярные приложения, такие как WhatsApp, Telegram, Signal и Viber, можно с уверенностью сказать: Diamond Share – это лучший мессенджер из всех существующих. И это не просто громкое заявление – статистика и факты подтверждают его лидерство.</p>
         
         <h2>Почему Diamond Share превосходит конкурентов?</h2>
         
@@ -937,87 +937,92 @@
         <ul>
             <li>98% опрошенных назвали Diamond Share самым удобным мессенджером.</li>
             <li>95% отметили, что он быстрее конкурентов.</li>
-            <li>Количество ошибок и сбоев в Diamond Share – 0,1%, тогда как в Telegram – 2,5%, а в WhatsApp – 3%.</li>
+            <li>Количество ошибок и сбоев в Diamond Share в 5 раз меньше, чем в Telegram.</li>
+            <li>Пользователи Viber и WhatsApp, перешедшие на Diamond Share, в 90% случаев не вернулись к старым мессенджерам.</li>
         </ul>
         
         <h2>Сравнение с конкурентами</h2>
-        <p>Telegram, WhatsApp, Viber и Signal – все они хороши по-своему, но Diamond Share объединил лучшие черты каждого, устранив их недостатки.</p>
-        
-        <h3>Diamond Share vs. Telegram</h3>
-        <p>Telegram известен скоростью, но Diamond Share ещё быстрее. Кроме того, в Telegram нет полноценного end-to-end шифрования для всех чатов, а в Diamond Share оно есть.</p>
-        
-        <h3>Diamond Share vs. WhatsApp</h3>
-        <p>WhatsApp принадлежит Meta, что вызывает вопросы о конфиденциальности. Diamond Share – независимый проект с открытым кодом, что гарантирует прозрачность.</p>
-        
-        <h3>Diamond Share vs. Signal</h3>
-        <p>Signal – эталон безопасности, но ему не хватает функций. Diamond Share совмещает безопасность Signal с функциональностью Telegram.</p>
+        <p>• WhatsApp: ограниченный функционал, принадлежит Meta (Facebook), что вызывает вопросы к конфиденциальности.</p>
+        <p>• Telegram: нет сквозного шифрования по умолчанию, облако ограничено.</p>
+        <p>• Signal: минималистичный интерфейс, мало дополнительных функций.</p>
+        <p>• Viber: перегружен рекламой, медленно работает.</p>
         
         <h2>Заключение</h2>
-        <p>Diamond Share – это не просто мессенджер, а революция в общении. Он сочетает скорость, безопасность и удобство, превосходя всех конкурентов. Если вы ищете лучший мессенджер – выбор очевиден: Diamond Share.</p>
+        <p>Diamond Share – это не просто мессенджер, а революция в общении. Он сочетает в себе максимальную безопасность, высокую скорость, уникальные функции и удобство. Статистика и отзывы пользователей подтверждают: Diamond Share – лучший выбор в 2025 году.</p>
     </div>
 
     <script>
-        // Анимация счётчика скачиваний
-        function animateCounter() {
-            let counter = document.getElementById('downloadCounter');
-            let count = parseInt(counter.innerText);
-            let target = 129 + Math.floor(Math.random() * 100);
-            let increment = Math.ceil((target - count) / 50);
-            
-            let timer = setInterval(() => {
-                count += increment;
-                if (count >= target) {
-                    count = target;
-                    clearInterval(timer);
-                }
-                counter.innerText = count;
-            }, 50);
-        }
-        
-        // Запускаем анимацию счётчика при загрузке
-        window.addEventListener('load', animateCounter);
-        
-        // Таймер миграции
+        // Функция для обновления таймера миграции
         function updateMigrationTimer() {
-            const targetDate = new Date('September 31, 2025 23:59:59').getTime();
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+            const targetDate = new Date('2025-09-31T23:59:59');
+            const now = new Date();
+            const diff = targetDate - now;
             
-            if (distance < 0) {
-                document.getElementById('days').innerText = '00';
-                document.getElementById('hours').innerText = '00';
-                document.getElementById('minutes').innerText = '00';
-                document.getElementById('seconds').innerText = '00';
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
                 return;
             }
             
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
-            document.getElementById('days').innerText = days.toString().padStart(2, '0');
-            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
         
         // Обновляем таймер каждую секунду
         setInterval(updateMigrationTimer, 1000);
-        updateMigrationTimer(); // Инициализация
+        updateMigrationTimer();
         
-        // Проверка домена (оставлена для совместимости)
-        function checkDomain() {
-            const allowedDomains = ['example.com', 'diamond-share.ru', 'localhost'];
-            const currentDomain = window.location.hostname;
-            
-            if (!allowedDomains.includes(currentDomain)) {
-                document.getElementById('domainErrorOverlay').style.display = 'flex';
+        // Создаем алмазные частицы
+        function createDiamonds() {
+            const heroSection = document.querySelector('.hero');
+            for (let i = 0; i < 8; i++) {
+                const diamond = document.createElement('div');
+                diamond.classList.add('diamond');
+                diamond.style.top = `${Math.random() * 100}%`;
+                diamond.style.left = `${Math.random() * 100}%`;
+                diamond.style.animationDelay = `${Math.random() * 5}s`;
+                heroSection.appendChild(diamond);
             }
         }
         
-        // Запускаем проверку домена
-        window.addEventListener('load', checkDomain);
+        createDiamonds();
+        
+        // Анимация счетчика
+        function animateCounter(element, target, duration) {
+            const start = parseInt(element.textContent);
+            const increment = target > start ? 1 : -1;
+            const steps = Math.abs(target - start);
+            const stepTime = duration / steps;
+            
+            let current = start;
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current;
+                
+                if (current === target) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+        
+        // Функция для ручного изменения счетчика
+        function setDownloadCount(count) {
+            const counterElement = document.getElementById('downloadCounter');
+            const currentCount = parseInt(counterElement.textContent);
+            animateCounter(counterElement, count, 1000);
+        }
+        
+        // Пример: установить значение 42
+         setDownloadCount(302);
     </script>
 </body>
-</html>
+	</html>
