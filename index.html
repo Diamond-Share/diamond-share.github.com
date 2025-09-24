@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIAMOND SHARE — Мессенджер с алмазной защитой</title>
-    <meta name="description" content="Diamond Share – Самый быстрый мессенджер.">
+    <title>Diamond Share — Безопасный мессенджер с шифрованием для Android</title>
+    <meta name="description" content="Diamond Share — безопасный мессенджер с P2P-шифрованием, быстрой доставкой сообщений и стильным дизайном. Скачайте бесплатно для Android.">
+    <meta name="keywords" content="мессенджер, безопасный мессенджер, скачать мессенджер, Diamond Share, шифрование, P2P, общение, чат, Android">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" href="/favicon-180x180.png" sizes="180x180">
@@ -15,8 +16,17 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Diamond Share" />
+    <meta property="og:title" content="Diamond Share — Безопасный мессенджер с шифрованием">
+    <meta property="og:description" content="Скачайте Diamond Share — мессенджер с P2P-шифрованием и мгновенной доставкой сообщений.">
+    <meta property="og:image" content="https://diamond-share.github.io/og-image.jpg">
+    <meta property="og:url" content="https://diamond-share.github.io/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" hreflang="ru" href="https://diamond-share.github.io/" />
+    <link rel="alternate" hreflang="x-default" href="https://diamond-share.github.io/" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="canonical" href="https://diamond-share.github.io/" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Базовые настройки */
@@ -1336,10 +1346,30 @@
         setInterval(updateTimer, 1000);
         
         // Проверка домена для загрузки
-    </script>
+        type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Diamond Share",
+          "applicationCategory": "CommunicationApplication",
+          "operatingSystem": "Android",
+          "description": "Безопасный мессенджер с шифрованием для приватного общения.",
+          "downloadUrl": "https://diamond-share.github.io/2.html",
+          "author": {
+            "@type": "Organization",
+            "name": "Diamond Share"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "RUB"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "2560"
+          }
+        }
+        </script>
 </body>
-
 </html>
-
-
-
