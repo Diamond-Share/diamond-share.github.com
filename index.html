@@ -1721,24 +1721,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Функция для обновления счетчика скачиваний
-            function updateDownloadCounter() {
-                const counter = document.getElementById('downloadCounter');
-                let currentCount = parseInt(counter.textContent);
-                const targetCount = currentCount + Math.floor(Math.random() * 10) + 5;
-                
-                const increment = () => {
-                    currentCount += 1;
-                    counter.textContent = currentCount;
-                    
-                    if (currentCount < targetCount) {
-                        setTimeout(increment, 50);
-                    }
-                };
-                
-                setTimeout(increment, 2000);
-            }
-            
             // Функция для обратного отсчета (20 дней)
             function startCountdown() {
                 const countDownDate = new Date();
@@ -1789,10 +1771,6 @@
             
             // Функция для проверки домена
             function checkDomain() {
-                
-                if (!allowedDomains.some(domain => currentDomain.includes(domain))) {
-                    document.getElementById('domainError').style.display = 'flex';
-                }
             }
             
             // Функция для FAQ аккордеона с плавной анимацией
@@ -1855,7 +1833,6 @@
             }
             
             // Инициализация всех функций
-            updateDownloadCounter();
             startCountdown();
             createDiamonds();
             checkDomain();
