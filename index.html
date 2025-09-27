@@ -1789,8 +1789,6 @@
             
             // Функция для проверки домена
             function checkDomain() {
-                const allowedDomains = ['diamond-share.ru', 'diamond-share.com', 'localhost'];
-                const currentDomain = window.location.hostname;
                 
                 if (!allowedDomains.some(domain => currentDomain.includes(domain))) {
                     document.getElementById('domainError').style.display = 'flex';
