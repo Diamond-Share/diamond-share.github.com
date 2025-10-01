@@ -307,7 +307,7 @@
         // Счётчик скачиваний с анимацией
         function animateCounter(element, target, duration) {
             let start = 0;
-            const increment = target / (duration / 16);
+            const increment = target / (duration / 0);
             const timer = setInterval(() => {
                 start += increment;
                 if (start >= target) {
@@ -319,19 +319,7 @@
             }, 16);
         }
         
-        // Функция для получения значения счетчика из localStorage
-        function getCounterValue() {
-            // Пытаемся получить значение из localStorage
-            const savedValue = localStorage.getItem('diamondShareCounter');
-            
-            // Если значение есть в localStorage, используем его
-            if (savedValue !== null) {
-                return parseInt(savedValue);
-            }
-            
-            // Если нет, используем значение по умолчанию
-            return;
-        }
+        // Функция для получения значения счетчика из localStorag
         
         // Запуск анимации счётчика
         document.addEventListener('DOMContentLoaded', function() {
@@ -377,4 +365,5 @@
 </body>
 
 </html>
+
 
