@@ -6,8 +6,8 @@
     <title>Diamond Share - Мультиссылки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Базовые настройки */
         :root {
             --primary: #6e8efb;
             --primary-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
@@ -19,9 +19,6 @@
             --bg-secondary: #f8f9fa;
             --bg-tertiary: #f1f3f5;
             --border: #e0e0e0;
-            --success: #4CAF50;
-            --error: #f44336;
-            --warning: #ff9800;
             --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
@@ -36,12 +33,12 @@
         html, body {
             max-width: 100%;
             overflow-x: hidden;
+            height: 100%;
         }
         
         body {
             background: var(--bg-light);
             color: var(--text-primary);
-            overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -50,9 +47,9 @@
             text-align: center;
             padding: 20px;
             position: relative;
+            overflow: hidden;
         }
         
-        /* Контейнер с обновленным дизайном */
         .container {
             max-width: 500px;
             width: 100%;
@@ -136,29 +133,6 @@
             box-shadow: var(--card-shadow);
         }
         
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0) 45%,
-                rgba(255, 255, 255, 0.3) 50%,
-                rgba(255, 255, 255, 0) 55%
-            );
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) rotate(30deg); }
-        }
-        
-        /* Алмазные частицы */
         .diamond {
             position: absolute;
             width: 10px;
@@ -174,7 +148,6 @@
             50% { transform: rotate(45deg) translateY(-20px); }
         }
         
-        /* Фоновый паттерн */
         .bg-pattern {
             position: absolute;
             top: 0;
@@ -193,49 +166,49 @@
             100% { opacity: 0.3; }
         }
         
+        .made-with-love {
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeInLove 4s ease-in-out 1s forwards;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeInLove {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateY(-5px) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .heart {
+            color: #ff6b6b;
+            display: inline-block;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+        }
+        
         footer {
             color: var(--text-secondary);
             font-size: 14px;
-            margin-top: 20px;
-        }
-        
-        /* Счётчик скачиваний */
-        .download-counter {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 999;
-            border: 1px solid var(--border);
-            box-shadow: var(--card-shadow);
-            animation: pulse-counter 2s infinite alternate;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes pulse-counter {
-            0% { box-shadow: 0 4px 12px rgba(110, 142, 251, 0.25); }
-            100% { box-shadow: 0 6px 20px rgba(167, 119, 227, 0.3); }
-        }
-        
-        .download-counter i {
-            color: var(--secondary);
-            font-size: 18px;
-        }
-        
-        .counter-number {
-            font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 18px;
-        }
-        
-        .counter-text {
-            font-size: 14px;
-            color: var(--text-secondary);
+            margin-top: 10px;
         }
         
         @media (max-width: 768px) {
@@ -256,29 +229,19 @@
                 font-size: 15px;
             }
             
-            .download-counter {
-                padding: 10px 16px;
-                font-size: 14px;
+            .made-with-love {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Фоновые элементы -->
     <div class="bg-pattern"></div>
     <div class="diamond" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
     <div class="diamond" style="top: 70%; left: 80%; animation-delay: 1s;"></div>
     <div class="diamond" style="top: 40%; left: 50%; animation-delay: 2s;"></div>
     <div class="diamond" style="top: 80%; left: 20%; animation-delay: 3s;"></div>
     
-    <!-- Счётчик скачиваний -->
-    <div class="download-counter">
-        <i class="fas fa-download"></i>
-        <span class="counter-number" id="downloadCounter"></span>
-        <span class="counter-text"></span>
-    </div>
-    
-    <!-- Основной контент -->
     <div class="container">
         <div class="logo">
             <i class="fas fa-gem"></i>
@@ -299,37 +262,16 @@
         </div>
     </div>
     
+    <div class="made-with-love">
+        Сделано с <span class="heart">❤️</span>
+    </div>
+    
     <footer>
         Diamond Team © 2025
     </footer>
     
     <script>
-        // Счётчик скачиваний с анимацией
-        function animateCounter(element, target, duration) {
-            let start = 0;
-            const increment = target / (duration / 0);
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= target) {
-                    element.textContent = Math.round(target).toLocaleString();
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.round(start).toLocaleString();
-                }
-            }, 16);
-        }
-        
-        // Функция для получения значения счетчика из localStorag
-        
-        // Запуск анимации счётчика
         document.addEventListener('DOMContentLoaded', function() {
-            // Получаем значение счетчика
-            const counterValue = getCounterValue();
-            const counterElement = document.getElementById('downloadCounter');
-            
-            // Запускаем анимацию счетчика
-            animateCounter(counterElement, counterValue, 2000);
-            
             // Создаем дополнительные алмазные частицы
             for (let i = 0; i < 10; i++) {
                 const diamond = document.createElement('div');
@@ -350,21 +292,7 @@
                 const y = e.clientY / window.innerHeight * 20 - 10;
                 bg.style.transform = `translate(${x}px, ${y}px)`;
             });
-            
-            // Обновляем счетчик каждые 5 секунд (на случай изменения на другой странице)
-            setInterval(() => {
-                const newValue = getCounterValue();
-                const currentValue = parseInt(counterElement.textContent.replace(/,/g, ''));
-                
-                if (newValue !== currentValue) {
-                    animateCounter(counterElement, newValue, 1000);
-                }
-            }, 5000);
         });
     </script>
 </body>
-
 </html>
-
-
-
