@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уведомления</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .notification-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .notification-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #007bff;
+            border-radius: 3px;
+        }
+        
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .instructions {
+            background-color: #e7f3ff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #b3d7ff;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Система уведомлений</h1>
+        
+        <div class="warning">
+            <strong>Важно:</strong> Для работы уведомлений откройте эту страницу через HTTP-сервер (localhost:8000)
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Как запустить:</h3>
+            <p><strong>Способ 1 (Python):</strong> Откройте терминал в папке с файлом и выполните:<br>
+            <code>python -m http.server 8000</code><br>
+            Затем откройте <code>http://localhost:8000</code></p>
+            
+            <p><strong>Способ 2 (Node.js):</strong><br>
+            <code>npx http-server -p 8000</code></p>
+            
+            <p><strong>Способ 3 (PHP):</strong><br>
+            <code>php -S localhost:8000</code></p>
+        </div>
+        
+        <div class="status info" id="status">
+            Нажмите "Разрешить уведомления" для начала работы
+        </div>
+        
+        <button class="btn" id="requestPermission">
+            Разрешить уведомления
+        </button>
+        
+        <button class="btn btn-success" id="sendNotification" disabled>
+            Отправить уведомление
+        </button>
+        
+        <button class="btn" id="testNotification" style="background-color: #ffc107; color: black;">
+            Тест уведомления (без разрешения)
+        </button>
+        
+        <div class="notification-list">
+            <h3>Последние уведомления:</h3>
+            <div id="notificationHistory"></div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const requestPermissionBtn = document.getElementById('requestPermission');
+        const sendNotificationBtn = document.getElementById('sendNotification');
+        const testNotificationBtn = document.getElementById('testNotification');
+        const statusDiv = document.getElementById('status');
+        const notificationHistory = document.getElementById('notificationHistory');
+        
+        // Список случайных уведомлений
+        const randomNotifications = [
+            "Новое сообщение в чате! 📩",
+            "Обновление системы завершено! ✅",
+            "Не забудьте о встрече в 15:00 🗓️",
+            "Ваш заказ готов к выдаче! 🎁",
+            "Получен новый отзыв! ⭐",
+            "Система обновлена до версии 2.1 🔄",
+            "Напоминание: оплатить счет 💳",
+            "Добро пожаловать обратно! 👋",
+            "Запущена новая функция! 🚀",
+            "Проверьте свою почту 📧",
+            "У вас новое достижение! 🏆",
+            "Баланс пополнен! 💰",
+            "Задача выполнена успешно! ✔️",
+            "Получено новое предложение! 🔥"
+        ];
+        
+        // Случайные иконки для уведомлений
+        const randomIcons = [
+            "🔔", "📱", "💻", "📧", "🎯", "⭐", "🚀", "💡", "📢", "👋", "🏆", "💰", "✔️", "🔥"
+        ];
+        
+        // Проверяем поддержку уведомлений
+        function checkNotificationSupport() {
+            if (!('Notification' in window)) {
+                statusDiv.textContent = '❌ Ваш браузер не поддерживает уведомления';
+                statusDiv.className = 'status error';
+                requestPermissionBtn.disabled = true;
+                sendNotificationBtn.disabled = true;
+                return false;
+            }
+            return true;
+        }
+        
+        // Функция запроса разрешения
+        function requestNotificationPermission() {
+            if (!checkNotificationSupport()) return;
+            
+            Notification.requestPermission().then(permission => {
+                handlePermissionResult(permission);
+            }).catch(error => {
+                console.error('Ошибка запроса разрешения:', error);
+                statusDiv.textContent = '❌ Ошибка при запросе разрешения';
+                statusDiv.className = 'status error';
+            });
+        }
+        
+        // Обработка результата разрешения
+        function handlePermissionResult(permission) {
+            if (permission === 'granted') {
+                statusDiv.textContent = '✅ Разрешение получено! Теперь вы можете отправлять уведомления';
+                statusDiv.className = 'status success';
+                sendNotificationBtn.disabled = false;
+                requestPermissionBtn.disabled = true;
+                
+                // Показываем тестовое уведомление
+                setTimeout(() => {
+                    showNotification('Добро пожаловать!', 'Теперь вы будете получать уведомления');
+                }, 1000);
+            } else if (permission === 'denied') {
+                statusDiv.textContent = '❌ Разрешение отклонено. Вы можете включить уведомления в настройках браузера';
+                statusDiv.className = 'status error';
+                sendNotificationBtn.disabled = true;
+            } else {
+                statusDiv.textContent = '⚠️ Разрешение не предоставлено';
+                statusDiv.className = 'status info';
+                sendNotificationBtn.disabled = true;
+            }
+        }
+        
+        // Функция показа уведомления
+        function showNotification(title, message) {
+            // Проверяем, запущено ли через сервер
+            if (window.location.protocol === 'file:') {
+                statusDiv.innerHTML = '❌ Уведомления работают только через HTTP-сервер (localhost)<br>Смотрите инструкцию выше';
+                statusDiv.className = 'status error';
+                addToHistory(title, message, '❌', 'Не отправлено (file://)');
+                return;
+            }
+            
+            if (Notification.permission !== 'granted') {
+                statusDiv.textContent = '❌ Нет разрешения на уведомления';
+                statusDiv.className = 'status error';
+                addToHistory(title, message, '❌', 'Не отправлено (нет разрешения)');
+                return;
+            }
+            
+            try {
+                const icon = randomIcons[Math.floor(Math.random() * randomIcons.length)];
+                
+                // Простые опции без проблемных полей
+                const options = {
+                    body: message,
+                    icon: '/favicon.ico', // Простая иконка
+                    tag: 'simple-notification'
+                };
+                
+                const notification = new Notification(`${icon} ${title}`, options);
+                
+                // Добавляем в историю
+                addToHistory(title, message, icon, 'Успешно отправлено');
+                
+                // Автоматическое закрытие через 5 секунд
+                setTimeout(() => {
+                    notification.close();
+                }, 5000);
+                
+                // Обработчик клика по уведомлению
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+                
+                notification.onerror = (error) => {
+                    console.error('Ошибка уведомления:', error);
+                    addToHistory(title, message, '❌', 'Ошибка отправки');
+                };
+                
+            } catch (error) {
+                console.error('Ошибка создания уведомления:', error);
+                handleNotificationError(error, title, message);
+            }
+        }
+        
+        // Обработка ошибок уведомлений
+        function handleNotificationError(error, title, message) {
+            let errorMessage = 'Неизвестная ошибка';
+            
+            if (error.message.includes('Illegal constructor')) {
+                errorMessage = 'Запустите через HTTP-сервер (см. инструкцию)';
+            } else if (error.message.includes('ServiceWorkerRegistration')) {
+                errorMessage = 'Требуется HTTPS или localhost';
+            } else {
+                errorMessage = error.message;
+            }
+            
+            statusDiv.innerHTML = `❌ Ошибка: ${errorMessage}`;
+            statusDiv.className = 'status error';
+            addToHistory(title, message, '❌', `Ошибка: ${errorMessage}`);
+        }
+        
+        // Функция добавления в историю
+        function addToHistory(title, message, icon, status = 'Успешно отправлено') {
+            const timestamp = new Date().toLocaleTimeString();
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'notification-item';
+            notificationItem.innerHTML = `
+                <strong>${icon} ${title}</strong><br>
+                ${message}<br>
+                <small>${status} | ${timestamp}</small>
+            `;
+            notificationHistory.insertBefore(notificationItem, notificationHistory.firstChild);
+            
+            // Ограничиваем историю 10 последними уведомлениями
+            if (notificationHistory.children.length > 10) {
+                notificationHistory.removeChild(notificationHistory.lastChild);
+            }
+        }
+        
+        // Функция отправки случайного уведомления
+        function sendRandomNotification() {
+            if (Notification.permission !== 'granted') {
+                statusDiv.textContent = '❌ Нет разрешения на уведомления';
+                statusDiv.className = 'status error';
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * randomNotifications.length);
+            const notificationText = randomNotifications[randomIndex];
+            const title = "Новое уведомление";
+            
+            showNotification(title, notificationText);
+        }
+        
+        // Тестовая функция для проверки ошибок
+        function testNotification() {
+            const randomIndex = Math.floor(Math.random() * randomNotifications.length);
+            const notificationText = randomNotifications[randomIndex];
+            const title = "Тестовое уведомление";
+            
+            if (Notification.permission === 'granted') {
+                showNotification(title, notificationText);
+            } else {
+                // Показываем в истории, но не отправляем реальное уведомление
+                addToHistory(title, notificationText, '🧪', 'Тест (без разрешения)');
+                statusDiv.textContent = '🧪 Тестовое уведомление добавлено в историю (нет разрешения)';
+                statusDiv.className = 'status info';
+            }
+        }
+        
+        // Инициализация при загрузке
+        function initialize() {
+            if (!checkNotificationSupport()) return;
+            
+            // Проверяем протокол
+            if (window.location.protocol === 'file:') {
+                statusDiv.innerHTML = '⚠️ Запущено как файл. Уведомления работают только через HTTP-сервер!';
+                statusDiv.className = 'status error';
+            }
+            
+            // Проверяем текущий статус разрешения при загрузке
+            if (Notification.permission === 'granted') {
+                statusDiv.textContent = '✅ Разрешение уже предоставлено! Можете отправлять уведомления';
+                statusDiv.className = 'status success';
+                sendNotificationBtn.disabled = false;
+                requestPermissionBtn.disabled = true;
+            } else if (Notification.permission === 'denied') {
+                statusDiv.textContent = '❌ Разрешение отклонено. Включите уведомления в настройках браузера';
+                statusDiv.className = 'status error';
+                sendNotificationBtn.disabled = true;
+                requestPermissionBtn.disabled = true;
+            }
+        }
+        
+        // Обработчики событий
+        requestPermissionBtn.addEventListener('click', requestNotificationPermission);
+        sendNotificationBtn.addEventListener('click', sendRandomNotification);
+        testNotificationBtn.addEventListener('click', testNotification);
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
