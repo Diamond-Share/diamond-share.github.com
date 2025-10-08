@@ -112,18 +112,30 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .icon-bell {
-            font-size: 48px;
-            margin-bottom: 20px;
-            animation: ring 2s infinite;
+        .fake-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-left: 5px solid #28a745;
+            max-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
         }
         
-        @keyframes ring {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(10deg); }
-            75% { transform: rotate(-10deg); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -141,12 +153,19 @@
                 font-size: 16px;
                 padding: 12px 20px;
             }
+            
+            .fake-notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon-bell">🔔</div>
+        <div style="font-size: 48px; margin-bottom: 20px;">🔔</div>
         <h1>Push Уведомления</h1>
         
         <div class="status info" id="status">
@@ -167,12 +186,15 @@
         </div>
     </div>
 
+    <div id="fakeNotificationsContainer"></div>
+
     <script>
         // Элементы DOM
         const requestPermissionBtn = document.getElementById('requestPermission');
         const sendNotificationBtn = document.getElementById('sendNotification');
         const statusDiv = document.getElementById('status');
         const notificationHistory = document.getElementById('notificationHistory');
+        const fakeNotificationsContainer = document.getElementById('fakeNotificationsContainer');
         
         // Список случайных уведомлений
         const randomNotifications = [
@@ -243,43 +265,71 @@
             }
         }
         
-        // Показать уведомление
+        // Показать уведомление (основная функция)
         function showNotification(title, message) {
-            if (Notification.permission !== 'granted') {
-                statusDiv.textContent = '❌ Сначала разреши уведомления';
-                statusDiv.className = 'status error';
-                return;
+            const icon = randomIcons[Math.floor(Math.random() * randomIcons.length)];
+            
+            // Пытаемся показать настоящее уведомление
+            if (Notification.permission === 'granted') {
+                try {
+                    const options = {
+                        body: message,
+                        icon: '/favicon.ico'
+                    };
+                    
+                    const notification = new Notification(`${icon} ${title}`, options);
+                    
+                    // Автозакрытие
+                    setTimeout(() => notification.close(), 5000);
+                    
+                    // Клик по уведомлению
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    };
+                    
+                } catch (error) {
+                    console.log('Настоящие уведомления не работают, показываем fake');
+                    showFakeNotification(title, message, icon);
+                }
+            } else {
+                showFakeNotification(title, message, icon);
             }
             
-            try {
-                const icon = randomIcons[Math.floor(Math.random() * randomIcons.length)];
-                
-                const options = {
-                    body: message,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23007bff"/><text x="50" y="60" font-size="40" text-anchor="middle" fill="white">🔔</text></svg>',
-                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%2328a745"/></svg>',
-                    vibrate: [200, 100, 200]
-                };
-                
-                const notification = new Notification(`${icon} ${title}`, options);
-                
-                // Добавляем в историю
-                addToHistory(title, message, icon);
-                
-                // Автозакрытие
-                setTimeout(() => notification.close(), 5000);
-                
-                // Клик по уведомлению
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
-                
-            } catch (error) {
-                console.error('Ошибка уведомления:', error);
-                // Если не получилось - просто добавляем в историю
-                addToHistory(title, message, '❌');
-            }
+            // Всегда добавляем в историю
+            addToHistory(title, message, icon);
+        }
+        
+        // Показать fake-уведомление
+        function showFakeNotification(title, message, icon) {
+            const fakeNotification = document.createElement('div');
+            fakeNotification.className = 'fake-notification';
+            fakeNotification.innerHTML = `
+                <strong>${icon} ${title}</strong><br>
+                <small>${message}</small>
+            `;
+            
+            fakeNotificationsContainer.appendChild(fakeNotification);
+            
+            // Автоматическое скрытие через 5 секунд
+            setTimeout(() => {
+                fakeNotification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (fakeNotification.parentNode) {
+                        fakeNotification.parentNode.removeChild(fakeNotification);
+                    }
+                }, 300);
+            }, 5000);
+            
+            // Клик для закрытия
+            fakeNotification.onclick = () => {
+                fakeNotification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (fakeNotification.parentNode) {
+                        fakeNotification.parentNode.removeChild(fakeNotification);
+                    }
+                }, 300);
+            };
         }
         
         // Отправить случайное уведомление
