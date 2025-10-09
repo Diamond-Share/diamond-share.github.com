@@ -158,10 +158,38 @@
         const tokenContainer = document.getElementById('tokenContainer');
         const curlExample = document.getElementById('curlExample');
 
+        // Регистрация Service Worker
+        async function registerServiceWorker() {
+            if (!'serviceWorker' in navigator) {
+                throw new Error('Service Worker не поддерживается');
+            }
+
+            try {
+                // Регистрируем Service Worker
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('Service Worker зарегистрирован:', registration);
+                
+                // Ждем пока Service Worker станет активным
+                await navigator.serviceWorker.ready;
+                console.log('Service Worker готов к работе');
+                
+                return registration;
+            } catch (error) {
+                console.error('Ошибка регистрации Service Worker:', error);
+                throw error;
+            }
+        }
+
         // Проверка поддержки
         function checkSupport() {
             if (!('Notification' in window)) {
                 statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
+                statusDiv.className = 'status error';
+                return false;
+            }
+            
+            if (!('serviceWorker' in navigator)) {
+                statusDiv.textContent = '❌ Браузер не поддерживает Service Worker';
                 statusDiv.className = 'status error';
                 return false;
             }
@@ -180,10 +208,19 @@
             if (!checkSupport()) return;
 
             try {
+                statusDiv.textContent = '⏳ Регистрируем Service Worker...';
+                
+                // Регистрируем Service Worker
+                await registerServiceWorker();
+                
                 statusDiv.textContent = '⏳ Запрашиваем разрешение...';
                 
                 // Запрашиваем разрешение на уведомления
-                await Notification.requestPermission();
+                const permission = await Notification.requestPermission();
+                
+                if (permission !== 'granted') {
+                    throw new Error('Пользователь не разрешил уведомления');
+                }
                 
                 statusDiv.textContent = '⏳ Получаем токен устройства...';
                 
@@ -295,10 +332,20 @@
         sendTestNotificationBtn.addEventListener('click', sendTestNotification);
 
         // Проверка текущего статуса при загрузке
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!checkSupport()) return;
+
+            // Пытаемся зарегистрировать Service Worker сразу
+            try {
+                await registerServiceWorker();
+                console.log('Service Worker зарегистрирован при загрузке');
+            } catch (error) {
+                console.log('Service Worker не зарегистрирован при загрузке, но зарегистрируется позже');
+            }
+
             if (Notification.permission === 'granted') {
                 // Если уже разрешено, получаем токен
-                requestNotificationPermission();
+                requestPermissionBtn.click();
             } else if (Notification.permission === 'denied') {
                 statusDiv.textContent = '❌ Уведомления заблокированы в настройках браузера';
                 statusDiv.className = 'status error';
