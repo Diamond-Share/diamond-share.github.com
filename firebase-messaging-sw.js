@@ -14,6 +14,18 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// Обработчик установки Service Worker
+self.addEventListener('install', (event) => {
+  console.log('Service Worker установлен');
+  self.skipWaiting(); // Активируем сразу
+});
+
+// Обработчик активации Service Worker
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker активирован');
+  event.waitUntil(self.clients.claim()); // Берем управление всеми клиентами
+});
+
 // Обработка фоновых сообщений (когда сайт закрыт)
 messaging.setBackgroundMessageHandler(function(payload) {
   console.log('Получено фоновое сообщение:', payload);
@@ -22,7 +34,8 @@ messaging.setBackgroundMessageHandler(function(payload) {
   const notificationOptions = {
     body: payload.notification.body,
     icon: payload.notification.icon || '/icon.png',
-    data: payload.data
+    badge: '/icon.png',
+    data: payload.data || {}
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
@@ -34,16 +47,21 @@ self.addEventListener('notificationclick', function(event) {
   
   event.notification.close();
   
+  const urlToOpen = event.notification.data.click_action || self.location.origin + '/';
+  
   // Открываем страницу при клике
   event.waitUntil(
-    clients.matchAll({type: 'window'}).then(function(clientList) {
+    clients.matchAll({type: 'window', includeUncontrolled: true}).then(function(clientList) {
+      // Ищем уже открытую вкладку с нашим сайтом
       for (let client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
           return client.focus();
         }
       }
+      
+      // Если не нашли, открываем новую вкладку
       if (clients.openWindow) {
-        return clients.openWindow('/');
+        return clients.openWindow(urlToOpen);
       }
     })
   );
