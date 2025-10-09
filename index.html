@@ -1529,24 +1529,61 @@
         </div>
     </section>
     
-    <div id="notificationBtn" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 10000;">
-    <button onclick="enableNotifications()" style="
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+    <h4 style="margin: 0 0 10px 0; color: #2c3e50;">🔔 Получайте уведомления</h4>
+    <button onclick="simpleNotification()" style="
         background: linear-gradient(135deg, #6e8efb, #a777e3);
         color: white;
         border: none;
-        padding: 15px 20px;
-        border-radius: 25px;
+        padding: 12px 20px;
+        border-radius: 8px;
         cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        font-size: 14px;
+        width: 100%;
     ">
-        🔔 Включить уведомления
+        Включить уведомления
     </button>
 </div>
+
+<script>
+function simpleNotification() {
+    if (!("Notification" in window)) {
+        alert("Этот браузер не поддерживает уведомления");
+        return;
+    }
+    
+    if (Notification.permission === "granted") {
+        alert("Уведомления уже включены!");
+        return;
+    }
+    
+    if (Notification.permission === "denied") {
+        alert("Вы заблокировали уведомления. Разрешите их в настройках браузера.");
+        return;
+    }
+    
+    // Запрашиваем разрешение
+    Notification.requestPermission().then(function(permission) {
+        if (permission === "granted") {
+            alert("✅ Отлично! Уведомления включены.");
+            // Сразу покажем тестовое уведомление
+            if (document.hidden) { // Только если страница не активна
+                new Notification("Diamond Share", {
+                    body: "Теперь вы будете получать наши уведомления!",
+                    icon: "/favicon.ico"
+                });
+            }
+        } else {
+            alert("❌ Вы отключили уведомления. Включите их позже в настройках.");
+        }
+    });
+}
+
+// Проверим статус при загрузке
+if ("Notification" in window && Notification.permission === "granted") {
+    console.log("Уведомления уже разрешены");
+}
+</script>
 
 <script>
 function enableNotifications() {
