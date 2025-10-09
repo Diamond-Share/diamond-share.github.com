@@ -3,257 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push Уведомления с Firebase</title>
+    <title>Push Уведомления</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #f0f0f0;
             text-align: center;
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
-        .btn {
-            background-color: #007bff;
-            color: white;
+        button {
+            background: #ffcc00;
+            color: #333;
             border: none;
-            padding: 15px 30px;
+            padding: 15px 25px;
             font-size: 18px;
             border-radius: 10px;
             cursor: pointer;
             margin: 10px;
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        
-        .btn:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-        
-        .btn-success {
-            background-color: #28a745;
-        }
-        
-        .status {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
             font-weight: bold;
         }
-        
-        .status.success {
-            background-color: #d4edda;
-            color: #155724;
+        .status {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
         }
-        
-        .status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .status.info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .token-display {
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .code {
             background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
             word-break: break-all;
-            text-align: left;
-            font-size: 14px;
-        }
-        
-        .instructions {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+            margin: 10px 0;
             text-align: left;
         }
     </style>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🔔 Настоящие Push Уведомления</h1>
+        <h1>🔔 Push Уведомления</h1>
         
-        <div class="instructions">
-            <strong>Важно:</strong> Этот сайт должен быть на HTTPS. Если тестируешь локально - используй localhost.
+        <button onclick="subscribeToPush()">📲 Включить уведомления</button>
+        
+        <div id="status" class="status info">
+            Нажми кнопку чтобы включить уведомления
         </div>
         
-        <div class="status info" id="status">
-            Нажми "Разрешить уведомления" для начала
+        <div id="subscriptionData" style="display: none;">
+            <h3>✅ Подписка активна!</h3>
+            <div class="code" id="subscriptionJson"></div>
+            <button onclick="sendTestNotification()" style="background: #28a745; color: white;">🚀 Тест уведомления</button>
         </div>
         
-        <button class="btn" id="requestPermission">
-            Разрешить уведомления
-        </button>
-        
-        <button class="btn btn-success" id="sendTestNotification" disabled>
-            Тестовое уведомление
-        </button>
-        
-        <div id="tokenContainer" style="display: none;">
-            <h3>Твой токен устройства:</h3>
-            <div class="token-display" id="tokenDisplay"></div>
-            <p>Используй этот токен для отправки push-уведомлений</p>
-        </div>
-        
-        <div style="margin-top: 30px; text-align: left;">
-            <h3>Как отправить уведомление через curl:</h3>
-            <pre id="curlExample" style="background: #f8f9fa; padding: 15px; border-radius: 10px; overflow-x: auto;"></pre>
+        <div style="margin-top: 20px; text-align: left; font-size: 14px;">
+            <p><strong>Как работает:</strong></p>
+            <p>1. Нажимаешь "Включить уведомления"</p>
+            <p>2. Разрешаешь уведомления в браузере</p>
+            <p>3. Получаешь данные подписки</p>
+            <p>4. Нажимаешь "Тест уведомления"</p>
         </div>
     </div>
 
     <script>
-        // Твои данные из Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q",
-            authDomain: "skyberry-a31d8.firebaseapp.com",
-            projectId: "skyberry-a31d8",
-            storageBucket: "skyberry-a31d8.firebasestorage.app",
-            messagingSenderId: "942887528624",
-            appId: "1:942887528624:web:537f9f76d79d81be89b375"
-        };
+        // VAPID ключ из Yandex Cloud (замени на свой)
+        const VAPID_PUBLIC_KEY = 'BL3fJ4pX8k2z9mKqWrTvYx7cD0gH5nL8sP1bN6jM9qV3tR7wZ0yA4uF2iC5oE8h';
+        
+        let currentSubscription = null;
 
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
-
-        // Элементы DOM
-        const requestPermissionBtn = document.getElementById('requestPermission');
-        const sendTestNotificationBtn = document.getElementById('sendTestNotification');
-        const statusDiv = document.getElementById('status');
-        const tokenDisplay = document.getElementById('tokenDisplay');
-        const tokenContainer = document.getElementById('tokenContainer');
-        const curlExample = document.getElementById('curlExample');
-
-        // Регистрация Service Worker
-        async function registerServiceWorker() {
-            if (!'serviceWorker' in navigator) {
-                throw new Error('Service Worker не поддерживается');
-            }
-
+        async function subscribeToPush() {
+            const statusDiv = document.getElementById('status');
+            const subscriptionData = document.getElementById('subscriptionData');
+            const subscriptionJson = document.getElementById('subscriptionJson');
+            
             try {
+                statusDiv.textContent = '⏳ Проверяем браузер...';
+                statusDiv.className = 'status info';
+
+                // Проверяем поддержку
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    throw new Error('Браузер не поддерживает push-уведомления');
+                }
+
                 // Регистрируем Service Worker
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                console.log('Service Worker зарегистрирован:', registration);
-                
-                // Ждем пока Service Worker станет активным
+                statusDiv.textContent = '⏳ Настраиваем...';
+                const registration = await navigator.serviceWorker.register('/sw.js');
                 await navigator.serviceWorker.ready;
-                console.log('Service Worker готов к работе');
-                
-                return registration;
-            } catch (error) {
-                console.error('Ошибка регистрации Service Worker:', error);
-                throw error;
-            }
-        }
 
-        // Проверка поддержки
-        function checkSupport() {
-            if (!('Notification' in window)) {
-                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
-                statusDiv.className = 'status error';
-                return false;
-            }
-            
-            if (!('serviceWorker' in navigator)) {
-                statusDiv.textContent = '❌ Браузер не поддерживает Service Worker';
-                statusDiv.className = 'status error';
-                return false;
-            }
-            
-            if (!firebase.messaging.isSupported()) {
-                statusDiv.textContent = '❌ Firebase Messaging не поддерживается';
-                statusDiv.className = 'status error';
-                return false;
-            }
-            
-            return true;
-        }
-
-        // Запрос разрешения и получение токена
-        async function requestNotificationPermission() {
-            if (!checkSupport()) return;
-
-            try {
-                statusDiv.textContent = '⏳ Регистрируем Service Worker...';
-                
-                // Регистрируем Service Worker
-                await registerServiceWorker();
-                
+                // Запрашиваем разрешение
                 statusDiv.textContent = '⏳ Запрашиваем разрешение...';
-                
-                // Запрашиваем разрешение на уведомления
                 const permission = await Notification.requestPermission();
                 
                 if (permission !== 'granted') {
-                    throw new Error('Пользователь не разрешил уведомления');
+                    throw new Error('Ты не разрешил уведомления 😔');
                 }
+
+                // Подписываемся на push
+                statusDiv.textContent = '⏳ Создаем подписку...';
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
+
+                currentSubscription = subscription;
                 
-                statusDiv.textContent = '⏳ Получаем токен устройства...';
+                // Показываем данные подписки
+                const subData = subscription.toJSON();
+                subscriptionJson.textContent = JSON.stringify(subData, null, 2);
+                subscriptionData.style.display = 'block';
                 
-                // Получаем FCM токен
-                const token = await messaging.getToken();
+                statusDiv.textContent = '✅ Уведомления включены! Теперь можно тестировать';
+                statusDiv.className = 'status success';
                 
-                if (token) {
-                    // Сохраняем токен
-                    await saveTokenToServer(token);
-                    
-                    statusDiv.textContent = '✅ Уведомления разрешены! Токен получен.';
-                    statusDiv.className = 'status success';
-                    
-                    // Показываем токен
-                    tokenDisplay.textContent = token;
-                    tokenContainer.style.display = 'block';
-                    
-                    // Активируем кнопку теста
-                    sendTestNotificationBtn.disabled = false;
-                    requestPermissionBtn.disabled = true;
-                    
-                    // Показываем пример curl
-                    showCurlExample(token);
-                    
-                    // Показываем тестовое уведомление
-                    setTimeout(() => {
-                        showTestNotification();
-                    }, 1000);
-                    
-                } else {
-                    statusDiv.textContent = '❌ Не удалось получить токен';
-                    statusDiv.className = 'status error';
-                }
+                // Показываем тестовое уведомление
+                new Notification('🎉 Ура!', {
+                    body: 'Push уведомления работают!',
+                    icon: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png'
+                });
                 
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -262,93 +138,48 @@
             }
         }
 
-        // Сохранение токена
-        async function saveTokenToServer(token) {
-            console.log('Токен для сохранения на сервере:', token);
-            localStorage.setItem('fcmToken', token);
-        }
-
-        // Показ примера curl команды
-        function showCurlExample(token) {
-            const example = `curl -X POST \\
-  "https://fcm.googleapis.com/fcm/send" \\
-  -H "Authorization: key=AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "notification": {
-      "title": "Тест Push",
-      "body": "Это настоящее push-уведомление!",
-      "icon": "https://skyberry-a31d8.firebaseapp.com/icon.png",
-      "click_action": "https://skyberry-a31d8.firebaseapp.com"
-    },
-    "to": "${token}"
-  }'`;
+        function sendTestNotification() {
+            if (!currentSubscription) return;
             
-            curlExample.textContent = example;
+            new Notification('📱 Тест с телефона', {
+                body: 'Это тестовое push-уведомление! Работает! 🚀',
+                icon: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png'
+            });
         }
 
-        // Показ тестового уведомления
-        function showTestNotification() {
-            if (Notification.permission === 'granted') {
-                new Notification('Тест успешен! 🎉', {
-                    body: 'Push-уведомления работают! Теперь можешь отправлять через curl.',
-                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png'
-                });
+        // Конвертер ключа
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
             }
+            return outputArray;
         }
 
-        // Отправка тестового уведомления
-        async function sendTestNotification() {
-            try {
-                statusDiv.textContent = '⏳ Показываем тестовое уведомление...';
-                
-                showTestNotification();
-                
-                setTimeout(() => {
-                    statusDiv.textContent = '✅ Тестовое уведомление показано!';
-                    statusDiv.className = 'status success';
-                }, 1000);
-                
-            } catch (error) {
-                statusDiv.textContent = '❌ Ошибка: ' + error.message;
-                statusDiv.className = 'status error';
-            }
-        }
-
-        // Обработчик входящих сообщений (когда пользователь на странице)
-        messaging.onMessage((payload) => {
-            console.log('Получено сообщение когда страница открыта:', payload);
-            
-            if (Notification.permission === 'granted') {
-                new Notification(payload.notification.title, {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon
-                });
-            }
-        });
-
-        // Обработчики событий
-        requestPermissionBtn.addEventListener('click', requestNotificationPermission);
-        sendTestNotificationBtn.addEventListener('click', sendTestNotification);
-
-        // Проверка текущего статуса при загрузке
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (!checkSupport()) return;
-
-            // Пытаемся зарегистрировать Service Worker сразу
-            try {
-                await registerServiceWorker();
-                console.log('Service Worker зарегистрирован при загрузке');
-            } catch (error) {
-                console.log('Service Worker не зарегистрирован при загрузке, но зарегистрируется позже');
-            }
-
-            if (Notification.permission === 'granted') {
-                // Если уже разрешено, получаем токен
-                requestPermissionBtn.click();
-            } else if (Notification.permission === 'denied') {
-                statusDiv.textContent = '❌ Уведомления заблокированы в настройках браузера';
-                statusDiv.className = 'status error';
+        // Проверяем существующую подписку при загрузке
+        window.addEventListener('load', async () => {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const subscription = await registration.pushManager.getSubscription();
+                    
+                    if (subscription) {
+                        currentSubscription = subscription;
+                        document.getElementById('subscriptionJson').textContent = JSON.stringify(subscription.toJSON(), null, 2);
+                        document.getElementById('subscriptionData').style.display = 'block';
+                        document.getElementById('status').textContent = '✅ Уведомления уже включены!';
+                        document.getElementById('status').className = 'status success';
+                    }
+                } catch (error) {
+                    console.log('Подписка не найдена');
+                }
             }
         });
     </script>
