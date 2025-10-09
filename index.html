@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+	<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+	<script>
+  	window.OneSignalDeferred = window.OneSignalDeferred || [];
+  	OneSignalDeferred.push(async function(OneSignal) {
+    	await OneSignal.init({
+  	    appId: "3612d5f9-95a6-456d-a037-85f9bd7e4508",
+    	});
+  	});
+	</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIAMOND SHARE — Мессенджер с алмазной защитой</title>
@@ -1529,100 +1538,6 @@
         </div>
     </section>
     
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
-    <h4 style="margin: 0 0 10px 0; color: #2c3e50;">🔔 Получайте уведомления</h4>
-    <button onclick="simpleNotification()" style="
-        background: linear-gradient(135deg, #6e8efb, #a777e3);
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        width: 100%;
-    ">
-        Включить уведомления
-    </button>
-</div>
-
-<script>
-function simpleNotification() {
-    if (!("Notification" in window)) {
-        alert("Этот браузер не поддерживает уведомления");
-        return;
-    }
-    
-    if (Notification.permission === "granted") {
-        alert("Уведомления уже включены!");
-        return;
-    }
-    
-    if (Notification.permission === "denied") {
-        alert("Вы заблокировали уведомления. Разрешите их в настройках браузера.");
-        return;
-    }
-    
-    // Запрашиваем разрешение
-    Notification.requestPermission().then(function(permission) {
-        if (permission === "granted") {
-            alert("✅ Отлично! Уведомления включены.");
-            // Сразу покажем тестовое уведомление
-            if (document.hidden) { // Только если страница не активна
-                new Notification("Diamond Share", {
-                    body: "Теперь вы будете получать наши уведомления!",
-                    icon: "/favicon.ico"
-                });
-            }
-        } else {
-            alert("❌ Вы отключили уведомления. Включите их позже в настройках.");
-        }
-    });
-}
-
-// Проверим статус при загрузке
-if ("Notification" in window && Notification.permission === "granted") {
-    console.log("Уведомления уже разрешены");
-}
-</script>
-
-<script>
-function enableNotifications() {
-    if (window.OneSignal) {
-        OneSignal.showSlidedownPrompt().then(function() {
-            console.log("Уведомления запрошены");
-        }).catch(function(error) {
-            console.error("Ошибка OneSignal:", error);
-            // Если OneSignal не работает, используем нативный способ
-            nativeNotificationRequest();
-        });
-    } else {
-        nativeNotificationRequest();
-    }
-}
-
-function nativeNotificationRequest() {
-    if ("Notification" in window) {
-        Notification.requestPermission().then(function(permission) {
-            if (permission === "granted") {
-                alert("✅ Уведомления включены! Вы будете получать важные уведомления.");
-                // Покажем тестовое уведомление
-                new Notification("Diamond Share", {
-                    body: "Спасибо за включение уведомлений!",
-                    icon: "/favicon.ico"
-                });
-            }
-        });
-    } else {
-        alert("❌ Ваш браузер не поддерживает уведомления");
-    }
-}
-
-// Автоматически покажем кнопку через 3 секунды на всякий случай
-setTimeout(function() {
-    document.getElementById('notificationBtn').style.display = 'block';
-}, 3000);
-</script>
-
     <!-- Новый блок: Сравнение с конкурентами -->
     <section class="comparison-section">
         <div class="comparison-container">
@@ -1942,22 +1857,7 @@ setTimeout(function() {
             });
         });
     </script>
-	<!-- УДАЛИТЕ старый OneSignal код и ВСТАВЬТЕ этот -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
-<script>
-  window.OneSignal = window.OneSignal || [];
-  OneSignal.push(function() {
-    OneSignal.init({
-      appId: "1084b316-a1e2-4f8e-8382-251981a087c3",
-    });
-    
-    // Покажем кнопку когда OneSignal готов
-    OneSignal.on('initialized', function() {
-      console.log("OneSignal инициализирован");
-      document.getElementById('notificationBtn').style.display = 'block';
-    });
-  });
-</script>
+	
 </body>
 
 </html>
