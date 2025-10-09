@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push Уведомления</title>
+    <title>Push Уведомления с Firebase</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -26,13 +26,11 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
-            margin-top: 20px;
         }
         
         h1 {
             color: #333;
             margin-bottom: 30px;
-            font-size: 28px;
         }
         
         .btn {
@@ -45,31 +43,19 @@
             cursor: pointer;
             margin: 10px;
             transition: all 0.3s;
-            width: 100%;
-            max-width: 300px;
         }
         
         .btn:hover {
             background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
         }
         
         .btn:disabled {
             background-color: #6c757d;
             cursor: not-allowed;
-            transform: none;
         }
         
         .btn-success {
             background-color: #28a745;
-        }
-        
-        .btn-success:hover {
-            background-color: #1e7e34;
         }
         
         .status {
@@ -77,311 +63,247 @@
             padding: 20px;
             border-radius: 10px;
             font-weight: bold;
-            font-size: 16px;
         }
         
         .status.success {
             background-color: #d4edda;
             color: #155724;
-            border: 2px solid #c3e6cb;
         }
         
         .status.error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 2px solid #f5c6cb;
         }
         
         .status.info {
             background-color: #d1ecf1;
             color: #0c5460;
-            border: 2px solid #bee5eb;
         }
         
-        .notification-list {
-            margin-top: 30px;
-            text-align: left;
-        }
-        
-        .notification-item {
+        .token-display {
             background: #f8f9fa;
             padding: 15px;
-            margin: 10px 0;
-            border-left: 5px solid #007bff;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            word-break: break-all;
+            text-align: left;
+            font-size: 14px;
         }
         
-        .fake-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
+        .instructions {
+            background: #fff3cd;
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-left: 5px solid #28a745;
-            max-width: 300px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
-            
-            .btn {
-                font-size: 16px;
-                padding: 12px 20px;
-            }
-            
-            .fake-notification {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-                max-width: none;
-            }
+            margin: 20px 0;
+            text-align: left;
         }
     </style>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 </head>
 <body>
     <div class="container">
-        <div style="font-size: 48px; margin-bottom: 20px;">🔔</div>
-        <h1>Push Уведомления</h1>
+        <h1>🔔 Настоящие Push Уведомления</h1>
+        
+        <div class="instructions">
+            <strong>Важно:</strong> Этот сайт должен быть на HTTPS. Если тестируешь локально - используй localhost.
+        </div>
         
         <div class="status info" id="status">
-            Нажмите кнопку ниже чтобы разрешить уведомления
+            Нажми "Разрешить уведомления" для начала
         </div>
         
         <button class="btn" id="requestPermission">
-            📲 Разрешить уведомления
+            Разрешить уведомления
         </button>
         
-        <button class="btn btn-success" id="sendNotification" disabled>
-            🚀 Отправить уведомление
+        <button class="btn btn-success" id="sendTestNotification" disabled>
+            Тестовое уведомление
         </button>
         
-        <div class="notification-list">
-            <h3>📋 История уведомлений:</h3>
-            <div id="notificationHistory"></div>
+        <div id="tokenContainer" style="display: none;">
+            <h3>Твой токен устройства:</h3>
+            <div class="token-display" id="tokenDisplay"></div>
+            <p>Используй этот токен для отправки push-уведомлений</p>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: left;">
+            <h3>Как отправить уведомление через curl:</h3>
+            <pre id="curlExample" style="background: #f8f9fa; padding: 15px; border-radius: 10px; overflow-x: auto;"></pre>
         </div>
     </div>
 
-    <div id="fakeNotificationsContainer"></div>
-
     <script>
+        // Твои данные из Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q",
+            authDomain: "skyberry-a31d8.firebaseapp.com",
+            projectId: "skyberry-a31d8",
+            storageBucket: "skyberry-a31d8.firebasestorage.app",
+            messagingSenderId: "942887528624",
+            appId: "1:942887528624:web:537f9f76d79d81be89b375"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
         // Элементы DOM
         const requestPermissionBtn = document.getElementById('requestPermission');
-        const sendNotificationBtn = document.getElementById('sendNotification');
+        const sendTestNotificationBtn = document.getElementById('sendTestNotification');
         const statusDiv = document.getElementById('status');
-        const notificationHistory = document.getElementById('notificationHistory');
-        const fakeNotificationsContainer = document.getElementById('fakeNotificationsContainer');
-        
-        // Список случайных уведомлений
-        const randomNotifications = [
-            "Привет! Как твои дела? 👋",
-            "У тебя новое сообщение! 💬",
-            "Не забудь о встрече сегодня 🗓️",
-            "Обновление готово к установке! 🔄",
-            "Получен новый заказ! 🎁",
-            "Проверь свою почту 📧",
-            "Напоминание: позвонить маме 📞",
-            "Твой профиль обновлен! ✅",
-            "Получен новый отзыв! ⭐",
-            "Баланс пополнен! 💰",
-            "Достижение разблокировано! 🏆",
-            "Новое предложение для тебя! 🔥",
-            "Задача выполнена успешно! 🎯",
-            "Время для перерыва! ☕"
-        ];
-        
-        // Случайные иконки
-        const randomIcons = ["🔔", "📱", "💎", "🎁", "⭐", "🚀", "💡", "👋", "🏆", "💰", "🎯", "🔥"];
-        
-        // Проверка поддержки уведомлений
-        function checkNotificationSupport() {
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        const tokenContainer = document.getElementById('tokenContainer');
+        const curlExample = document.getElementById('curlExample');
+
+        // Проверка поддержки
+        function checkSupport() {
             if (!('Notification' in window)) {
-                statusDiv.textContent = '❌ Ваш браузер не поддерживает уведомления';
+                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
                 statusDiv.className = 'status error';
                 return false;
             }
+            
+            if (!firebase.messaging.isSupported()) {
+                statusDiv.textContent = '❌ Firebase Messaging не поддерживается';
+                statusDiv.className = 'status error';
+                return false;
+            }
+            
             return true;
         }
-        
-        // Запрос разрешения
+
+        // Запрос разрешения и получение токена
         async function requestNotificationPermission() {
-            if (!checkNotificationSupport()) return;
-            
+            if (!checkSupport()) return;
+
             try {
-                const permission = await Notification.requestPermission();
-                handlePermissionResult(permission);
+                statusDiv.textContent = '⏳ Запрашиваем разрешение...';
+                
+                // Запрашиваем разрешение на уведомления
+                await Notification.requestPermission();
+                
+                statusDiv.textContent = '⏳ Получаем токен устройства...';
+                
+                // Получаем FCM токен
+                const token = await messaging.getToken();
+                
+                if (token) {
+                    // Сохраняем токен
+                    await saveTokenToServer(token);
+                    
+                    statusDiv.textContent = '✅ Уведомления разрешены! Токен получен.';
+                    statusDiv.className = 'status success';
+                    
+                    // Показываем токен
+                    tokenDisplay.textContent = token;
+                    tokenContainer.style.display = 'block';
+                    
+                    // Активируем кнопку теста
+                    sendTestNotificationBtn.disabled = false;
+                    requestPermissionBtn.disabled = true;
+                    
+                    // Показываем пример curl
+                    showCurlExample(token);
+                    
+                    // Показываем тестовое уведомление
+                    setTimeout(() => {
+                        showTestNotification();
+                    }, 1000);
+                    
+                } else {
+                    statusDiv.textContent = '❌ Не удалось получить токен';
+                    statusDiv.className = 'status error';
+                }
+                
             } catch (error) {
                 console.error('Ошибка:', error);
-                statusDiv.textContent = '❌ Ошибка при запросе разрешения';
+                statusDiv.textContent = '❌ Ошибка: ' + error.message;
                 statusDiv.className = 'status error';
             }
         }
-        
-        // Обработка результата
-        function handlePermissionResult(permission) {
-            if (permission === 'granted') {
-                statusDiv.textContent = '✅ Отлично! Уведомления разрешены';
-                statusDiv.className = 'status success';
-                sendNotificationBtn.disabled = false;
-                requestPermissionBtn.disabled = true;
+
+        // Сохранение токена
+        async function saveTokenToServer(token) {
+            console.log('Токен для сохранения на сервере:', token);
+            localStorage.setItem('fcmToken', token);
+        }
+
+        // Показ примера curl команды
+        function showCurlExample(token) {
+            const example = `curl -X POST \\
+  "https://fcm.googleapis.com/fcm/send" \\
+  -H "Authorization: key=AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "notification": {
+      "title": "Тест Push",
+      "body": "Это настоящее push-уведомление!",
+      "icon": "https://skyberry-a31d8.firebaseapp.com/icon.png",
+      "click_action": "https://skyberry-a31d8.firebaseapp.com"
+    },
+    "to": "${token}"
+  }'`;
+            
+            curlExample.textContent = example;
+        }
+
+        // Показ тестового уведомления
+        function showTestNotification() {
+            if (Notification.permission === 'granted') {
+                new Notification('Тест успешен! 🎉', {
+                    body: 'Push-уведомления работают! Теперь можешь отправлять через curl.',
+                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png'
+                });
+            }
+        }
+
+        // Отправка тестового уведомления
+        async function sendTestNotification() {
+            try {
+                statusDiv.textContent = '⏳ Показываем тестовое уведомление...';
                 
-                // Показываем первое уведомление
+                showTestNotification();
+                
                 setTimeout(() => {
-                    showNotification('Добро пожаловать!', 'Теперь ты будешь получать уведомления');
+                    statusDiv.textContent = '✅ Тестовое уведомление показано!';
+                    statusDiv.className = 'status success';
                 }, 1000);
                 
-            } else if (permission === 'denied') {
-                statusDiv.textContent = '❌ Уведомления заблокированы. Разреши в настройках браузера';
+            } catch (error) {
+                statusDiv.textContent = '❌ Ошибка: ' + error.message;
                 statusDiv.className = 'status error';
-                sendNotificationBtn.disabled = true;
-            } else {
-                statusDiv.textContent = '⚠️ Разрешение не предоставлено';
-                statusDiv.className = 'status info';
-                sendNotificationBtn.disabled = true;
             }
         }
-        
-        // Показать уведомление (основная функция)
-        function showNotification(title, message) {
-            const icon = randomIcons[Math.floor(Math.random() * randomIcons.length)];
-            
-            // Пытаемся показать настоящее уведомление
-            if (Notification.permission === 'granted') {
-                try {
-                    const options = {
-                        body: message,
-                        icon: '/favicon.ico'
-                    };
-                    
-                    const notification = new Notification(`${icon} ${title}`, options);
-                    
-                    // Автозакрытие
-                    setTimeout(() => notification.close(), 5000);
-                    
-                    // Клик по уведомлению
-                    notification.onclick = () => {
-                        window.focus();
-                        notification.close();
-                    };
-                    
-                } catch (error) {
-                    console.log('Настоящие уведомления не работают, показываем fake');
-                    showFakeNotification(title, message, icon);
-                }
-            } else {
-                showFakeNotification(title, message, icon);
-            }
-            
-            // Всегда добавляем в историю
-            addToHistory(title, message, icon);
-        }
-        
-        // Показать fake-уведомление
-        function showFakeNotification(title, message, icon) {
-            const fakeNotification = document.createElement('div');
-            fakeNotification.className = 'fake-notification';
-            fakeNotification.innerHTML = `
-                <strong>${icon} ${title}</strong><br>
-                <small>${message}</small>
-            `;
-            
-            fakeNotificationsContainer.appendChild(fakeNotification);
-            
-            // Автоматическое скрытие через 5 секунд
-            setTimeout(() => {
-                fakeNotification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => {
-                    if (fakeNotification.parentNode) {
-                        fakeNotification.parentNode.removeChild(fakeNotification);
-                    }
-                }, 300);
-            }, 5000);
-            
-            // Клик для закрытия
-            fakeNotification.onclick = () => {
-                fakeNotification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => {
-                    if (fakeNotification.parentNode) {
-                        fakeNotification.parentNode.removeChild(fakeNotification);
-                    }
-                }, 300);
-            };
-        }
-        
-        // Отправить случайное уведомление
-        function sendRandomNotification() {
-            const randomIndex = Math.floor(Math.random() * randomNotifications.length);
-            const message = randomNotifications[randomIndex];
-            const title = "Новое уведомление";
-            
-            showNotification(title, message);
-        }
-        
-        // Добавить в историю
-        function addToHistory(title, message, icon) {
-            const time = new Date().toLocaleTimeString();
-            const item = document.createElement('div');
-            item.className = 'notification-item';
-            item.innerHTML = `
-                <strong>${icon} ${title}</strong><br>
-                ${message}<br>
-                <small>⏰ ${time}</small>
-            `;
-            notificationHistory.prepend(item);
-            
-            // Ограничиваем историю
-            if (notificationHistory.children.length > 8) {
-                notificationHistory.removeChild(notificationHistory.lastChild);
-            }
-        }
-        
-        // Инициализация
-        function init() {
-            if (!checkNotificationSupport()) return;
+
+        // Обработчик входящих сообщений (когда пользователь на странице)
+        messaging.onMessage((payload) => {
+            console.log('Получено сообщение когда страница открыта:', payload);
             
             if (Notification.permission === 'granted') {
-                statusDiv.textContent = '✅ Уведомления уже разрешены!';
-                statusDiv.className = 'status success';
-                sendNotificationBtn.disabled = false;
-                requestPermissionBtn.disabled = true;
-            } else if (Notification.permission === 'denied') {
-                statusDiv.textContent = '❌ Уведомления заблокированы. Разреши в настройках браузера';
-                statusDiv.className = 'status error';
-                sendNotificationBtn.disabled = true;
-                requestPermissionBtn.disabled = true;
+                new Notification(payload.notification.title, {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon
+                });
             }
-        }
-        
-        // События
+        });
+
+        // Обработчики событий
         requestPermissionBtn.addEventListener('click', requestNotificationPermission);
-        sendNotificationBtn.addEventListener('click', sendRandomNotification);
-        
-        // Запуск
-        document.addEventListener('DOMContentLoaded', init);
+        sendTestNotificationBtn.addEventListener('click', sendTestNotification);
+
+        // Проверка текущего статуса при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Notification.permission === 'granted') {
+                // Если уже разрешено, получаем токен
+                requestNotificationPermission();
+            } else if (Notification.permission === 'denied') {
+                statusDiv.textContent = '❌ Уведомления заблокированы в настройках браузера';
+                statusDiv.className = 'status error';
+            }
+        });
     </script>
 </body>
 </html>
