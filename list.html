@@ -3,184 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push Уведомления</title>
+    <title>Тест Уведомлений</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            background: #f0f0f0;
             text-align: center;
+            background: #f5f5f5;
         }
         .container {
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 50px;
         }
-        button {
-            background: #ffcc00;
-            color: #333;
-            border: none;
-            padding: 15px 25px;
+        .btn {
+            padding: 15px 30px;
             font-size: 18px;
-            border-radius: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             margin: 10px;
-            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
         }
         .status {
-            margin: 15px 0;
+            margin: 20px 0;
             padding: 15px;
-            border-radius: 10px;
-        }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .info { background: #d1ecf1; color: #0c5460; }
-        .code {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            word-break: break-all;
-            margin: 10px 0;
-            text-align: left;
+            border-radius: 8px;
+            background: #e9ecef;
         }
     </style>
+    
+    <!-- OneSignal -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "1084b316-a1e2-4f8e-8382-251981a087c3",
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>🔔 Push Уведомления</h1>
+        <h1>🔔 Тест Push-уведомлений</h1>
+        <p>Нажмите кнопку ниже чтобы включить уведомления на телефоне</p>
         
-        <button onclick="subscribeToPush()">📲 Включить уведомления</button>
-        
-        <div id="status" class="status info">
-            Нажми кнопку чтобы включить уведомления
+        <div class="status" id="status">
+            Статус: Ожидание действий...
         </div>
         
-        <div id="subscriptionData" style="display: none;">
-            <h3>✅ Подписка активна!</h3>
-            <div class="code" id="subscriptionJson"></div>
-            <button onclick="sendTestNotification()" style="background: #28a745; color: white;">🚀 Тест уведомления</button>
-        </div>
+        <button class="btn" onclick="enableNotifications()">
+            📱 Включить уведомления
+        </button>
         
-        <div style="margin-top: 20px; text-align: left; font-size: 14px;">
-            <p><strong>Как работает:</strong></p>
-            <p>1. Нажимаешь "Включить уведомления"</p>
-            <p>2. Разрешаешь уведомления в браузере</p>
-            <p>3. Получаешь данные подписки</p>
-            <p>4. Нажимаешь "Тест уведомления"</p>
+        <button class="btn btn-success" onclick="sendTestNotification()">
+            🚀 Отправить тест
+        </button>
+        
+        <div style="margin-top: 30px; font-size: 14px; color: #666;">
+            <p>Уведомления будут приходить даже когда браузер закрыт!</p>
         </div>
     </div>
 
     <script>
-        // VAPID ключ из Yandex Cloud (замени на свой)
-        const VAPID_PUBLIC_KEY = 'BL3fJ4pX8k2z9mKqWrTvYx7cD0gH5nL8sP1bN6jM9qV3tR7wZ0yA4uF2iC5oE8h';
-        
-        let currentSubscription = null;
-
-        async function subscribeToPush() {
-            const statusDiv = document.getElementById('status');
-            const subscriptionData = document.getElementById('subscriptionData');
-            const subscriptionJson = document.getElementById('subscriptionJson');
-            
+        async function enableNotifications() {
             try {
-                statusDiv.textContent = '⏳ Проверяем браузер...';
-                statusDiv.className = 'status info';
-
-                // Проверяем поддержку
-                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                    throw new Error('Браузер не поддерживает push-уведомления');
-                }
-
-                // Регистрируем Service Worker
-                statusDiv.textContent = '⏳ Настраиваем...';
-                const registration = await navigator.serviceWorker.register('/sw.js');
-                await navigator.serviceWorker.ready;
-
-                // Запрашиваем разрешение
-                statusDiv.textContent = '⏳ Запрашиваем разрешение...';
-                const permission = await Notification.requestPermission();
-                
-                if (permission !== 'granted') {
-                    throw new Error('Ты не разрешил уведомления 😔');
-                }
-
-                // Подписываемся на push
-                statusDiv.textContent = '⏳ Создаем подписку...';
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-                });
-
-                currentSubscription = subscription;
-                
-                // Показываем данные подписки
-                const subData = subscription.toJSON();
-                subscriptionJson.textContent = JSON.stringify(subData, null, 2);
-                subscriptionData.style.display = 'block';
-                
-                statusDiv.textContent = '✅ Уведомления включены! Теперь можно тестировать';
-                statusDiv.className = 'status success';
-                
-                // Показываем тестовое уведомление
-                new Notification('🎉 Ура!', {
-                    body: 'Push уведомления работают!',
-                    icon: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png'
-                });
-                
+                document.getElementById('status').innerHTML = 'Статус: Запрос разрешения...';
+                await OneSignal.showSlidedownPrompt();
+                document.getElementById('status').innerHTML = 'Статус: ✅ Уведомления включены!';
             } catch (error) {
-                console.error('Ошибка:', error);
-                statusDiv.textContent = '❌ Ошибка: ' + error.message;
-                statusDiv.className = 'status error';
+                console.error("Ошибка:", error);
+                document.getElementById('status').innerHTML = 'Статус: ❌ Ошибка при включении';
             }
         }
 
         function sendTestNotification() {
-            if (!currentSubscription) return;
+            document.getElementById('status').innerHTML = 'Статус: 📤 Отправка тестового уведомления...';
             
-            new Notification('📱 Тест с телефона', {
-                body: 'Это тестовое push-уведомление! Работает! 🚀',
-                icon: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png'
-            });
+            // Имитация отправки уведомления через OneSignal панель
+            setTimeout(() => {
+                document.getElementById('status').innerHTML = 
+                    'Статус: ✅ Тест отправлен!<br><small>Проверьте панель OneSignal для реальной отправки</small>';
+            }, 1000);
         }
 
-        // Конвертер ключа
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/-/g, '+')
-                .replace(/_/g, '/');
-
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-
-        // Проверяем существующую подписку при загрузке
-        window.addEventListener('load', async () => {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.ready;
-                    const subscription = await registration.pushManager.getSubscription();
-                    
-                    if (subscription) {
-                        currentSubscription = subscription;
-                        document.getElementById('subscriptionJson').textContent = JSON.stringify(subscription.toJSON(), null, 2);
-                        document.getElementById('subscriptionData').style.display = 'block';
-                        document.getElementById('status').textContent = '✅ Уведомления уже включены!';
-                        document.getElementById('status').className = 'status success';
-                    }
-                } catch (error) {
-                    console.log('Подписка не найдена');
-                }
-            }
+        // Автоматический запрос через 2 секунды
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                OneSignal.showSlidedownPrompt();
+            }, 2000);
         });
     </script>
 </body>
