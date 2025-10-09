@@ -1,46 +1,7 @@
-// sw.js - простой Service Worker
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
-});
-
-// Обработка push-уведомлений
-self.addEventListener('push', (event) => {
-    let data = { title: 'Новое уведомление', body: 'У вас новое сообщение' };
-    
-    try {
-        if (event.data) {
-            data = event.data.json();
-        }
-    } catch (error) {
-        data.body = event.data.text() || data.body;
-    }
-    
-    event.waitUntil(
-        self.registration.showNotification(data.title, {
-            body: data.body,
-            icon: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png',
-            badge: 'https://yastatic.net/s3/cloud/yc-web/1.0.0/yc-favicon.png'
-        })
-    );
-});
-
-// Клик по уведомлению
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({type: 'window'}).then((clientList) => {
-            for (const client of clientList) {
-                if (client.url === self.location.origin && 'focus' in client) {
-                    return client.focus();
-                }
-            }
-            if (clients.openWindow) {
-                return clients.openWindow(self.location.origin);
-            }
-        })
-    );
-});
+/**
+ * Warning: Before you edit this file or merge with other current worker
+ * In case of edit or rename, merge with other: be careful existing projects with subscribers registrations on this worker path, can be destroyed after changes and you may occur some issues with deliverability
+ * In case of two workers: be sure that you provide other file name and update project in PushPushGo Dashboard and use /ppg scope.
+ * If you have any questions before you take any action please contact with support@pushpushgo.com for consulting service worker change strategy
+ */
+importScripts('https://s-eu-1.pushpushgo.com/68e7a847285710d0ea75a08d/worker.js');
