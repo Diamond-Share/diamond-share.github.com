@@ -1593,6 +1593,29 @@
         </div>
     </section>
 
+	<!-- Кнопка для уведомлений -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <button onclick="enableNotifications()" style="
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    ">
+        <i class="fas fa-bell"></i>
+        Включить уведомления
+    </button>
+</div>
+
+
+
     <!-- Обновленный блок с таймером -->
     <section class="migration-section">
         <div class="migration-container">
@@ -1856,10 +1879,30 @@
       appId: "1084b316-a1e2-4f8e-8382-251981a087c3",
     });
   });
+</script><script>
+// Функция для включения уведомлений
+async function enableNotifications() {
+    try {
+        // Показываем запрос на разрешение
+        await OneSignal.showSlidedownPrompt();
+        console.log("Уведомления запрошены");
+    } catch (error) {
+        console.error("Ошибка:", error);
+        alert("Произошла ошибка при включении уведомлений");
+    }
+}
+
+// Автоматически спросим через 5 секунд после загрузки
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        OneSignal.showSlidedownPrompt();
+    }, 5000);
+});
 </script>
 </body>
 
 </html>
+
 
 
 
