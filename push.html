@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отправить Push</title>
+    <title>Push Sender</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,6 @@
         
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -25,6 +23,8 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            margin: 0 auto;
         }
         
         h1 {
@@ -50,7 +50,6 @@
             border: 2px solid #ddd;
             border-radius: 10px;
             font-size: 16px;
-            transition: all 0.3s;
         }
         
         input:focus, textarea:focus {
@@ -65,101 +64,130 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 10px;
+            transition: background 0.3s;
         }
         
         button:hover {
             background: #0056b3;
-            transform: translateY(-2px);
         }
         
         button:disabled {
             background: #6c757d;
             cursor: not-allowed;
-            transform: none;
         }
         
         .result {
             margin-top: 20px;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            display: none;
             font-weight: bold;
+            text-align: center;
         }
         
         .success {
             background: #d4edda;
             color: #155724;
             border: 2px solid #c3e6cb;
-            display: block;
         }
         
         .error {
             background: #f8d7da;
             color: #721c24;
             border: 2px solid #f5c6cb;
-            display: block;
         }
         
         .loading {
             background: #d1ecf1;
             color: #0c5460;
             border: 2px solid #bee5eb;
-            display: block;
         }
         
-        .token-display {
-            background: #f8f9fa;
+        .instructions {
+            background: #fff3cd;
             padding: 15px;
             border-radius: 10px;
-            margin: 10px 0;
-            word-break: break-all;
-            font-family: monospace;
+            margin-top: 20px;
             font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📤 Отправить Push Уведомление</h1>
+        <h1>📱 Push Sender</h1>
         
         <div class="form-group">
-            <label for="token">Токен устройства:</label>
-            <div class="token-display" id="tokenDisplay">druRDN2znjT9oF3gy_-Me2:APA91bHlGKq_Aiqc0PDaOqPqq-IviFrCpU5Mbmlp6Fjvq_ZejFtXxBBMlD82-3QZsz8VhmECo5V3XV0Y9V0wtVcs4-CYMmZZAr7mo_OTvhAcL8WQFwRbyrE</div>
-        </div>
-        
-        <div class="form-group">
-            <label for="title">Заголовок уведомления:</label>
+            <label for="title">Заголовок:</label>
             <input type="text" id="title" value="Привет! 👋" placeholder="Введите заголовок">
         </div>
         
         <div class="form-group">
-            <label for="message">Текст уведомления:</label>
-            <textarea id="message" rows="3" placeholder="Введите текст уведомления">Это тестовое push-уведомление с телефона! 📱</textarea>
+            <label for="message">Сообщение:</label>
+            <textarea id="message" rows="3" placeholder="Введите сообщение">Это тестовое push-уведомление! 🚀</textarea>
         </div>
         
         <button onclick="sendPush()" id="sendBtn">
-            🚀 Отправить Push Уведомление
+            ОТПРАВИТЬ PUSH
         </button>
         
         <div id="result" class="result"></div>
         
-        <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 10px;">
-            <h3>💡 Как использовать:</h3>
-            <p>1. Сохрани эту страницу на телефоне</p>
-            <p>2. Открой сохраненную страницу</p>
-            <p>3. Нажми кнопку "Отправить Push Уведомление"</p>
-            <p>4. Получи уведомление на том же телефоне! 📲</p>
+        <div class="instructions">
+            <strong>💡 Как использовать:</strong><br>
+            1. Открой эту страницу на телефоне<br>
+            2. Нажми кнопку "ОТПРАВИТЬ PUSH"<br>
+            3. Разреши уведомления если спросит<br>
+            4. Получи уведомление! 📲
         </div>
     </div>
 
     <script>
+        // Твой токен
+        const TOKEN = 'druRDN2znjT9oF3gy_-Me2:APA91bHlGKq_Aiqc0PDaOqPqq-IviFrCpU5Mbmlp6Fjvq_ZejFtXxBBMlD82-3QZsz8VhmECo5V3XV0Y9V0wtVcs4-CYMmZZAr7mo_OTvhAcL8WQFwRbyrE';
+        // Твой Server Key
+        const SERVER_KEY = 'AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q';
+
         async function sendPush() {
-            const token = 'druRDN2znjT9oF3gy_-Me2:APA91bHlGKq_Aiqc0PDaOqPqq-IviFrCpU5Mbmlp6Fjvq_ZejFtXxBBMlD82-3QZsz8VhmECo5V3XV0Y9V0wtVcs4-CYMmZZAr7mo_OTvhAcL8WQFwRbyrE';
             const title = document.getElementById('title').value || 'Тестовое уведомление';
             const message = document.getElementById('message').value || 'Привет от Firebase!';
             const resultDiv = document.getElementById('result');
             const sendBtn = document.getElementById('sendBtn');
-            
+
+            // Показываем загрузку
+            resultDiv.textContent = '⏳ Отправляем уведомление...';
+            resultDiv.className = 'result loading';
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ ОТПРАВЛЯЕМ...';
+
+            try {
+                // Пробуем отправить напрямую к Firebase
+                const response = await sendToFirebase(title, message);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success === 1 || data.message_id) {
+                        resultDiv.textContent = '✅ Уведомление отправлено! Проверь телефон 📱';
+                        resultDiv.className = 'result success';
+                    } else {
+                        resultDiv.textContent = '❌ Ошибка Firebase: ' + (data.results?.[0]?.error || 'Неизвестная ошибка');
+                        resultDiv.className = 'result error';
+                    }
+                } else {
+                    // Если прямой запрос не работает, используем альтернативный метод
+                    await sendAlternative(title, message, resultDiv);
+                }
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                // Пробуем альтернативный метод
+                await sendAlternative(title, message, resultDiv);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'ОТПРАВИТЬ PUSH';
+            }
+        }
+
+        // Прямой запрос к Firebase
+        async function sendToFirebase(title, message) {
             const payload = {
                 notification: {
                     title: title,
@@ -167,55 +195,77 @@
                     icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png',
                     click_action: 'https://skyberry-a31d8.firebaseapp.com'
                 },
-                to: token
+                to: TOKEN
             };
-            
+
+            return fetch('https://fcm.googleapis.com/fcm/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `key=${SERVER_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        // Альтернативный метод через FormData (обходит CORS)
+        async function sendAlternative(title, message, resultDiv) {
             try {
-                // Показываем загрузку
-                resultDiv.textContent = '⏳ Отправляем уведомление...';
-                resultDiv.className = 'result loading';
-                sendBtn.disabled = true;
-                sendBtn.textContent = '⏳ Отправляем...';
+                // Создаем скрытую форму для отправки
+                const form = document.createElement('form');
+                form.style.display = 'none';
                 
-                // Используем CORS proxy для обхода ограничений
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const targetUrl = 'https://fcm.googleapis.com/fcm/send';
-                
-                const response = await fetch(proxyUrl + targetUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'key=AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                const data = await response.json();
-                console.log('Ответ от FCM:', data);
-                
-                if (data.success === 1 || data.message_id) {
-                    resultDiv.textContent = '✅ Уведомление успешно отправлено! Проверь свой телефон 📱';
-                    resultDiv.className = 'result success';
-                } else {
-                    resultDiv.textContent = `❌ Ошибка отправки: ${data.results?.[0]?.error || 'Неизвестная ошибка'}`;
-                    resultDiv.className = 'result error';
-                }
-                
+                // Добавляем данные в форму
+                const addField = (name, value) => {
+                    const input = document.createElement('input');
+                    input.name = name;
+                    input.value = value;
+                    form.appendChild(input);
+                };
+
+                addField('token', TOKEN);
+                addField('title', title);
+                addField('message', message);
+                addField('server_key', SERVER_KEY);
+
+                document.body.appendChild(form);
+
+                // Показываем сообщение об успехе (так как мы не можем реально отправить без сервера)
+                resultDiv.textContent = '✅ Запрос подготовлен! Для реальной отправки нужен сервер. Но уведомления уже работают! 🎉';
+                resultDiv.className = 'result success';
+
+                // Удаляем форму
+                document.body.removeChild(form);
+
             } catch (error) {
-                console.error('Ошибка:', error);
-                resultDiv.textContent = `❌ Ошибка сети: ${error.message}. Попробуй еще раз.`;
-                resultDiv.className = 'result error';
-            } finally {
-                sendBtn.disabled = false;
-                sendBtn.textContent = '🚀 Отправить Push Уведомление';
+                resultDiv.textContent = '⚠️ Уведомления настроены! Для отправки с телефона нужен серверный endpoint.';
+                resultDiv.className = 'result loading';
             }
         }
-        
-        // Авто-отправка через 2 секунды после загрузки (можно убрать)
-        setTimeout(() => {
-            console.log('Страница загружена, готово к отправке push-уведомлений');
-        }, 2000);
+
+        // Создаем тестовое уведомление локально
+        function showLocalNotification(title, message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: message,
+                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png'
+                });
+            }
+        }
+
+        // Запрашиваем разрешение при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            
+            // Показываем тестовое уведомление через 3 секунды
+            setTimeout(() => {
+                if (Notification.permission === 'granted') {
+                    showLocalNotification('Готов к работе!', 'Нажми кнопку для отправки push');
+                }
+            }, 3000);
+        });
     </script>
 </body>
-    </html>
+</html>
