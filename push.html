@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправить Push</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📤 Отправить Push Уведомление</h1>
+        
+        <div class="form-group">
+            <label for="token">Токен устройства:</label>
+            <input type="text" id="token" value="druRDN2znjT9oF3gy_-Me2:APA91bHlGKq_Aiqc0PDaOqPqq-IviFrCpU5Mbmlp6Fjvq_ZejFtXxBBMlD82-3QZsz8VhmECo5V3XV0Y9V0wtVcs4-CYMmZZAr7mo_OTvhAcL8WQFwRbyrE" readonly>
+        </div>
+        
+        <div class="form-group">
+            <label for="title">Заголовок уведомления:</label>
+            <input type="text" id="title" value="Привет от телефона! 📱">
+        </div>
+        
+        <div class="form-group">
+            <label for="message">Текст уведомления:</label>
+            <textarea id="message" rows="3">Это push-уведомление отправлено с моего телефона! 🚀</textarea>
+        </div>
+        
+        <button onclick="sendPush()">📨 Отправить Push</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function sendPush() {
+            const token = document.getElementById('token').value;
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+            const resultDiv = document.getElementById('result');
+            
+            // Твой Firebase Server Key
+            const serverKey = 'AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q';
+            
+            const payload = {
+                notification: {
+                    title: title,
+                    body: message,
+                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png',
+                    click_action: 'https://skyberry-a31d8.firebaseapp.com'
+                },
+                to: token
+            };
+            
+            try {
+                resultDiv.textContent = '⏳ Отправляем уведомление...';
+                resultDiv.className = 'result';
+                resultDiv.style.display = 'block';
+                
+                const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `key=${serverKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success === 1) {
+                    resultDiv.textContent = '✅ Уведомление успешно отправлено!';
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ Ошибка: ${data.results[0].error}`;
+                    resultDiv.className = 'result error';
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ Ошибка сети: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // Авто-отправка при загрузке (опционально)
+        // setTimeout(sendPush, 1000);
+    </script>
+</body>
+</html>
