@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .invite-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .tag-display {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #495057;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 22px;
+        }
+
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .instructions ol {
+            color: #666;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            font-weight: 600;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 480px) {
+            .invite-card {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+            
+            .tag-display {
+                font-size: 20px;
+                padding: 15px;
+            }
+            
+            .copy-btn {
+                padding: 18px 30px;
+                font-size: 16px;
+            }
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .invite-card > * {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .tag-display {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .copy-btn {
+            animation: fadeIn 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="invite-card">
+        <div class="avatar">👤</div>
+        
+        <h1>Приглашение в друзья</h1>
+        <p class="subtitle">Скопируйте тег пользователя ниже и добавьте его в друзья</p>
+        
+        <div class="tag-display" id="userTag">@support</div>
+        
+        <button class="copy-btn" id="copyBtn">
+            <span class="btn-icon">📋</span>
+            Скопировать тег
+        </button>
+        
+        <div id="statusMessage" class="status-message"></div>
+        
+        <div class="instructions">
+            <h3>Как добавить в друзья:</h3>
+            <ol>
+                <li>Нажмите кнопку "Скопировать тег" выше</li>
+                <li>Откройте приложение</li>
+                <li>Перейдите в раздел "Друзья"</li>
+                <li>Вставьте тег в поле поиска</li>
+                <li>Нажмите "Добавить в друзья"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userTagElement = document.getElementById('userTag');
+            const copyBtn = document.getElementById('copyBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // Получаем тег из URL
+            function getTagFromURL() {
+                const path = window.location.pathname;
+                // Ищем часть после /invite/
+                const match = path.match(/\/invite\/(@[\wа-яё_-]+)/i);
+                if (match && match[1]) {
+                    return match[1];
+                }
+                return '@support'; // значение по умолчанию
+            }
+            
+            // Устанавливаем тег на странице
+            const userTag = getTagFromURL();
+            userTagElement.textContent = userTag;
+            
+            // Функция для показа статуса
+            function showStatus(message, isSuccess = true) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+                statusMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Функция копирования в буфер обмена
+            copyBtn.addEventListener('click', async function() {
+                try {
+                    await navigator.clipboard.writeText(userTag);
+                    showStatus('✅ Тег скопирован в буфер обмена!');
+                    
+                    // Меняем текст кнопки на 2 секунды
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<span class="btn-icon">✅</span> Скопировано!';
+                    copyBtn.disabled = true;
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        copyBtn.disabled = false;
+                    }, 2000);
+                    
+                } catch (err) {
+                    // Fallback для старых браузеров
+                    try {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = userTag;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        showStatus('✅ Тег скопирован в буфер обмена!');
+                        
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<span class="btn-icon">✅</span> Скопировано!';
+                        copyBtn.disabled = true;
+                        
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                            copyBtn.disabled = false;
+                        }, 2000);
+                        
+                    } catch (error) {
+                        showStatus('❌ Не удалось скопировать тег', false);
+                    }
+                }
+            });
+            
+            // Защита от копирования текста на странице
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+            
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
