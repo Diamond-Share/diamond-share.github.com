@@ -13,77 +13,126 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
             min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 11px 16px;
+            border-bottom: 1px solid #e6e6e6;
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            min-height: 50px;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #0088cc;
+            cursor: pointer;
+            margin-right: 16px;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
         }
 
-        .invite-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        .back-button:hover {
+            background-color: rgba(0, 136, 204, 0.1);
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 40px 24px;
             text-align: center;
-            max-width: 500px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .avatar {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0088cc 0%, #00a8ff 100%);
             border-radius: 50%;
-            margin: 0 auto 20px;
+            margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             color: white;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+            color: #000000;
+            margin-bottom: 12px;
+            font-size: 24px;
             font-weight: 700;
         }
 
         .subtitle {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 18px;
+            margin-bottom: 32px;
+            font-size: 16px;
             line-height: 1.5;
         }
 
-        .tag-display {
+        .tag-section {
             background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 25px 0;
-            font-size: 24px;
-            font-weight: 700;
-            color: #495057;
-            font-family: 'Courier New', monospace;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 0 32px 0;
+            border: 1px solid #e9ecef;
         }
 
-        .copy-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .tag-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .tag-display {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0088cc;
+            font-family: 'Courier New', monospace;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .open-btn {
+            background: #0088cc;
             color: white;
             border: none;
-            border-radius: 15px;
-            padding: 20px 40px;
-            font-size: 18px;
+            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -91,58 +140,178 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            gap: 10px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
         }
 
-        .copy-btn:hover {
+        .open-btn:hover {
+            background: #0077b3;
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 16px rgba(0, 136, 204, 0.4);
+        }
+
+        .open-btn:active {
+            transform: translateY(0);
+        }
+
+        .open-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 24px;
+            border: 1px solid #e9ecef;
+        }
+
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .instructions ol {
+            color: #666;
+            padding-left: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
         }
 
         .status-message {
-            padding: 15px;
+            padding: 16px;
             border-radius: 10px;
             margin: 20px 0;
             display: none;
             font-weight: 600;
+            font-size: 15px;
         }
 
         .status-message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #e8f5e8;
+            color: #2d5016;
+            border: 1px solid #c8e6c9;
         }
 
+        .status-message.error {
+            background: #ffeaea;
+            color: #c53030;
+            border: 1px solid #ffcdd2;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content > * {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .avatar {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .open-btn {
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Адаптивность */
         @media (max-width: 480px) {
-            .invite-card {
-                padding: 30px 20px;
+            .container {
+                max-width: 100%;
+            }
+            
+            .content {
+                padding: 32px 20px;
+            }
+            
+            .avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .subtitle {
+                font-size: 15px;
+            }
+            
+            .tag-display {
+                font-size: 20px;
+            }
+            
+            .open-btn {
+                padding: 16px 24px;
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="invite-card">
-        <div class="avatar">👤</div>
-        <h1>Приглашение в друзья</h1>
-        <p class="subtitle">Скопируйте тег пользователя ниже и добавьте его в друзья</p>
-        
-        <div class="tag-display" id="userTag">@support</div>
-        
-        <button class="copy-btn" id="copyBtn">
-            <span>📋</span>
-            Скопировать тег
-        </button>
-        
-        <div id="statusMessage" class="status-message"></div>
+    <div class="container">
+        <div class="header">
+            <button class="back-button">
+                ←
+            </button>
+            <div class="header-title">Приглашение</div>
+        </div>
+
+        <div class="content">
+            <div class="avatar">👤</div>
+            
+            <h1>Приглашение в друзья</h1>
+            <p class="subtitle">Нажмите "Открыть" чтобы скопировать тег и перейти в приложение</p>
+            
+            <div class="tag-section">
+                <div class="tag-label">Тег пользователя:</div>
+                <div class="tag-display" id="userTag">@support</div>
+            </div>
+            
+            <button class="open-btn" id="openBtn">
+                <span>🚀</span>
+                Открыть
+            </button>
+            
+            <div id="statusMessage" class="status-message"></div>
+            
+            <div class="instructions">
+                <h3>Как добавить в друзья:</h3>
+                <ol>
+                    <li>Нажмите кнопку "Открыть"</li>
+                    <li>Тег автоматически скопируется</li>
+                    <li>Откроется приложение</li>
+                    <li>Вставьте тег в поиск друзей</li>
+                    <li>Нажмите "Добавить в друзья"</li>
+                </ol>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const userTagElement = document.getElementById('userTag');
-            const copyBtn = document.getElementById('copyBtn');
+            const openBtn = document.getElementById('openBtn');
             const statusMessage = document.getElementById('statusMessage');
+            const backButton = document.querySelector('.back-button');
+            
+            // URL для перехода
+            const redirectUrl = 'http://f1138033.xsph.ru/index.php';
             
             // Получаем тег из параметра URL
             function getTagFromURL() {
@@ -166,30 +335,37 @@
             // Обновляем title
             document.title = `Приглашение от ${userTag}`;
             
-            function showStatus(message) {
+            function showStatus(message, isSuccess = true) {
                 statusMessage.textContent = message;
-                statusMessage.className = 'status-message success';
+                statusMessage.className = 'status-message ' + (isSuccess ? 'success' : 'error');
                 statusMessage.style.display = 'block';
+                
                 setTimeout(() => {
                     statusMessage.style.display = 'none';
                 }, 3000);
             }
             
-            copyBtn.addEventListener('click', async function() {
+            // Функция копирования и перехода
+            openBtn.addEventListener('click', async function() {
                 try {
+                    // Копируем тег в буфер обмена
                     await navigator.clipboard.writeText(userTag);
-                    showStatus('✅ Тег скопирован в буфер обмена!');
                     
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<span>✅</span> Скопировано!';
-                    copyBtn.disabled = true;
+                    // Показываем статус
+                    showStatus('✅ Тег скопирован! Открываем приложение...');
                     
+                    // Меняем текст кнопки
+                    const originalText = openBtn.innerHTML;
+                    openBtn.innerHTML = '<span>⏳</span> Открываем...';
+                    openBtn.disabled = true;
+                    
+                    // Ждем немного и переходим
                     setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                        copyBtn.disabled = false;
-                    }, 2000);
+                        window.location.href = redirectUrl;
+                    }, 1000);
                     
                 } catch (err) {
+                    // Fallback для старых браузеров
                     try {
                         const textArea = document.createElement('textarea');
                         textArea.value = userTag;
@@ -198,11 +374,29 @@
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
                         
-                        showStatus('✅ Тег скопирован в буфер обмена!');
+                        showStatus('✅ Тег скопирован! Открываем приложение...');
+                        
+                        const originalText = openBtn.innerHTML;
+                        openBtn.innerHTML = '<span>⏳</span> Открываем...';
+                        openBtn.disabled = true;
+                        
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1000);
+                        
                     } catch (error) {
-                        showStatus('❌ Не удалось скопировать тег');
+                        // Если не удалось скопировать, просто переходим
+                        showStatus('Открываем приложение...');
+                        openBtn.innerHTML = '<span>⏳</span> Открываем...';
+                        openBtn.disabled = true;
+                        window.location.href = redirectUrl;
                     }
                 }
+            });
+            
+            // Обработчик кнопки "Назад"
+            backButton.addEventListener('click', function() {
+                window.history.back();
             });
         });
     </script>
