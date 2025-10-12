@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NeonCall • Групповые видеозвонки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -10,40 +10,34 @@
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #8b5cf6;
-            --secondary: #06d6a0;
-            --accent: #f59e0b;
-            --danger: #ef4444;
-            --background: #0f0f23;
-            --surface: #1a1b2e;
-            --surface-light: #2d2e42;
-            --text: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --border: #334155;
-            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06d6a0 100%);
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --primary: #6e8efb;
+            --primary-hover: #5a7df9;
+            --bg: #000000;
+            --card: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: #cccccc;
+            --border: #333333;
+            --shadow: rgba(0,0,0,0.5);
+            --hover: rgba(255,255,255,0.1);
+            --danger: #ff4757;
+            --success: #00d2a0;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
-            background: var(--background);
+            background-color: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Анимированный фон */
+        /* Анимированный фон для главного экрана */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -51,159 +45,138 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.1;
         }
 
         .bg-circle {
             position: absolute;
             border-radius: 50%;
-            background: var(--gradient);
-            filter: blur(60px);
-            animation: float 20s infinite linear;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            filter: blur(40px);
+            animation: float 15s infinite linear;
         }
 
         .bg-circle:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
+            width: 200px;
+            height: 200px;
+            top: 20%;
             left: 10%;
             animation-delay: 0s;
         }
 
         .bg-circle:nth-child(2) {
-            width: 400px;
-            height: 400px;
+            width: 300px;
+            height: 300px;
             top: 60%;
             right: 10%;
             animation-delay: -5s;
         }
 
-        .bg-circle:nth-child(3) {
-            width: 250px;
-            height: 250px;
-            bottom: 10%;
-            left: 20%;
-            animation-delay: -10s;
-        }
-
         @keyframes float {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(20px, 20px) rotate(90deg); }
-            50% { transform: translate(0, 40px) rotate(180deg); }
-            75% { transform: translate(-20px, 20px) rotate(270deg); }
+            33% { transform: translate(30px, 20px) rotate(120deg); }
+            66% { transform: translate(-20px, 30px) rotate(240deg); }
         }
 
-        /* Основные контейнеры */
-        .app-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* Главный экран с группами */
         .groups-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .call-container {
-            display: none;
             height: 100vh;
-            flex-direction: column;
-            background: var(--surface);
-        }
-
-        .call-container.active {
             display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: var(--bg);
         }
 
-        /* Хедер */
+        .groups-screen.hidden {
+            display: none;
+        }
+
+        /* Хедер главного экрана */
         .app-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
         }
 
         .logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: 12px;
             margin-bottom: 1rem;
         }
 
         .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient);
-            border-radius: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: var(--shadow);
+            font-size: 1.5rem;
+            box-shadow: 0 8px 20px rgba(110, 142, 251, 0.3);
         }
 
         .logo-text {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            background: var(--gradient);
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .app-subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--text-secondary);
-            max-width: 500px;
+            max-width: 300px;
             margin: 0 auto;
+            line-height: 1.4;
         }
 
         /* Карточка интерфейса */
         .interface-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 500px;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .interface-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient);
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         /* Табы */
         .tabs {
             display: flex;
-            background: var(--surface-light);
-            border-radius: 16px;
-            padding: 6px;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
             position: relative;
         }
 
+        .tab-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: calc(50% - 4px);
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(110, 142, 251, 0.3);
+        }
+
+        .tab-slider.join { transform: translateX(0); }
+        .tab-slider.create { transform: translateX(100%); }
+
         .tab {
             flex: 1;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1rem;
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             border-radius: 12px;
@@ -216,41 +189,16 @@
             color: var(--text);
         }
 
-        .tab-slider {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            height: calc(100% - 12px);
-            width: calc(50% - 6px);
-            background: var(--gradient);
-            border-radius: 12px;
-            transition: transform 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-
-        .tab-slider.join { transform: translateX(0); }
-        .tab-slider.create { transform: translateX(100%); }
-
         /* Формы */
         .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 1.2rem;
         }
 
         .form-input {
             width: 100%;
-            padding: 1rem 1.5rem;
-            background: var(--surface-light);
-            border: 2px solid var(--border);
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             color: var(--text);
             font-size: 1rem;
@@ -260,7 +208,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .form-input::placeholder {
@@ -269,7 +217,7 @@
 
         /* Кнопки */
         .btn {
-            padding: 1rem 2rem;
+            padding: 1rem;
             border: none;
             border-radius: 12px;
             font-size: 1rem;
@@ -280,58 +228,30 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
         }
 
         .btn-primary {
-            background: var(--gradient);
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
             color: white;
-            box-shadow: var(--shadow);
+            box-shadow: 0 6px 20px rgba(110, 142, 251, 0.3);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
         }
 
         .btn-primary:disabled {
-            background: var(--surface-light);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-secondary);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        .btn-secondary {
-            background: var(--surface-light);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--surface);
-            border-color: var(--primary);
-        }
-
         /* Список групп */
         .groups-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .section-header {
@@ -342,7 +262,7 @@
         }
 
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
         }
 
@@ -358,37 +278,35 @@
 
         .refresh-btn:hover {
             color: var(--primary);
-            background: var(--surface-light);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .groups-list {
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            background: var(--surface-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .groups-list::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         .groups-list::-webkit-scrollbar-track {
-            background: var(--surface);
-            border-radius: 3px;
+            background: transparent;
         }
 
         .groups-list::-webkit-scrollbar-thumb {
             background: var(--primary);
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
         .group-card {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .group-card:last-child {
@@ -396,11 +314,11 @@
         }
 
         .group-card:hover {
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .group-card.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            background: linear-gradient(135deg, rgba(110, 142, 251, 0.1), rgba(167, 119, 227, 0.05));
             border-left: 3px solid var(--primary);
         }
 
@@ -412,478 +330,584 @@
         }
 
         .group-name {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--text);
         }
 
         .group-users {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.3rem;
             background: var(--primary);
             color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
         .group-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-        }
-
-        .group-creator {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .group-time {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 2rem 1rem;
             color: var(--text-secondary);
         }
 
         .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
             opacity: 0.5;
         }
 
-        /* Интерфейс звонка */
+        /* ИНТЕРФЕЙС ЗВОНКА (ТВОЙ ДИЗАЙН) */
+        .call-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #000;
+        }
+
+        .call-container.active {
+            display: flex;
+        }
+
+        /* Шапка звонка */
         .call-header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 12px 16px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            z-index: 10;
+            position: relative;
+            backdrop-filter: blur(10px);
         }
 
-        .caller-info {
+        .call-header-content {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
+            flex: 1;
         }
 
-        .caller-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .caller-details h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .group-badge {
-            background: var(--primary);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .call-duration {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            font-feature-settings: "tnum";
-        }
-
-        .call-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            background: var(--surface-light);
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: var(--text);
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
             color: white;
-            transform: translateY(-2px);
         }
 
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .call-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .call-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .call-status {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .call-timer {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Основная область видео */
         .video-container {
             flex: 1;
+            background-color: #000;
             position: relative;
-            background: var(--background);
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .remote-video-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .local-video-container {
-            position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            width: 200px;
-            height: 150px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid var(--primary);
-            background: var(--surface);
-            box-shadow: var(--shadow-lg);
-            z-index: 10;
-            transition: all 0.3s ease;
-        }
-
-        .local-video-container:hover {
-            transform: scale(1.05);
-        }
-
-        .video-element {
+        .remote-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
+        .local-video {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            width: 100px;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            z-index: 5;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            z-index: 5;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .user-status {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Панель управления звонком */
+        .call-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            padding: 40px 20px 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            background: var(--surface);
-            color: var(--text-secondary);
-            gap: 1rem;
+            gap: 30px;
+            z-index: 10;
         }
 
-        .video-placeholder i {
-            font-size: 3rem;
-            opacity: 0.5;
-        }
-
-        .call-controls {
+        .main-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1.5rem;
-            padding: 2rem;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
+            gap: 40px;
+        }
+
+        .secondary-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
         }
 
         .control-btn {
             width: 70px;
             height: 70px;
-            border-radius: 20px;
+            border-radius: 50%;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            box-shadow: var(--shadow);
-        }
-
-        .control-btn.video, .control-btn.audio {
-            background: var(--surface-light);
-            color: var(--text);
-        }
-
-        .control-btn.video.active, .control-btn.audio.active {
-            background: var(--primary);
+            font-size: 24px;
             color: white;
-        }
-
-        .control-btn.end-call {
-            background: var(--danger);
-            color: white;
-            width: 80px;
-            height: 80px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .control-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
 
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .groups-screen {
-                padding: 1rem;
-            }
-
-            .interface-card {
-                padding: 2rem 1.5rem;
-                border-radius: 20px;
-            }
-
-            .logo {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .logo-text {
-                font-size: 2rem;
-            }
-
-            .local-video-container {
-                width: 120px;
-                height: 90px;
-                bottom: 1rem;
-                right: 1rem;
-            }
-
-            .call-controls {
-                gap: 1rem;
-                padding: 1.5rem;
-            }
-
-            .control-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 1.2rem;
-            }
-
-            .control-btn.end-call {
-                width: 70px;
-                height: 70px;
-            }
+        .control-btn.mic {
+            background-color: var(--primary);
         }
 
-        @media (max-width: 480px) {
-            .interface-card {
-                padding: 1.5rem 1rem;
-            }
+        .control-btn.camera {
+            background-color: var(--primary);
+        }
 
-            .tab {
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-            }
+        .control-btn.flip {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+        }
 
-            .form-input {
-                padding: 0.8rem 1rem;
-            }
+        .control-btn.end-call {
+            background-color: var(--danger);
+            width: 80px;
+            height: 80px;
+            font-size: 28px;
+        }
 
-            .btn {
-                padding: 0.8rem 1.5rem;
-            }
+        .control-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            font-weight: 500;
+        }
 
-            .group-header {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+        .control-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .group-users {
-                align-self: flex-start;
-            }
+        /* Состояния кнопок */
+        .control-btn.active {
+            background-color: var(--primary);
+        }
+
+        .control-btn.inactive {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         /* Анимации */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 71, 87, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
             }
         }
 
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .groups-screen {
+                padding: 15px;
+            }
+
+            .interface-card {
+                padding: 1.2rem;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+
+            .app-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .call-controls {
+                padding: 30px 16px 25px;
+                gap: 25px;
+            }
+            
+            .main-controls {
+                gap: 30px;
+            }
+            
+            .secondary-controls {
+                gap: 50px;
+            }
+            
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+            
+            .control-btn.end-call {
+                width: 70px;
+                height: 70px;
+                font-size: 26px;
+            }
+            
+            .control-btn.flip {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .local-video {
+                width: 80px;
+                height: 120px;
+                bottom: 180px;
+                right: 16px;
+            }
+            
+            .user-info {
+                top: 16px;
+                left: 16px;
+            }
+            
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .user-name {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .local-video {
+                width: 80px;
+                height: 120px;
+                bottom: 160px;
+            }
+            
+            .call-controls {
+                padding: 30px 20px 25px;
+                gap: 20px;
+            }
+
+            .groups-screen {
+                padding: 15px;
+            }
+
+            .app-header {
+                margin-bottom: 1.5rem;
+            }
         }
 
         /* Уведомления */
         .notification {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            top: 1rem;
+            right: 1rem;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 1rem 1.5rem;
-            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             z-index: 1000;
             transform: translateX(400px);
             transition: transform 0.3s ease;
+            max-width: 300px;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
-        .notification.success { border-left: 4px solid var(--secondary); }
+        .notification.success { border-left: 4px solid var(--success); }
         .notification.error { border-left: 4px solid var(--danger); }
-        .notification.warning { border-left: 4px solid var(--accent); }
+        .notification.warning { border-left: 4px solid #ffa502; }
 
         .notification-icon {
             font-size: 1.2rem;
         }
 
-        .notification.success .notification-icon { color: var(--secondary); }
+        .notification.success .notification-icon { color: var(--success); }
         .notification.error .notification-icon { color: var(--danger); }
-        .notification.warning .notification-icon { color: var(--accent); }
+        .notification.warning .notification-icon { color: #ffa502; }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
     <div class="bg-animation">
         <div class="bg-circle"></div>
         <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
     </div>
 
-    <div class="app-container">
-        <!-- Экран групп -->
-        <div class="groups-screen" id="groupsScreen">
-            <div class="app-header slide-in">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <h1 class="logo-text">NeonCall</h1>
+    <!-- Главный экран с группами -->
+    <div class="groups-screen" id="groupsScreen">
+        <div class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-video"></i>
                 </div>
-                <p class="app-subtitle">Премиум видеозвонки с искусственным интеллектом и кристально чистым звуком</p>
+                <h1 class="logo-text">NeonCall</h1>
+            </div>
+            <p class="app-subtitle">Приватные групповые видеозвонки</p>
+        </div>
+
+        <div class="interface-card">
+            <div class="tabs">
+                <div class="tab-slider join"></div>
+                <button class="tab active" data-tab="join">
+                    <i class="fas fa-users"></i> Присоединиться
+                </button>
+                <button class="tab" data-tab="create">
+                    <i class="fas fa-plus"></i> Создать
+                </button>
             </div>
 
-            <div class="interface-card slide-in">
-                <div class="tabs">
-                    <div class="tab-slider join"></div>
-                    <button class="tab active" data-tab="join">
-                        <i class="fas fa-users"></i> Присоединиться
-                    </button>
-                    <button class="tab" data-tab="create">
-                        <i class="fas fa-plus"></i> Создать группу
-                    </button>
+            <!-- Вкладка присоединения -->
+            <div class="tab-content active" id="joinTab">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="usernameInput" placeholder="Ваше имя" maxlength="20">
                 </div>
-
-                <!-- Вкладка присоединения -->
-                <div class="tab-content active" id="joinTab">
-                    <div class="form-group">
-                        <label class="form-label">Ваше имя</label>
-                        <input type="text" class="form-input" id="usernameInput" placeholder="Как вас зовут?" maxlength="20">
+                
+                <div class="groups-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Активные группы</h3>
+                        <button class="refresh-btn" id="refreshGroupsBtn" title="Обновить">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
-                    
-                    <div class="groups-section">
-                        <div class="section-header">
-                            <h3 class="section-title">Активные группы</h3>
-                            <button class="refresh-btn" id="refreshGroupsBtn" title="Обновить список">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                        <div class="groups-list" id="groupsList">
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <p>Пока нет активных групп</p>
-                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">Создайте первую или подождите...</p>
+                    <div class="groups-list" id="groupsList">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-users"></i>
                             </div>
+                            <p>Нет активных групп</p>
                         </div>
                     </div>
-                    
-                    <button class="btn btn-primary" id="joinGroupBtn" disabled>
-                        <i class="fas fa-sign-in-alt"></i> Присоединиться к группе
-                    </button>
                 </div>
+                
+                <button class="btn btn-primary" id="joinGroupBtn" disabled>
+                    <i class="fas fa-sign-in-alt"></i> Присоединиться
+                </button>
+            </div>
 
-                <!-- Вкладка создания -->
-                <div class="tab-content" id="createTab">
-                    <div class="form-group">
-                        <label class="form-label">Ваше имя</label>
-                        <input type="text" class="form-input" id="creatorNameInput" placeholder="Как вас зовут?" maxlength="20">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Название группы</label>
-                        <input type="text" class="form-input" id="groupNameInput" placeholder="Придумайте название" maxlength="30">
-                    </div>
-                    
-                    <button class="btn btn-primary" id="createGroupBtn" disabled>
-                        <i class="fas fa-rocket"></i> Создать группу
-                    </button>
+            <!-- Вкладка создания -->
+            <div class="tab-content" id="createTab">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="creatorNameInput" placeholder="Ваше имя" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-input" id="groupNameInput" placeholder="Название группы" maxlength="30">
+                </div>
+                
+                <button class="btn btn-primary" id="createGroupBtn" disabled>
+                    <i class="fas fa-rocket"></i> Создать группу
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИНТЕРФЕЙС ЗВОНКА (ТВОЙ ДИЗАЙН) -->
+    <div class="call-container" id="callContainer">
+        <!-- Шапка звонка -->
+        <div class="call-header">
+            <div class="call-header-content">
+                <button class="back-btn" id="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="call-info">
+                    <div class="call-title" id="call-title">Групповой звонок</div>
+                    <div class="call-status" id="call-status">Подключение...</div>
                 </div>
             </div>
         </div>
 
-        <!-- Интерфейс звонка -->
-        <div class="call-container" id="callContainer">
-            <div class="call-header">
-                <div class="caller-info">
-                    <div class="caller-avatar" id="userAvatar">U</div>
-                    <div class="caller-details">
-                        <h3 id="userName">Пользователь</h3>
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-                            <div class="group-badge" id="groupBadge">Группа</div>
-                            <div class="call-duration" id="callDuration">00:00</div>
-                        </div>
-                    </div>
+        <!-- Основная область видео -->
+        <div class="video-container" id="video-container">
+            <!-- Видео собеседника -->
+            <video class="remote-video" id="remote-video" autoplay playsinline></video>
+            
+            <!-- Видео пользователя -->
+            <video class="local-video" id="local-video" autoplay playsinline muted></video>
+            
+            <!-- Информация о собеседнике -->
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-avatar-text">U</span>
                 </div>
-                <div class="call-actions">
-                    <button class="action-btn" id="leaveGroupBtn" title="Выйти из группы">
-                        <i class="fas fa-sign-out-alt"></i>
+                <div class="user-details">
+                    <div class="user-name" id="user-name">Группа</div>
+                    <div class="user-status" id="user-status">Онлайн</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель управления звонком -->
+        <div class="call-controls">
+            <!-- Основные кнопки - по центру -->
+            <div class="main-controls">
+                <div class="control-item">
+                    <button class="control-btn mic active" id="mic-btn">
+                        <i class="fas fa-microphone"></i>
                     </button>
+                    <div class="control-label">Микрофон</div>
+                </div>
+                
+                <div class="control-item">
+                    <button class="control-btn end-call pulse" id="end-call-btn">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                    <div class="control-label">Завершить</div>
+                </div>
+                
+                <div class="control-item">
+                    <button class="control-btn camera active" id="camera-btn">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <div class="control-label">Камера</div>
                 </div>
             </div>
-
-            <div class="video-container">
-                <div class="remote-video-container">
-                    <div id="remoteVideo" class="video-placeholder">
-                        <i class="fas fa-users"></i>
-                        <p>Ожидание участников...</p>
-                        <p style="font-size: 0.9rem;" id="groupInfo">Присоединяйтесь к разговору</p>
-                    </div>
+            
+            <!-- Вторичные кнопки - ниже -->
+            <div class="secondary-controls">
+                <div class="control-item">
+                    <button class="control-btn flip" id="flip-btn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="control-label">Камера</div>
                 </div>
-
-                <div class="local-video-container">
-                    <div id="localVideo" class="video-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="call-controls">
-                <button class="control-btn video active" id="toggleVideoBtn" title="Включить/выключить видео">
-                    <i class="fas fa-video"></i>
-                </button>
-                <button class="control-btn audio active" id="toggleAudioBtn" title="Включить/выключить звук">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="control-btn end-call" id="endCallBtn" title="Завершить звонок">
-                    <i class="fas fa-phone"></i>
-                </button>
             </div>
         </div>
     </div>
@@ -927,9 +951,13 @@
         let localTracks = { videoTrack: null, audioTrack: null };
         let currentGroup = null;
         let currentUser = null;
-        let durationInterval;
         let selectedGroupId = null;
         let groupsCleanupInterval;
+        let callTimerInterval;
+        let callTimer = 0;
+        let micActive = true;
+        let cameraActive = true;
+        let usingFrontCamera = true;
 
         // Элементы DOM
         const groupsScreen = document.getElementById('groupsScreen');
@@ -941,17 +969,22 @@
         const joinGroupBtn = document.getElementById('joinGroupBtn');
         const createGroupBtn = document.getElementById('createGroupBtn');
         const refreshGroupsBtn = document.getElementById('refreshGroupsBtn');
-        const leaveGroupBtn = document.getElementById('leaveGroupBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
-        const toggleVideoBtn = document.getElementById('toggleVideoBtn');
-        const toggleAudioBtn = document.getElementById('toggleAudioBtn');
-        const localVideo = document.getElementById('localVideo');
-        const remoteVideo = document.getElementById('remoteVideo');
-        const callDuration = document.getElementById('callDuration');
-        const userAvatar = document.getElementById('userAvatar');
-        const userName = document.getElementById('userName');
-        const groupBadge = document.getElementById('groupBadge');
-        const groupInfo = document.getElementById('groupInfo');
+        
+        // Элементы интерфейса звонка
+        const backBtn = document.getElementById('back-btn');
+        const callTitle = document.getElementById('call-title');
+        const callStatus = document.getElementById('call-status');
+        const remoteVideo = document.getElementById('remote-video');
+        const localVideo = document.getElementById('local-video');
+        const userAvatar = document.getElementById('user-avatar');
+        const userAvatarText = document.getElementById('user-avatar-text');
+        const userName = document.getElementById('user-name');
+        const userStatus = document.getElementById('user-status');
+        const micBtn = document.getElementById('mic-btn');
+        const cameraBtn = document.getElementById('camera-btn');
+        const flipBtn = document.getElementById('flip-btn');
+        const endCallBtn = document.getElementById('end-call-btn');
+        
         const notification = document.getElementById('notification');
         const notificationTitle = document.getElementById('notificationTitle');
         const notificationMessage = document.getElementById('notificationMessage');
@@ -965,7 +998,7 @@
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 4000);
+            }, 3000);
         }
 
         // Инициализация Agora
@@ -1009,7 +1042,6 @@
                     
                     Object.entries(groups).forEach(async ([groupId, group]) => {
                         if (!group.users || Object.keys(group.users).length === 0) {
-                            // Если группа создана более 2 минут назад и пустая - удаляем
                             if (group.created && group.created < twoMinutesAgo) {
                                 await database.ref('groups/' + groupId).remove();
                                 console.log('Удалена пустая группа:', groupId);
@@ -1019,7 +1051,7 @@
                 } catch (error) {
                     console.error('Ошибка очистки групп:', error);
                 }
-            }, 30000); // Проверяем каждые 30 секунд
+            }, 30000);
         }
 
         // Отображение групп
@@ -1030,8 +1062,7 @@
                         <div class="empty-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <p>Пока нет активных групп</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Создайте первую или подождите...</p>
+                        <p>Нет активных групп</p>
                     </div>
                 `;
                 return;
@@ -1042,7 +1073,6 @@
                 if (!group || !group.name) return;
                 
                 const userCount = group.users ? Object.keys(group.users).length : 0;
-                const createdTime = new Date(group.created).toLocaleTimeString();
                 
                 groupsHTML += `
                     <div class="group-card" data-group-id="${groupId}">
@@ -1052,21 +1082,13 @@
                                 <i class="fas fa-users"></i> ${userCount}
                             </div>
                         </div>
-                        <div class="group-meta">
-                            <div class="group-creator">
-                                <i class="fas fa-crown"></i> ${group.creator || 'Неизвестно'}
-                            </div>
-                            <div class="group-time">
-                                <i class="fas fa-clock"></i> ${createdTime}
-                            </div>
-                        </div>
+                        <div class="group-meta">Создатель: ${group.creator || 'Неизвестно'}</div>
                     </div>
                 `;
             });
 
             groupsList.innerHTML = groupsHTML;
             
-            // Обработчики для карточек групп
             document.querySelectorAll('.group-card').forEach(card => {
                 card.addEventListener('click', function() {
                     document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
@@ -1177,15 +1199,32 @@
             localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
             await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
             
-            localVideo.innerHTML = '';
-            const localVideoElement = document.createElement('video');
-            localVideoElement.className = 'video-element';
-            localVideoElement.autoplay = true;
-            localVideoElement.muted = true;
-            localVideo.appendChild(localVideoElement);
-            localTracks.videoTrack.play(localVideoElement);
+            // Воспроизводим локальное видео
+            localVideo.srcObject = localTracks.videoTrack.getMediaStreamTrack();
+            localTracks.videoTrack.play(localVideo);
             
             startCallTimer();
+        }
+
+        // Запуск таймера звонка
+        function startCallTimer() {
+            callTimer = 0;
+            callTimerInterval = setInterval(() => {
+                callTimer++;
+                const minutes = Math.floor(callTimer / 60).toString().padStart(2, '0');
+                const seconds = (callTimer % 60).toString().padStart(2, '0');
+                callStatus.textContent = `${minutes}:${seconds}`;
+                callStatus.classList.add('call-timer');
+            }, 1000);
+        }
+
+        // Остановка таймера звонка
+        function stopCallTimer() {
+            if (callTimerInterval) {
+                clearInterval(callTimerInterval);
+                callStatus.textContent = 'Завершено';
+                callStatus.classList.remove('call-timer');
+            }
         }
 
         // Выход из группы
@@ -1227,10 +1266,9 @@
 
         // Переключение интерфейсов
         function switchToCallInterface(groupName) {
-            userName.textContent = currentUser;
-            userAvatar.textContent = currentUser.charAt(0).toUpperCase();
-            groupBadge.textContent = groupName;
-            groupInfo.textContent = groupName;
+            callTitle.textContent = `Группа: ${groupName}`;
+            userName.textContent = groupName;
+            userAvatarText.textContent = groupName.charAt(0).toUpperCase();
             
             groupsScreen.classList.add('hidden');
             callContainer.classList.add('active');
@@ -1249,24 +1287,17 @@
             
             callContainer.classList.remove('active');
             groupsScreen.classList.remove('hidden');
-        }
-
-        // Таймер звонка
-        function startCallTimer() {
-            const startTime = new Date();
-            durationInterval = setInterval(() => {
-                const diff = Math.floor((new Date() - startTime) / 1000);
-                const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
-                const seconds = (diff % 60).toString().padStart(2, '0');
-                callDuration.textContent = `${minutes}:${seconds}`;
-            }, 1000);
-        }
-
-        function stopCallTimer() {
-            if (durationInterval) {
-                clearInterval(durationInterval);
-                callDuration.textContent = '00:00';
-            }
+            
+            // Сброс состояния кнопок
+            micActive = true;
+            cameraActive = true;
+            micBtn.classList.add('active');
+            micBtn.classList.remove('inactive');
+            micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            cameraBtn.classList.add('active');
+            cameraBtn.classList.remove('inactive');
+            cameraBtn.innerHTML = '<i class="fas fa-video"></i>';
+            endCallBtn.classList.add('pulse');
         }
 
         // Слушатели Agora
@@ -1274,12 +1305,7 @@
             client.on("user-published", async (user, mediaType) => {
                 await client.subscribe(user, mediaType);
                 if (mediaType === "video") {
-                    remoteVideo.innerHTML = '';
-                    const videoElement = document.createElement('video');
-                    videoElement.className = 'video-element';
-                    videoElement.autoplay = true;
-                    remoteVideo.appendChild(videoElement);
-                    user.videoTrack.play(videoElement);
+                    user.videoTrack.play(remoteVideo);
                 }
                 if (mediaType === "audio") {
                     user.audioTrack.play();
@@ -1290,6 +1316,54 @@
                 showNotification('Участник', 'Кто-то присоединился к звонку', 'success');
             });
         }
+
+        // Управление медиа
+        micBtn.addEventListener('click', async () => {
+            if (localTracks.audioTrack) {
+                await localTracks.audioTrack.setEnabled(!micActive);
+                micActive = !micActive;
+                
+                if (micActive) {
+                    micBtn.classList.add('active');
+                    micBtn.classList.remove('inactive');
+                    micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                } else {
+                    micBtn.classList.remove('active');
+                    micBtn.classList.add('inactive');
+                    micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                }
+            }
+        });
+
+        cameraBtn.addEventListener('click', async () => {
+            if (localTracks.videoTrack) {
+                await localTracks.videoTrack.setEnabled(!cameraActive);
+                cameraActive = !cameraActive;
+                
+                if (cameraActive) {
+                    cameraBtn.classList.add('active');
+                    cameraBtn.classList.remove('inactive');
+                    cameraBtn.innerHTML = '<i class="fas fa-video"></i>';
+                    localVideo.style.display = 'block';
+                } else {
+                    cameraBtn.classList.remove('active');
+                    cameraBtn.classList.add('inactive');
+                    cameraBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
+                    localVideo.style.display = 'none';
+                }
+            }
+        });
+
+        // Переключение камеры
+        flipBtn.addEventListener('click', () => {
+            usingFrontCamera = !usingFrontCamera;
+            showNotification('Камера', usingFrontCamera ? 'Фронтальная камера' : 'Основная камера', 'success');
+            
+            flipBtn.style.transform = 'rotate(180deg)';
+            setTimeout(() => {
+                flipBtn.style.transform = 'rotate(0)';
+            }, 300);
+        });
 
         // Обработчики событий UI
         document.querySelectorAll('.tab').forEach(tab => {
@@ -1317,41 +1391,19 @@
             loadGroups();
             showNotification('Обновлено', 'Список групп обновлен', 'success');
         });
-        leaveGroupBtn.addEventListener('click', leaveGroup);
+
+        // Обработчики интерфейса звонка
         endCallBtn.addEventListener('click', leaveGroup);
-
-        toggleVideoBtn.addEventListener('click', async () => {
-            if (localTracks.videoTrack) {
-                const enabled = !localTracks.videoTrack.enabled;
-                await localTracks.videoTrack.setEnabled(enabled);
-                toggleVideoBtn.classList.toggle('active', enabled);
-                toggleVideoBtn.querySelector('i').className = enabled ? 'fas fa-video' : 'fas fa-video-slash';
-            }
-        });
-
-        toggleAudioBtn.addEventListener('click', async () => {
-            if (localTracks.audioTrack) {
-                const enabled = !localTracks.audioTrack.enabled;
-                await localTracks.audioTrack.setEnabled(enabled);
-                toggleAudioBtn.classList.toggle('active', enabled);
-                toggleAudioBtn.querySelector('i').className = enabled ? 'fas fa-microphone' : 'fas fa-microphone-slash';
+        backBtn.addEventListener('click', () => {
+            if (confirm('Завершить звонок?')) {
+                leaveGroup();
             }
         });
 
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
             initializeAgora();
-            
-            // Анимация появления
-            setTimeout(() => {
-                document.querySelectorAll('.slide-in').forEach(el => {
-                    el.style.animation = 'none';
-                    setTimeout(() => {
-                        el.style.animation = 'slideIn 0.5s ease-out';
-                    }, 10);
-                });
-            }, 100);
         });
     </script>
 </body>
-                                    </html>
+                        </html>
