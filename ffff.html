@@ -121,6 +121,12 @@
         .primary-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        .primary-btn.enabled {
+            background: var(--primary);
+            cursor: pointer;
         }
 
         .groups-list {
@@ -144,11 +150,13 @@
 
         .group-card:hover {
             border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .group-card.active {
             border-color: var(--primary);
             background: rgba(0, 136, 204, 0.1);
+            transform: translateY(-2px);
         }
 
         .group-header {
@@ -306,6 +314,17 @@
         .control-btn.active {
             background: var(--primary);
         }
+
+        .debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -341,6 +360,8 @@
     </div>
 
     <div class="call-container" id="callContainer">
+        <div class="debug-info" id="debugInfo">Группа не выбрана</div>
+        
         <div class="call-header">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div class="caller-avatar" id="userAvatar">U</div>
@@ -404,11 +425,13 @@
         let currentGroup = null;
         let currentUser = null;
         let durationInterval;
+        let selectedGroupId = null;
 
         // Элементы DOM
         const groupsScreen = document.getElementById('groupsScreen');
         const callContainer = document.getElementById('callContainer');
         const errorMessage = document.getElementById('errorMessage');
+        const debugInfo = document.getElementById('debugInfo');
         const usernameInput = document.getElementById('usernameInput');
         const creatorNameInput = document.getElementById('creatorNameInput');
         const groupNameInput = document.getElementById('groupNameInput');
@@ -433,6 +456,13 @@
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 5000);
+        }
+
+        // Обновить отладочную информацию
+        function updateDebugInfo() {
+            const hasUsername = usernameInput.value.trim().length > 0;
+            const hasSelectedGroup = selectedGroupId !== null;
+            debugInfo.textContent = `Имя: ${hasUsername ? '✓' : '✗'}, Группа: ${hasSelectedGroup ? '✓' : '✗'}`;
         }
 
         // Инициализация Agora
@@ -464,13 +494,15 @@
 
         // Отображение групп
         function displayGroups(groups) {
-            if (!groups) {
-                groupsList.innerHTML = '<div class="empty-state">Нет активных групп</div>';
+            if (!groups || Object.keys(groups).length === 0) {
+                groupsList.innerHTML = '<div class="empty-state">Нет активных групп. Создайте первую!</div>';
                 return;
             }
 
             let groupsHTML = '';
             Object.entries(groups).forEach(([groupId, group]) => {
+                if (!group || !group.name) return;
+                
                 const userCount = group.users ? Object.keys(group.users).length : 0;
                 groupsHTML += `
                     <div class="group-card" data-group-id="${groupId}">
@@ -478,20 +510,62 @@
                             <div class="group-name">${group.name}</div>
                             <div class="group-users">${userCount} 👥</div>
                         </div>
-                        <div>Создатель: ${group.creator}</div>
+                        <div style="font-size: 14px; color: #666;">Создатель: ${group.creator || 'Неизвестно'}</div>
+                        <div style="font-size: 12px; color: #999;">ID: ${groupId}</div>
                     </div>
                 `;
             });
 
+            if (groupsHTML === '') {
+                groupsHTML = '<div class="empty-state">Нет активных групп</div>';
+            }
+
             groupsList.innerHTML = groupsHTML;
             
+            // Добавляем обработчики для карточек групп
             document.querySelectorAll('.group-card').forEach(card => {
                 card.addEventListener('click', function() {
-                    document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
+                    // Убираем активный класс у всех карточек
+                    document.querySelectorAll('.group-card').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    
+                    // Добавляем активный класс выбранной карточке
                     this.classList.add('active');
+                    
+                    // Сохраняем выбранный ID группы
+                    selectedGroupId = this.dataset.groupId;
+                    console.log('Выбрана группа:', selectedGroupId);
+                    
+                    // Обновляем кнопку
                     updateJoinButtonState();
+                    updateDebugInfo();
                 });
             });
+        }
+
+        // Обновление состояния кнопки присоединения
+        function updateJoinButtonState() {
+            const hasUsername = usernameInput.value.trim().length > 0;
+            const hasSelectedGroup = selectedGroupId !== null;
+            
+            console.log('Проверка кнопки:', { hasUsername, hasSelectedGroup, selectedGroupId });
+            
+            if (hasUsername && hasSelectedGroup) {
+                joinGroupBtn.disabled = false;
+                joinGroupBtn.classList.add('enabled');
+            } else {
+                joinGroupBtn.disabled = true;
+                joinGroupBtn.classList.remove('enabled');
+            }
+        }
+
+        // Обновление состояния кнопки создания
+        function updateCreateButtonState() {
+            const hasCreatorName = creatorNameInput.value.trim().length > 0;
+            const hasGroupName = groupNameInput.value.trim().length > 0;
+            
+            createGroupBtn.disabled = !(hasCreatorName && hasGroupName);
         }
 
         // Создание группы
@@ -499,21 +573,26 @@
             const creatorName = creatorNameInput.value.trim();
             const groupName = groupNameInput.value.trim();
             
-            if (!creatorName || !groupName) return;
+            if (!creatorName || !groupName) {
+                showError('Заполните все поля');
+                return;
+            }
 
             try {
-                const groupId = 'group_' + Date.now();
+                const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                 const groupData = {
                     name: groupName,
                     creator: creatorName,
                     created: Date.now(),
                     users: {
                         [creatorName]: {
-                            joined: Date.now()
+                            joined: Date.now(),
+                            active: true
                         }
                     }
                 };
 
+                console.log('Создаем группу:', groupId, groupData);
                 await database.ref('groups/' + groupId).set(groupData);
                 
                 currentUser = creatorName;
@@ -529,22 +608,38 @@
 
         // Присоединение к группе
         async function joinGroup() {
-            const selectedGroup = document.querySelector('.group-card.active');
+            if (!selectedGroupId) {
+                showError('Выберите группу');
+                return;
+            }
+
             const username = usernameInput.value.trim();
-            
-            if (!selectedGroup || !username) return;
+            if (!username) {
+                showError('Введите ваше имя');
+                return;
+            }
 
             try {
-                const groupId = selectedGroup.dataset.groupId;
-                const groupName = selectedGroup.querySelector('.group-name').textContent;
+                // Получаем информацию о группе
+                const groupSnapshot = await database.ref('groups/' + selectedGroupId).once('value');
+                const group = groupSnapshot.val();
                 
-                await database.ref('groups/' + groupId + '/users/' + username).set({
-                    joined: Date.now()
+                if (!group) {
+                    showError('Группа не найдена');
+                    return;
+                }
+
+                const groupName = group.name;
+                
+                // Добавляем пользователя в группу
+                await database.ref('groups/' + selectedGroupId + '/users/' + username).set({
+                    joined: Date.now(),
+                    active: true
                 });
                 
                 currentUser = username;
-                currentGroup = groupId;
-                await joinAgoraChannel(groupId);
+                currentGroup = selectedGroupId;
+                await joinAgoraChannel(selectedGroupId);
                 
                 switchToCallInterface(groupName);
                 
@@ -621,26 +716,20 @@
         function switchToGroupsInterface() {
             currentGroup = null;
             currentUser = null;
+            selectedGroupId = null;
             usernameInput.value = '';
             creatorNameInput.value = '';
             groupNameInput.value = '';
             document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
             updateJoinButtonState();
             updateCreateButtonState();
+            updateDebugInfo();
             
             callContainer.classList.remove('active');
             groupsScreen.classList.remove('hidden');
         }
 
-        // Вспомогательные функции
-        function updateJoinButtonState() {
-            joinGroupBtn.disabled = !(usernameInput.value.trim() && document.querySelector('.group-card.active'));
-        }
-
-        function updateCreateButtonState() {
-            createGroupBtn.disabled = !(creatorNameInput.value.trim() && groupNameInput.value.trim());
-        }
-
+        // Таймер звонка
         function startCallTimer() {
             const startTime = new Date();
             durationInterval = setInterval(() => {
@@ -652,8 +741,28 @@
         }
 
         function stopCallTimer() {
-            clearInterval(durationInterval);
-            callDuration.textContent = '00:00';
+            if (durationInterval) {
+                clearInterval(durationInterval);
+                callDuration.textContent = '00:00';
+            }
+        }
+
+        // Слушатели Agora
+        function setupAgoraListeners() {
+            client.on("user-published", async (user, mediaType) => {
+                await client.subscribe(user, mediaType);
+                if (mediaType === "video") {
+                    remoteVideo.innerHTML = '';
+                    const videoElement = document.createElement('video');
+                    videoElement.className = 'video-element';
+                    videoElement.autoplay = true;
+                    remoteVideo.appendChild(videoElement);
+                    user.videoTrack.play(videoElement);
+                }
+                if (mediaType === "audio") {
+                    user.audioTrack.play();
+                }
+            });
         }
 
         // Обработчики событий
@@ -666,9 +775,14 @@
             });
         });
 
-        usernameInput.addEventListener('input', updateJoinButtonState);
+        usernameInput.addEventListener('input', () => {
+            updateJoinButtonState();
+            updateDebugInfo();
+        });
+
         creatorNameInput.addEventListener('input', updateCreateButtonState);
         groupNameInput.addEventListener('input', updateCreateButtonState);
+
         joinGroupBtn.addEventListener('click', joinGroup);
         createGroupBtn.addEventListener('click', createGroup);
         leaveGroupBtn.addEventListener('click', leaveGroup);
@@ -689,24 +803,6 @@
                 toggleAudioBtn.classList.toggle('active', enabled);
             }
         });
-
-        // Слушатели Agora
-        function setupAgoraListeners() {
-            client.on("user-published", async (user, mediaType) => {
-                await client.subscribe(user, mediaType);
-                if (mediaType === "video") {
-                    remoteVideo.innerHTML = '';
-                    const videoElement = document.createElement('video');
-                    videoElement.className = 'video-element';
-                    videoElement.autoplay = true;
-                    remoteVideo.appendChild(videoElement);
-                    user.videoTrack.play(videoElement);
-                }
-                if (mediaType === "audio") {
-                    user.audioTrack.play();
-                }
-            });
-        }
 
         // Инициализация
         initializeAgora();
