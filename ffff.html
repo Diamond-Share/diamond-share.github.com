@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Call - Multi Channel</title>
+    <title>Video Call - Group System</title>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <!-- Agora SDK -->
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
     <style>
         :root {
             --primary: #0088cc;
-            --chat-bg: #e6ebee;
             --bg-color: #ffffff;
             --text-color: #000000;
             --border-color: #e0e0e0;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #f44336;
         }
 
         [data-theme="dark"] {
             --primary: #0088cc;
-            --chat-bg: #0e1216;
             --bg-color: #1f1f1f;
             --text-color: #e0e0e0;
             --border-color: #333333;
@@ -35,100 +41,90 @@
             overflow: hidden;
         }
 
-        /* Экран выбора канала */
-        .channel-selection {
+        /* Экран групп */
+        .groups-screen {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
-            max-width: 500px;
-            text-align: center;
+            max-width: 600px;
             padding: 30px;
             z-index: 1000;
             background: var(--bg-color);
         }
 
-        .channel-selection.hidden {
+        .groups-screen.hidden {
             display: none;
         }
 
-        .channel-title {
+        .screen-title {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 10px;
+            text-align: center;
             color: var(--text-color);
         }
 
-        .channel-subtitle {
+        .screen-subtitle {
             font-size: 16px;
             color: #666;
-            margin-bottom: 40px;
-        }
-
-        .channels-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
             margin-bottom: 30px;
-        }
-
-        .channel-card {
-            background: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 15px;
-            padding: 25px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-align: center;
         }
 
-        .channel-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .channel-card.active {
-            border-color: var(--primary);
-            background: rgba(0, 136, 204, 0.1);
-        }
-
-        .channel-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .channel-name {
-            font-size: 18px;
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .channel-info {
-            font-size: 14px;
+            cursor: pointer;
             color: #666;
-            line-height: 1.4;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
 
-        .channel-users {
-            margin-top: 10px;
-            font-size: 12px;
+        .tab.active {
             color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
-        .username-input {
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
             width: 100%;
             padding: 15px;
             border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 16px;
-            margin-bottom: 20px;
             background: var(--bg-color);
             color: var(--text-color);
+            margin-bottom: 15px;
         }
 
-        .join-btn {
+        .form-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .primary-btn {
             background: var(--primary);
             color: white;
             border: none;
@@ -142,17 +138,111 @@
             box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
         }
 
-        .join-btn:hover {
+        .primary-btn:hover {
             background: #0077bb;
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0, 136, 204, 0.4);
         }
 
-        .join-btn:disabled {
+        .primary-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Список групп */
+        .groups-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .group-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .group-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-card.active {
+            border-color: var(--primary);
+            background: rgba(0, 136, 204, 0.1);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .group-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .group-users {
+            font-size: 12px;
+            color: var(--primary);
+            background: rgba(0, 136, 204, 0.1);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .group-creator {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .group-id {
+            font-size: 12px;
+            color: #999;
+            font-family: monospace;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
 
         /* Основной контейнер звонка */
@@ -167,7 +257,6 @@
             display: flex;
         }
 
-        /* Верхняя панель */
         .call-header {
             display: flex;
             justify-content: space-between;
@@ -175,7 +264,6 @@
             padding: 15px 20px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
-            position: relative;
             z-index: 10;
         }
 
@@ -197,7 +285,7 @@
             font-size: 18px;
         }
 
-        .channel-badge {
+        .group-badge {
             background: var(--primary);
             color: white;
             padding: 4px 12px;
@@ -231,7 +319,6 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Контейнер видео */
         .video-container {
             flex: 1;
             position: relative;
@@ -276,7 +363,6 @@
             background: #333;
         }
 
-        /* Панель управления звонком */
         .call-controls {
             display: flex;
             justify-content: center;
@@ -322,7 +408,6 @@
             transform: scale(1.1);
         }
 
-        /* Статус соединения */
         .connection-status {
             position: absolute;
             top: 20px;
@@ -345,15 +430,15 @@
         }
 
         .status-online {
-            background: #4CAF50;
+            background: var(--success);
         }
 
         .status-offline {
-            background: #f44336;
+            background: var(--error);
         }
 
         .status-connecting {
-            background: #FF9800;
+            background: var(--warning);
             animation: pulse 1s infinite;
         }
 
@@ -363,12 +448,7 @@
             100% { opacity: 1; }
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
-            .channels-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .local-video-container {
                 width: 120px;
                 height: 90px;
@@ -390,124 +470,140 @@
     </style>
 </head>
 <body>
-    <!-- Экран выбора канала -->
-    <div class="channel-selection" id="channelSelection">
-        <h1 class="channel-title">Выберите канал</h1>
-        <p class="channel-subtitle">Присоединитесь к одному из каналов для общения</p>
+    <!-- Экран групп -->
+    <div class="groups-screen" id="groupsScreen">
+        <h1 class="screen-title">Групповые звонки</h1>
+        <p class="screen-subtitle">Создайте новую группу или присоединитесь к существующей</p>
         
-        <div class="channels-grid">
-            <div class="channel-card" data-channel="channel-1">
-                <div class="channel-icon">👥</div>
-                <div class="channel-name">Канал 1</div>
-                <div class="channel-info">Общая комната для встреч</div>
-                <div class="channel-users" id="channel1Users">Участников: 0</div>
-            </div>
-            
-            <div class="channel-card" data-channel="channel-2">
-                <div class="channel-icon">👥</div>
-                <div class="channel-name">Канал 2</div>
-                <div class="channel-info">Приватные переговоры</div>
-                <div class="channel-users" id="channel2Users">Участников: 0</div>
-            </div>
+        <div class="tabs">
+            <button class="tab active" data-tab="join">Присоединиться</button>
+            <button class="tab" data-tab="create">Создать группу</button>
         </div>
 
-        <input type="text" class="username-input" id="usernameInput" placeholder="Введите ваше имя" maxlength="20">
-        <button class="join-btn" id="joinChannelBtn" disabled>Присоединиться к каналу</button>
+        <!-- Вкладка присоединения -->
+        <div class="tab-content active" id="joinTab">
+            <div class="form-group">
+                <input type="text" class="form-input" id="usernameInput" placeholder="Введите ваше имя" maxlength="20">
+            </div>
+            
+            <h3 style="margin-bottom: 15px;">Доступные группы:</h3>
+            <div class="groups-list" id="groupsList">
+                <div class="empty-state">
+                    <div class="icon">👥</div>
+                    <div>Нет активных групп</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Создайте первую группу!</div>
+                </div>
+            </div>
+            
+            <button class="primary-btn" id="joinGroupBtn" disabled>Присоединиться к группе</button>
+        </div>
+
+        <!-- Вкладка создания -->
+        <div class="tab-content" id="createTab">
+            <div class="form-group">
+                <input type="text" class="form-input" id="creatorNameInput" placeholder="Ваше имя" maxlength="20">
+                <input type="text" class="form-input" id="groupNameInput" placeholder="Название группы" maxlength="30">
+            </div>
+            
+            <button class="primary-btn" id="createGroupBtn" disabled>Создать группу</button>
+            <button class="secondary-btn" id="backToJoinBtn">← Назад к списку</button>
+        </div>
     </div>
 
     <!-- Основной интерфейс звонка -->
     <div class="call-container" id="callContainer">
-        <!-- Верхняя панель -->
         <div class="call-header">
             <div class="caller-info">
                 <div class="caller-avatar" id="userAvatar">U</div>
                 <div>
                     <div class="caller-name" id="userName">Пользователь</div>
-                    <div class="channel-badge" id="currentChannelBadge">Канал 1</div>
+                    <div class="group-badge" id="groupBadge">Группа</div>
                     <div class="call-duration" id="callDuration">00:00</div>
                 </div>
             </div>
             <div class="call-actions">
-                <button class="call-action-btn" id="leaveChannelBtn" title="Сменить канал">🔄</button>
+                <button class="call-action-btn" id="leaveGroupBtn" title="Выйти из группы">🔄</button>
                 <button class="call-action-btn" id="closeBtn">×</button>
             </div>
         </div>
 
-        <!-- Контейнер видео -->
         <div class="video-container">
-            <!-- Удаленное видео -->
             <div class="remote-video-container">
                 <div id="remoteVideo" class="video-placeholder">
-                    <div style="font-size: 48px;">👤</div>
+                    <div style="font-size: 48px;">👥</div>
                     <div>Ожидание участников...</div>
-                    <div style="font-size: 14px; opacity: 0.7;" id="channelInfo">Канал 1</div>
+                    <div style="font-size: 14px; opacity: 0.7;" id="groupInfo">Группа</div>
                 </div>
             </div>
 
-            <!-- Локальное видео -->
             <div class="local-video-container">
                 <div id="localVideo" class="video-placeholder">
                     <div style="font-size: 24px;">📹</div>
                 </div>
             </div>
 
-            <!-- Статус соединения -->
             <div class="connection-status">
                 <div class="status-indicator status-connecting" id="connectionIndicator"></div>
-                <span id="connectionText">Выбор канала...</span>
+                <span id="connectionText">Выбор группы...</span>
             </div>
         </div>
 
-        <!-- Панель управления -->
         <div class="call-controls">
-            <button class="control-btn video active" id="toggleVideoBtn" title="Выключить видео">
-                📹
-            </button>
-            <button class="control-btn audio active" id="toggleAudioBtn" title="Выключить звук">
-                🎤
-            </button>
-            <button class="control-btn end-call" id="endCallBtn" title="Завершить звонок">
-                📞
-            </button>
+            <button class="control-btn video active" id="toggleVideoBtn">📹</button>
+            <button class="control-btn audio active" id="toggleAudioBtn">🎤</button>
+            <button class="control-btn end-call" id="endCallBtn">📞</button>
         </div>
     </div>
 
-    <!-- Agora SDK -->
-    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
-
     <script>
-        // Конфигурация
-        const config = {
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q",
+            authDomain: "skyberry-a31d8.firebaseapp.com",
+            databaseURL: "https://skyberry-a31d8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "skyberry-a31d8",
+            storageBucket: "skyberry-a31d8.firebasestorage.app",
+            messagingSenderId: "942887528624",
+            appId: "1:942887528624:web:537f9f76d79d81be89b375",
+            measurementId: "G-N2WKSHRB4L"
+        };
+
+        // Agora конфигурация
+        const agoraConfig = {
             appId: "fc97c0f924ce4bec9389fa2cf4899e48",
             token: null
         };
 
-        // Переменные
+        // Инициализация Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Глобальные переменные
         let client;
-        let localTracks = {
-            videoTrack: null,
-            audioTrack: null
-        };
+        let localTracks = { videoTrack: null, audioTrack: null };
         let isJoined = false;
         let isVideoEnabled = true;
         let isAudioEnabled = true;
         let callStartTime;
         let durationInterval;
         let remoteUsers = new Set();
-        let currentChannel = '';
-        let currentUsername = '';
-        let channelUsers = {
-            'channel-1': new Set(),
-            'channel-2': new Set()
-        };
+        let currentGroup = null;
+        let currentUser = null;
+        let groupsRef;
 
         // Элементы DOM
-        const channelSelection = document.getElementById('channelSelection');
+        const groupsScreen = document.getElementById('groupsScreen');
         const callContainer = document.getElementById('callContainer');
-        const channelCards = document.querySelectorAll('.channel-card');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
         const usernameInput = document.getElementById('usernameInput');
-        const joinChannelBtn = document.getElementById('joinChannelBtn');
-        const leaveChannelBtn = document.getElementById('leaveChannelBtn');
+        const creatorNameInput = document.getElementById('creatorNameInput');
+        const groupNameInput = document.getElementById('groupNameInput');
+        const groupsList = document.getElementById('groupsList');
+        const joinGroupBtn = document.getElementById('joinGroupBtn');
+        const createGroupBtn = document.getElementById('createGroupBtn');
+        const backToJoinBtn = document.getElementById('backToJoinBtn');
+        const leaveGroupBtn = document.getElementById('leaveGroupBtn');
         const endCallBtn = document.getElementById('endCallBtn');
         const toggleVideoBtn = document.getElementById('toggleVideoBtn');
         const toggleAudioBtn = document.getElementById('toggleAudioBtn');
@@ -518,24 +614,18 @@
         const connectionText = document.getElementById('connectionText');
         const userAvatar = document.getElementById('userAvatar');
         const userName = document.getElementById('userName');
-        const currentChannelBadge = document.getElementById('currentChannelBadge');
-        const channelInfo = document.getElementById('channelInfo');
-        const channel1Users = document.getElementById('channel1Users');
-        const channel2Users = document.getElementById('channel2Users');
+        const groupBadge = document.getElementById('groupBadge');
+        const groupInfo = document.getElementById('groupInfo');
 
         // Инициализация Agora
         function initializeAgora() {
-            client = AgoraRTC.createClient({ 
-                mode: "rtc", 
-                codec: "vp8" 
-            });
-
-            setupEventListeners();
-            updateChannelUsersDisplay();
+            client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+            setupAgoraListeners();
+            loadGroups();
         }
 
-        // Настройка обработчиков событий Agora
-        function setupEventListeners() {
+        // Настройка слушателей Agora
+        function setupAgoraListeners() {
             client.on("user-published", async (user, mediaType) => {
                 try {
                     await client.subscribe(user, mediaType);
@@ -557,7 +647,7 @@
                     }
                     
                     remoteUsers.add(user.uid);
-                    updateChannelUsersCount();
+                    updateGroupUsersCount();
                     
                 } catch (error) {
                     console.error('Ошибка подписки:', error);
@@ -572,118 +662,198 @@
             client.on("user-left", (user) => {
                 console.log('Пользователь покинул:', user.uid);
                 remoteUsers.delete(user.uid);
-                updateChannelUsersCount();
+                updateGroupUsersCount();
                 
                 if (remoteUsers.size === 0) {
-                    remoteVideo.innerHTML = `
-                        <div style="font-size: 48px;">👤</div>
-                        <div>Ожидание участников...</div>
-                        <div style="font-size: 14px; opacity: 0.7;">${currentChannel}</div>
-                    `;
-                    updateConnectionStatus('Ожидание участников', 'status-connecting');
+                    showWaitingState();
                 }
             });
         }
 
-        // Выбор канала
-        channelCards.forEach(card => {
-            card.addEventListener('click', function() {
-                // Убираем активный класс у всех карточек
-                channelCards.forEach(c => c.classList.remove('active'));
-                // Добавляем активный класс выбранной карточке
-                this.classList.add('active');
-                
-                currentChannel = this.dataset.channel;
-                updateJoinButtonState();
+        // Загрузка групп из Firebase
+        function loadGroups() {
+            groupsRef = database.ref('groups');
+            
+            groupsRef.on('value', (snapshot) => {
+                const groups = snapshot.val();
+                displayGroups(groups);
             });
-        });
-
-        // Обновление состояния кнопки присоединения
-        function updateJoinButtonState() {
-            const hasUsername = usernameInput.value.trim().length > 0;
-            const hasChannel = currentChannel !== '';
-            joinChannelBtn.disabled = !(hasUsername && hasChannel);
         }
 
-        // Ввод имени пользователя
-        usernameInput.addEventListener('input', function() {
-            currentUsername = this.value.trim();
-            updateJoinButtonState();
-            
-            // Обновляем аватар
-            if (currentUsername.length > 0) {
-                userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
+        // Отображение списка групп
+        function displayGroups(groups) {
+            if (!groups) {
+                groupsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">👥</div>
+                        <div>Нет активных групп</div>
+                        <div style="font-size: 14px; margin-top: 5px;">Создайте первую группу!</div>
+                    </div>
+                `;
+                return;
             }
-        });
 
-        // Присоединение к каналу
-        async function joinChannel() {
-            if (!currentChannel || !currentUsername) return;
+            let groupsHTML = '';
+            Object.entries(groups).forEach(([groupId, group]) => {
+                if (group.active !== false) { // Показываем только активные группы
+                    const userCount = group.users ? Object.keys(group.users).length : 0;
+                    groupsHTML += `
+                        <div class="group-card" data-group-id="${groupId}">
+                            <div class="group-header">
+                                <div class="group-name">${group.name}</div>
+                                <div class="group-users">${userCount} 👥</div>
+                            </div>
+                            <div class="group-creator">Создатель: ${group.creator}</div>
+                            <div class="group-id">ID: ${groupId}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (groupsHTML === '') {
+                groupsHTML = `
+                    <div class="empty-state">
+                        <div class="icon">👥</div>
+                        <div>Нет активных групп</div>
+                        <div style="font-size: 14px; margin-top: 5px;">Создайте первую группу!</div>
+                    </div>
+                `;
+            }
+
+            groupsList.innerHTML = groupsHTML;
+            
+            // Добавляем обработчики для карточек групп
+            document.querySelectorAll('.group-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    updateJoinButtonState();
+                });
+            });
+        }
+
+        // Создание новой группы
+        async function createGroup() {
+            const creatorName = creatorNameInput.value.trim();
+            const groupName = groupNameInput.value.trim();
+            
+            if (!creatorName || !groupName) return;
 
             try {
-                // Обновляем UI
-                userName.textContent = currentUsername;
-                currentChannelBadge.textContent = currentChannel === 'channel-1' ? 'Канал 1' : 'Канал 2';
-                channelInfo.textContent = currentChannel === 'channel-1' ? 'Канал 1' : 'Канал 2';
-                
-                // Скрываем выбор канала и показываем звонок
-                channelSelection.classList.add('hidden');
-                callContainer.classList.add('active');
+                const groupId = generateGroupId();
+                const groupData = {
+                    name: groupName,
+                    creator: creatorName,
+                    created: Date.now(),
+                    active: true,
+                    users: {
+                        [creatorName]: {
+                            joined: Date.now(),
+                            active: true
+                        }
+                    }
+                };
 
-                // Подключаемся к каналу
-                await client.join(config.appId, currentChannel, config.token, null);
+                // Сохраняем группу в Firebase
+                await groupsRef.child(groupId).set(groupData);
                 
-                // Создаем локальные треки
-                localTracks.videoTrack = await AgoraRTC.createCameraVideoTrack();
-                localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+                // Подключаемся к группе
+                currentUser = creatorName;
+                currentGroup = groupId;
+                await joinAgoraChannel(groupId);
                 
-                // Публикуем треки
-                await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
-                
-                // Воспроизводим локальное видео
-                localVideo.innerHTML = '';
-                const localVideoElement = document.createElement('video');
-                localVideoElement.className = 'video-element';
-                localVideoElement.autoplay = true;
-                localVideoElement.muted = true;
-                localVideo.appendChild(localVideoElement);
-                localTracks.videoTrack.play(localVideoElement);
-                
-                isJoined = true;
-                startCallTimer();
-                updateConnectionStatus('Подключено к ' + currentChannel, 'status-online');
-                
-                // Добавляем пользователя в канал
-                channelUsers[currentChannel].add(currentUsername);
-                updateChannelUsersDisplay();
+                // Переходим к звонку
+                switchToCallInterface(groupName, groupId);
                 
             } catch (error) {
-                console.error('Ошибка подключения к каналу:', error);
-                alert('Ошибка подключения: ' + error.message);
-                channelSelection.classList.remove('hidden');
-                callContainer.classList.remove('active');
+                console.error('Ошибка создания группы:', error);
+                alert('Ошибка создания группы: ' + error.message);
             }
         }
 
-        // Выход из канала
-        async function leaveChannel() {
-            await endCall();
+        // Присоединение к существующей группе
+        async function joinGroup() {
+            const selectedGroup = document.querySelector('.group-card.active');
+            const username = usernameInput.value.trim();
             
-            // Показываем экран выбора канала
-            channelSelection.classList.remove('hidden');
-            callContainer.classList.remove('active');
+            if (!selectedGroup || !username) return;
+
+            try {
+                const groupId = selectedGroup.dataset.groupId;
+                const groupName = selectedGroup.querySelector('.group-name').textContent;
+                
+                // Добавляем пользователя в группу в Firebase
+                await groupsRef.child(groupId).child('users').child(username).set({
+                    joined: Date.now(),
+                    active: true
+                });
+                
+                // Подключаемся к группе
+                currentUser = username;
+                currentGroup = groupId;
+                await joinAgoraChannel(groupId);
+                
+                // Переходим к звонку
+                switchToCallInterface(groupName, groupId);
+                
+            } catch (error) {
+                console.error('Ошибка присоединения к группе:', error);
+                alert('Ошибка присоединения к группе: ' + error.message);
+            }
+        }
+
+        // Подключение к каналу Agora
+        async function joinAgoraChannel(channelId) {
+            await client.join(agoraConfig.appId, channelId, agoraConfig.token, null);
             
-            // Сбрасываем выбор
-            channelCards.forEach(c => c.classList.remove('active'));
-            currentChannel = '';
-            usernameInput.value = '';
-            updateJoinButtonState();
+            // Создаем и публикуем локальные треки
+            localTracks.videoTrack = await AgoraRTC.createCameraVideoTrack();
+            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+            await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
+            
+            // Воспроизводим локальное видео
+            localVideo.innerHTML = '';
+            const localVideoElement = document.createElement('video');
+            localVideoElement.className = 'video-element';
+            localVideoElement.autoplay = true;
+            localVideoElement.muted = true;
+            localVideo.appendChild(localVideoElement);
+            localTracks.videoTrack.play(localVideoElement);
+            
+            isJoined = true;
+            startCallTimer();
+            updateConnectionStatus('Подключено к группе', 'status-online');
+        }
+
+        // Выход из группы
+        async function leaveGroup() {
+            try {
+                // Удаляем пользователя из группы в Firebase
+                if (currentGroup && currentUser) {
+                    await groupsRef.child(currentGroup).child('users').child(currentUser).remove();
+                    
+                    // Проверяем, остались ли пользователи в группе
+                    const groupSnapshot = await groupsRef.child(currentGroup).child('users').once('value');
+                    if (!groupSnapshot.exists()) {
+                        // Если группа пустая, помечаем как неактивную
+                        await groupsRef.child(currentGroup).update({ active: false });
+                    }
+                }
+                
+                // Выходим из канала Agora
+                await endCall();
+                
+                // Возвращаемся к экрану групп
+                switchToGroupsInterface();
+                
+            } catch (error) {
+                console.error('Ошибка выхода из группы:', error);
+            }
         }
 
         // Завершение звонка
         async function endCall() {
             try {
-                // Останавливаем треки
                 if (localTracks.audioTrack) {
                     localTracks.audioTrack.stop();
                     localTracks.audioTrack.close();
@@ -693,16 +863,8 @@
                     localTracks.videoTrack.close();
                 }
                 
-                // Выходим из канала
                 await client.leave();
                 
-                // Убираем пользователя из канала
-                if (currentChannel) {
-                    channelUsers[currentChannel].delete(currentUsername);
-                    updateChannelUsersDisplay();
-                }
-                
-                // Сбрасываем состояние
                 localTracks = { videoTrack: null, audioTrack: null };
                 isJoined = false;
                 stopCallTimer();
@@ -713,24 +875,70 @@
             }
         }
 
-        // Обновление счетчиков пользователей
-        function updateChannelUsersCount() {
-            const userCount = remoteUsers.size + 1; // +1 для текущего пользователя
-            connectionText.textContent = `Участников: ${userCount}`;
+        // Переключение на интерфейс звонка
+        function switchToCallInterface(groupName, groupId) {
+            userName.textContent = currentUser;
+            userAvatar.textContent = currentUser.charAt(0).toUpperCase();
+            groupBadge.textContent = groupName;
+            groupInfo.textContent = groupName;
+            
+            groupsScreen.classList.add('hidden');
+            callContainer.classList.add('active');
         }
 
-        function updateChannelUsersDisplay() {
-            channel1Users.textContent = `Участников: ${channelUsers['channel-1'].size}`;
-            channel2Users.textContent = `Участников: ${channelUsers['channel-2'].size}`;
+        // Переключение на интерфейс групп
+        function switchToGroupsInterface() {
+            // Сбрасываем состояние
+            currentGroup = null;
+            currentUser = null;
+            usernameInput.value = '';
+            creatorNameInput.value = '';
+            groupNameInput.value = '';
+            document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
+            updateJoinButtonState();
+            updateCreateButtonState();
+            
+            callContainer.classList.remove('active');
+            groupsScreen.classList.remove('hidden');
+            showWaitingState();
         }
 
-        // Обновление статуса соединения
+        // Вспомогательные функции
+        function generateGroupId() {
+            return 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        }
+
+        function updateJoinButtonState() {
+            const hasUsername = usernameInput.value.trim().length > 0;
+            const hasSelectedGroup = document.querySelector('.group-card.active') !== null;
+            joinGroupBtn.disabled = !(hasUsername && hasSelectedGroup);
+        }
+
+        function updateCreateButtonState() {
+            const hasCreatorName = creatorNameInput.value.trim().length > 0;
+            const hasGroupName = groupNameInput.value.trim().length > 0;
+            createGroupBtn.disabled = !(hasCreatorName && hasGroupName);
+        }
+
         function updateConnectionStatus(text, statusClass) {
             connectionText.textContent = text;
             connectionIndicator.className = 'status-indicator ' + statusClass;
         }
 
-        // Таймер звонка
+        function updateGroupUsersCount() {
+            const userCount = remoteUsers.size + 1;
+            connectionText.textContent = `Участников: ${userCount}`;
+        }
+
+        function showWaitingState() {
+            remoteVideo.innerHTML = `
+                <div style="font-size: 48px;">👥</div>
+                <div>Ожидание участников...</div>
+                <div style="font-size: 14px; opacity: 0.7;">${currentGroup ? groupInfo.textContent : 'Группа'}</div>
+            `;
+            updateConnectionStatus('Ожидание участников', 'status-connecting');
+        }
+
         function startCallTimer() {
             callStartTime = new Date();
             durationInterval = setInterval(() => {
@@ -769,9 +977,28 @@
         }
 
         // Обработчики событий
-        joinChannelBtn.addEventListener('click', joinChannel);
-        leaveChannelBtn.addEventListener('click', leaveChannel);
-        endCallBtn.addEventListener('click', leaveChannel);
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        usernameInput.addEventListener('input', updateJoinButtonState);
+        creatorNameInput.addEventListener('input', updateCreateButtonState);
+        groupNameInput.addEventListener('input', updateCreateButtonState);
+        joinGroupBtn.addEventListener('click', joinGroup);
+        createGroupBtn.addEventListener('click', createGroup);
+        backToJoinBtn.addEventListener('click', () => {
+            tabs[0].click();
+        });
+        leaveGroupBtn.addEventListener('click', leaveGroup);
+        endCallBtn.addEventListener('click', leaveGroup);
         toggleVideoBtn.addEventListener('click', toggleVideo);
         toggleAudioBtn.addEventListener('click', toggleAudio);
 
@@ -781,4 +1008,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
