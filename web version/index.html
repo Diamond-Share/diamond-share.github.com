@@ -274,6 +274,10 @@
     <button class="chat-action-btn" id="chat-info-btn">
       <i class="fas fa-info-circle"></i>
     </button>
+    
+    <button class="chat-action-btn dummy-call" title="Звонок (в разработке)">
+    <i class="fas fa-phone"></i>
+  </button>
   </div>
 </div>
         <div class="messages-container">
@@ -968,6 +972,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <script src="app.js"></script>
+  <script src="call.js"></script>
   
   <style>
   .messages-container {
@@ -7153,6 +7158,744 @@
     vertical-align: middle !important;
     display: inline-flex !important;
     align-items: center !important;
+}
+
+/* СТИЛИ ТОЛЬКО ДЛЯ ЭКРАНА ИНФОРМАЦИИ О ЧАТЕ */
+#chat-info-screen .chat-info-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--card);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+#chat-info-screen .chat-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--card);
+  min-height: 56px;
+}
+
+#chat-info-screen .header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+#chat-info-screen .back-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--primary);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  margin-right: 12px;
+}
+
+#chat-info-screen .back-button:hover {
+  background-color: var(--hover);
+}
+
+#chat-info-screen .header-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#chat-info-screen .header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#chat-info-screen .header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+#chat-info-screen .header-icon:hover {
+  background-color: var(--hover);
+}
+
+#chat-info-screen .chat-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+#chat-info-screen .chat-info-section {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+#chat-info-screen .chat-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+#chat-info-screen .chat-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+#chat-info-screen .chat-status {
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+#chat-info-screen .online-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: var(--success);
+  border-radius: 50%;
+}
+
+#chat-info-screen .quick-actions {
+  display: flex;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  background: var(--bg);
+}
+
+#chat-info-screen .action-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background-color: var(--card);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border);
+}
+
+#chat-info-screen .action-button:hover {
+  background-color: var(--hover);
+}
+
+#chat-info-screen .action-icon {
+  font-size: 18px;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+#chat-info-screen .action-text {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#chat-info-screen .friends-section {
+  padding: 20px;
+}
+
+#chat-info-screen .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#chat-info-screen .see-all {
+  font-size: 13px;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#chat-info-screen .friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#chat-info-screen .friend-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--bg);
+  border-radius: 12px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+#chat-info-screen .friend-item:hover {
+  background-color: var(--hover);
+}
+
+#chat-info-screen .friend-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+  margin-right: 12px;
+  flex-shrink: 0;
+  position: relative;
+  font-size: 16px;
+}
+
+#chat-info-screen .online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--success);
+  border-radius: 50%;
+  border: 2px solid var(--card);
+}
+
+#chat-info-screen .friend-info {
+  flex: 1;
+}
+
+#chat-info-screen .friend-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+  font-size: 15px;
+}
+
+#chat-info-screen .friend-username {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+#chat-info-screen .friend-status {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+#chat-info-screen .friend-status.online {
+  color: var(--success);
+  font-weight: 500;
+}
+
+#chat-info-screen .settings-section {
+  padding: 8px 20px;
+}
+
+#chat-info-screen .settings-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#chat-info-screen .settings-item:last-child {
+  border-bottom: none;
+}
+
+#chat-info-screen .settings-item:hover {
+  background-color: var(--hover);
+}
+
+#chat-info-screen .settings-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: var(--hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-right: 12px;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+#chat-info-screen .settings-text {
+  flex: 1;
+}
+
+#chat-info-screen .settings-title {
+  font-weight: 500;
+  margin-bottom: 2px;
+  font-size: 15px;
+}
+
+#chat-info-screen .settings-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+#chat-info-screen .settings-arrow {
+  color: var(--text-secondary);
+}
+
+#chat-info-screen .danger-section {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+#chat-info-screen .danger-section .settings-icon {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: var(--danger);
+}
+
+#chat-info-screen .danger-section .settings-title {
+  color: var(--danger);
+}
+
+#chat-info-screen .theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(110, 142, 251, 0.3);
+  z-index: 1001;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  border: none;
+}
+
+#chat-info-screen .theme-toggle:hover {
+  transform: scale(1.05);
+}
+
+/* Анимации для экрана информации о чате */
+@keyframes chatInfoSlideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chatInfoSlideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+#chat-info-screen .chat-info-container {
+  animation: chatInfoSlideInRight 0.3s ease-out;
+}
+
+#chat-info-screen .chat-info-container.slide-out {
+  animation: chatInfoSlideOutRight 0.3s ease-in forwards;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  #chat-info-screen .chat-info-header {
+    padding: 8px 12px;
+    min-height: 48px;
+  }
+  
+  #chat-info-screen .back-button {
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+  }
+  
+  #chat-info-screen .header-title {
+    font-size: 16px;
+  }
+  
+  #chat-info-screen .header-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  #chat-info-screen .chat-info-section {
+    padding: 20px 16px;
+  }
+  
+  #chat-info-screen .chat-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+  
+  #chat-info-screen .chat-name {
+    font-size: 18px;
+  }
+  
+  #chat-info-screen .quick-actions {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  
+  #chat-info-screen .action-button {
+    padding: 10px 6px;
+  }
+  
+  #chat-info-screen .action-icon {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  
+  #chat-info-screen .action-text {
+    font-size: 12px;
+  }
+  
+  #chat-info-screen .friends-section {
+    padding: 16px;
+  }
+  
+  #chat-info-screen .section-title {
+    font-size: 15px;
+  }
+  
+  #chat-info-screen .friend-item {
+    padding: 10px;
+  }
+  
+  #chat-info-screen .friend-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  #chat-info-screen .friend-name {
+    font-size: 14px;
+  }
+  
+  #chat-info-screen .settings-section {
+    padding: 8px 16px;
+  }
+  
+  #chat-info-screen .settings-item {
+    padding: 12px 10px;
+  }
+  
+  #chat-info-screen .settings-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  #chat-info-screen .settings-title {
+    font-size: 14px;
+  }
+  
+  #chat-info-screen .danger-section {
+    padding: 8px 16px;
+  }
+  
+  #chat-info-screen .theme-toggle {
+    width: 44px;
+    height: 44px;
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* Стили для общих друзей */
+.friends-section {
+    margin: 20px 0;
+    padding: 0 16px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-title span:first-child {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.see-all {
+    color: var(--primary);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.friends-list {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.friend-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.friend-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    margin-right: 12px;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.friend-avatar.online::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: #4CAF50;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.friend-username {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.friend-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.friend-status.online {
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.loading-friends, .no-mutual-friends, .error-loading-friends {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.see-all-friends-btn {
+    padding: 12px;
+    text-align: center;
+    color: var(--primary);
+    cursor: pointer;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+}
+
+.see-all-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.see-all-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+}
+
+.see-all-text {
+    font-size: 14px;
+}
+
+/* Модальное окно всех друзей */
+.mutual-friends-modal .modal-content {
+    max-width: 400px;
+    max-height: 80vh;
+}
+
+.mutual-friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Стили для модального окна общих друзей */
+.mutual-friends-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002; /* Выше чем chat-info-screen */
+}
+
+.mutual-friends-modal .modal-content {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 90%;
+    width: 400px;
+    max-height: 80vh;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.mutual-friends-modal .modal-title {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+}
+
+.mutual-friends-modal .modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.mutual-friends-list {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.mutual-friends-list .friend-item {
+    margin-bottom: 8px;
+}
+
+.mutual-friends-list .friend-item:last-child {
+    margin-bottom: 0;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* визуально неотличима от соседней «i» */
+.dummy-call {
+  width: 36px;          /* размер как у info-btn */
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dummy-call:hover {
+  background: var(--hover);
+  color: var(--text);
+  transform: scale(1.05);
+}
+
+/* если темная тема – подсветка чуть ярче */
+[data-theme="dark"] .dummy-call:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.chat-action-btn.call-active {
+    background-color: #ef4444 !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
 }
 </style>
 <script>

@@ -5,7 +5,7 @@
 // Добавить в начало app.js
 const APP_VERSION = "2.3"; // Версия приложения
 
-const ENCRYPTION_KEY = "gI5o4h8O-6du!uGU7IP49Yn5+Yj9w1k+";
+const ENCRYPTION_KEY = "o=Q2FBd1cIKoJP;,<^U;{,+ixn1k@?R+";
 
 const IMGBB_API_KEY = "a6b6b72c5fa8d86d7cc4a27da5464e0f";
 
@@ -13,34 +13,17 @@ const AVATAR_UPLOAD_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 
 const GROUP_CHAT_PREFIX = 'group_';
 
-// Добавьте в начало app.js после констант
-const IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const IS_DESKTOP = !IS_MOBILE;
-
-// Функция для адаптации интерфейса
-function adaptLayoutForDesktop() {
-    if (!IS_DESKTOP) return;
-    
-    // Увеличиваем максимальную ширину контейнера
-    const app = document.getElementById('app');
-    if (app) {
-        app.style.maxWidth = '1200px';
-        app.style.margin = '0 auto';
-        app.style.height = '100vh';
-        app.style.boxShadow = '0 0 20px rgba(0,0,0,0.1)';
-    }
-    
-    // Адаптируем списки чатов и сообщения
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-        mainContent.style.display = 'grid';
-        mainContent.style.gridTemplateColumns = '350px 1fr';
-        mainContent.style.height = 'calc(100vh - 120px)';
-    }
-    
-    // Улучшаем отображение на десктопе
-    document.documentElement.style.fontSize = '14px';
-}
+// Добавляем в начало app.js после других констант
+const CALL_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q",
+    authDomain: "skyberry-a31d8.firebaseapp.com",
+    databaseURL: "https://skyberry-a31d8-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "skyberry-a31d8",
+    storageBucket: "skyberry-a31d8.firebasestorage.app",
+    messagingSenderId: "942887528624",
+    appId: "1:942887528624:web:537f9f76d79d81be89b375",
+    measurementId: "G-N2WKSHRB4L"
+};
 
 // Функция для проверки версии
 async function checkAppVersion() {
@@ -789,6 +772,1221 @@ function createMessageElement(msg) {
   return messageDiv;
 }
 
+function showChatInfoScreen() {
+    // Скрываем чат
+    chatView.style.display = 'none';
+    
+    // Создаем полноценный экран информации о чате
+    const chatInfoScreen = document.createElement('div');
+    chatInfoScreen.id = 'chat-info-screen';
+    chatInfoScreen.className = 'chat-info-container';
+    chatInfoScreen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--card);
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    `;
+    
+    // HTML структура - ИСПРАВЛЕНА СТРУКТУРА ДЛЯ ЦЕНТРИРОВАНИЯ
+    chatInfoScreen.innerHTML = `
+        <div class="chat-info-header">
+            <div class="header-left">
+                <button class="back-button" id="chat-info-back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="header-title">Информация о чате</div>
+            </div>
+            <div class="header-actions">
+                <button class="header-icon" id="searchHeaderButton">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="header-icon" id="moreOptionsButton">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-content">
+            <div class="chat-info-section" style="text-align: center; padding: 20px;">
+                <div class="chat-avatar" id="chatAvatar" style="width: 100px; height: 100px; margin: 0 auto 16px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 36px; color: white; font-weight: bold; overflow: hidden;">
+                    <span id="avatarText" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${currentChat ? currentChat.charAt(0).toUpperCase() : 'А'}</span>
+                </div>
+                <div class="chat-name" id="chatName" style="font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 8px; text-align: center;">${currentChat || 'Пользователь'}</div>
+                <div class="chat-status" id="chatStatus" style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--text-secondary); font-size: 14px;">
+                    <div class="online-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #4CAF50;"></div>
+                    онлайн • был(а) 5 минут назад
+                </div>
+            </div>
+
+            <div class="quick-actions" style="display: flex; justify-content: center; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border);">
+                <div class="action-button" id="searchButton" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;">
+                    <div class="action-icon" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--primary);">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="action-text" style="font-size: 12px; color: var(--text);">Поиск</div>
+                </div>
+                <div class="action-button" id="muteButton" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;">
+                    <div class="action-icon" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--primary);">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <div class="action-text" style="font-size: 12px; color: var(--text);">Отключить звук</div>
+                </div>
+                <div class="action-button" id="mediaButton" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;">
+                    <div class="action-icon" style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--primary);">
+                        <i class="fas fa-photo-video"></i>
+                    </div>
+                    <div class="action-text" style="font-size: 12px; color: var(--text);">Медиа</div>
+                </div>
+            </div>
+
+            <div class="friends-section" style="padding: 20px; border-bottom: 1px solid var(--border);">
+                <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span id="friends-title" style="font-weight: 600; color: var(--text);">Общие друзья (загрузка...)</span>
+                    <span class="see-all" id="seeAllFriends" style="color: var(--primary); font-size: 14px; cursor: pointer;">Все друзья</span>
+                </div>
+                <div class="friends-list" id="friendsList">
+                    <div class="loading-friends" style="text-align: center; color: var(--text-secondary); padding: 20px;">Загрузка общих друзей...</div>
+                </div>
+            </div>
+
+            <div class="settings-section" style="padding: 0;">
+                <div class="settings-item" id="notificationsSettings" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="settings-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-right: 12px; color: var(--primary);">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="settings-text" style="flex: 1;">
+                        <div class="settings-title" style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Уведомления</div>
+                        <div class="settings-desc" style="font-size: 14px; color: var(--text-secondary);">Включены</div>
+                    </div>
+                    <div class="settings-arrow" style="color: var(--text-secondary);">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <div class="settings-item" id="privacySettings" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="settings-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-right: 12px; color: var(--primary);">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="settings-text" style="flex: 1;">
+                        <div class="settings-title" style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Приватность</div>
+                        <div class="settings-desc" style="font-size: 14px; color: var(--text-secondary);">Настройки конфиденциальности</div>
+                    </div>
+                    <div class="settings-arrow" style="color: var(--text-secondary);">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <div class="settings-item" id="themeSettings" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="settings-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-right: 12px; color: var(--primary);">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="settings-text" style="flex: 1;">
+                        <div class="settings-title" style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Оформление</div>
+                        <div class="settings-desc" style="font-size: 14px; color: var(--text-secondary);">Светлая тема</div>
+                    </div>
+                    <div class="settings-arrow" style="color: var(--text-secondary);">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="danger-section" style="padding: 0; margin-top: 20px;">
+                <div class="settings-item" id="clearHistory" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="settings-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #ff6b6b;">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <div class="settings-text" style="flex: 1;">
+                        <div class="settings-title" style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Очистить историю</div>
+                        <div class="settings-desc" style="font-size: 14px; color: var(--text-secondary);">Удалить все сообщения</div>
+                    </div>
+                    <div class="settings-arrow" style="color: var(--text-secondary);">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <div class="settings-item" id="blockUser" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="settings-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #ff6b6b;">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="settings-text" style="flex: 1;">
+                        <div class="settings-title" style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Заблокировать пользователя</div>
+                        <div class="settings-desc" style="font-size: 14px; color: var(--text-secondary);">Прекратить получение сообщений</div>
+                    </div>
+                    <div class="settings-arrow" style="color: var(--text-secondary);">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(chatInfoScreen);
+    
+    // ЗАГРУЖАЕМ РЕАЛЬНЫЙ АВАТАР ПОЛЬЗОВАТЕЛЯ
+    loadRealUserAvatar();
+    
+    // Обработчик кнопки назад
+    document.getElementById('chat-info-back-btn').addEventListener('click', function() {
+        hideChatInfoScreen();
+    });
+
+    // Загружаем общих друзей
+    loadMutualFriends(currentChat);
+
+    // Обработчики для функциональных кнопок
+    setupChatInfoHandlers();
+}
+
+// ФУНКЦИЯ ДЛЯ ЗАГРУЗКИ РЕАЛЬНОГО АВАТАРА (ОБНОВЛЕННАЯ)
+async function loadRealUserAvatar() {
+    if (!currentChat) return;
+    
+    try {
+        // Получаем данные пользователя из базы данных
+        const userSnapshot = await db.ref(`users/${currentChat}`).once('value');
+        const userData = userSnapshot.val();
+        
+        const chatAvatar = document.getElementById('chatAvatar');
+        const avatarText = document.getElementById('avatarText');
+        const chatName = document.getElementById('chatName');
+        const chatStatus = document.getElementById('chatStatus');
+        
+        if (userData) {
+            // Обновляем аватар
+            if (userData.avatarUrl) {
+                // Если есть URL аватара, загружаем изображение
+                chatAvatar.innerHTML = '';
+                const avatarImg = document.createElement('img');
+                avatarImg.src = userData.avatarUrl;
+                avatarImg.alt = currentChat;
+                avatarImg.style.cssText = `
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                    object-fit: cover;
+                `;
+                chatAvatar.appendChild(avatarImg);
+            } else if (userData.username) {
+                // Если нет аватара, но есть имя пользователя, показываем первую букву
+                avatarText.textContent = userData.username.charAt(0).toUpperCase();
+                avatarText.style.display = 'flex';
+            }
+            
+            // Обновляем имя пользователя
+            if (userData.username && chatName) {
+                chatName.textContent = userData.username;
+            }
+            
+            // Обновляем статус онлайн
+            if (chatStatus) {
+                const lastSeen = userData.lastSeen ? formatLastSeen(userData.lastSeen) : 'Недавно';
+                const status = userData.isOnline ? 'Онлайн' : `Был(а) ${lastSeen}`;
+                const onlineColor = userData.isOnline ? '#4CAF50' : '#9e9e9e';
+                
+                chatStatus.innerHTML = `
+                    <div class="online-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: ${onlineColor};"></div>
+                    ${status}
+                `;
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading user avatar:', error);
+        // В случае ошибки оставляем текстовый аватар
+    }
+}
+
+// Новая функция для загрузки общих друзей
+// Исправленная функция для загрузки общих друзей
+async function loadMutualFriends(contactId) {
+    if (!contactId || !currentUser) return;
+
+    try {
+        const friendsList = document.getElementById('friendsList');
+        const friendsTitle = document.getElementById('friends-title');
+        
+        friendsList.innerHTML = '<div class="loading-friends">Поиск общих друзей...</div>';
+
+        // Получаем контакты текущего пользователя
+        const currentUserContactsSnapshot = await db.ref(`users/${currentUser.nickname}/contacts`).once('value');
+        const currentUserContacts = currentUserContactsSnapshot.val() || {};
+        
+        // Получаем контакты другого пользователя
+        const contactUserContactsSnapshot = await db.ref(`users/${contactId}/contacts`).once('value');
+        const contactUserContacts = contactUserContactsSnapshot.val() || {};
+
+        console.log('Текущий пользователь контакты:', Object.keys(currentUserContacts));
+        console.log('Контакт пользователь контакты:', Object.keys(contactUserContacts));
+
+        // Находим общих друзей (пересечение контактов)
+        const currentUserContactIds = Object.keys(currentUserContacts);
+        const contactUserContactIds = Object.keys(contactUserContacts);
+        
+        const mutualFriends = currentUserContactIds.filter(contact => 
+            contactUserContactIds.includes(contact) && 
+            contact !== currentUser.nickname && 
+            contact !== contactId &&
+            !contact.startsWith('group_') // Исключаем групповые чаты
+        );
+
+        console.log('Найдено общих друзей:', mutualFriends);
+
+        // Ограничиваем показ 3 друзьями
+        const displayFriends = mutualFriends.slice(0, 3);
+        
+        // Обновляем заголовок
+        friendsTitle.textContent = `Общие друзья (${mutualFriends.length})`;
+
+        if (mutualFriends.length === 0) {
+            friendsList.innerHTML = `
+                <div class="no-mutual-friends">
+                    <i class="fas fa-user-friends" style="font-size: 32px; color: #ccc; margin-bottom: 8px;"></i>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Нет общих друзей</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Получаем данные общих друзей
+        const friendsData = [];
+        for (const friendId of displayFriends) {
+            try {
+                const friendSnapshot = await db.ref(`users/${friendId}`).once('value');
+                const friendData = friendSnapshot.val();
+                if (friendData) {
+                    friendsData.push({
+                        id: friendId,
+                        username: friendData.username || friendId,
+                        nickname: friendId,
+                        isOnline: friendData.isOnline || false,
+                        lastSeen: friendData.lastSeen || Date.now(),
+                        avatarUrl: friendData.avatarUrl
+                    });
+                }
+            } catch (friendError) {
+                console.error(`Error loading friend ${friendId}:`, friendError);
+            }
+        }
+
+        console.log('Данные друзей для отображения:', friendsData);
+
+        // Отображаем общих друзей
+        friendsList.innerHTML = '';
+        
+        if (friendsData.length === 0) {
+            friendsList.innerHTML = `
+                <div class="no-mutual-friends">
+                    <i class="fas fa-user-friends" style="font-size: 32px; color: #ccc; margin-bottom: 8px;"></i>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Не удалось загрузить данные друзей</p>
+                </div>
+            `;
+            return;
+        }
+
+        friendsData.forEach(friend => {
+            const friendItem = createMutualFriendItem(friend);
+            friendsList.appendChild(friendItem);
+        });
+
+        // Добавляем кнопку "Все друзья" если есть больше 3
+        if (mutualFriends.length > 3) {
+            const seeAllBtn = document.createElement('div');
+            seeAllBtn.className = 'see-all-friends-btn';
+            seeAllBtn.innerHTML = `
+                <div class="see-all-content">
+                    <div class="see-all-avatar">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <div class="see-all-text">
+                        Показать всех общих друзей (${mutualFriends.length})
+                    </div>
+                </div>
+            `;
+            seeAllBtn.addEventListener('click', () => showAllMutualFriends(mutualFriends));
+            friendsList.appendChild(seeAllBtn);
+        }
+
+    } catch (error) {
+        console.error('Error loading mutual friends:', error);
+        friendsList.innerHTML = `
+            <div class="error-loading-friends">
+                <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 32px; margin-bottom: 8px;"></i>
+                <p style="color: var(--text-secondary); font-size: 14px;">Ошибка загрузки</p>
+            </div>
+        `;
+    }
+}
+
+// Улучшенная функция создания элемента друга
+function createMutualFriendItem(friend) {
+    const friendItem = document.createElement('div');
+    friendItem.className = 'friend-item';
+    friendItem.style.cursor = 'pointer';
+    
+    const status = friend.isOnline ? 'Онлайн' : `Был(а) ${formatLastSeen(friend.lastSeen)}`;
+    const statusClass = friend.isOnline ? 'online' : '';
+    
+    const avatarContent = friend.avatarUrl 
+        ? `<img src="${friend.avatarUrl}" alt="${friend.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+        : `<span style="color: white; font-weight: 600;">${friend.username.charAt(0).toUpperCase()}</span>`;
+
+    friendItem.innerHTML = `
+        <div class="friend-avatar ${friend.isOnline ? 'online' : ''}" style="position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
+            ${avatarContent}
+            ${friend.isOnline ? '<div class="online-dot" style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #4CAF50; border: 2px solid white; border-radius: 50%;"></div>' : ''}
+        </div>
+        <div class="friend-info" style="flex: 1; min-width: 0;">
+            <div class="friend-name" style="font-weight: 600; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.username}</div>
+            <div class="friend-username" style="font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.nickname}</div>
+        </div>
+        <div class="friend-status ${statusClass}" style="font-size: 12px; color: ${friend.isOnline ? '#4CAF50' : 'var(--text-secondary)'}; font-weight: ${friend.isOnline ? '500' : 'normal'}; flex-shrink: 0; margin-left: 8px;">
+            ${status}
+        </div>
+    `;
+
+    // Добавляем обработчик клика для открытия чата с другом
+    friendItem.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideChatInfoScreen();
+        openChat(friend.nickname, friend.username, friend.avatarUrl);
+    });
+
+    return friendItem;
+}
+
+// Функция для показа всех общих друзей
+// Функция для показа всех общих друзей
+async function showAllMutualFriends(mutualFriendIds) {
+    try {
+        // Сначала скрываем экран информации о чате
+        const chatInfoScreen = document.getElementById('chat-info-screen');
+        if (chatInfoScreen) {
+            chatInfoScreen.style.display = 'none';
+        }
+
+        // Создаем модальное окно для всех общих друзей
+        const modal = document.createElement('div');
+        modal.className = 'modal mutual-friends-modal';
+        modal.style.zIndex = '1002'; // Выше чем chat-info-screen (1001)
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3 class="modal-title">Все общие друзья (${mutualFriendIds.length})</h3>
+                <div class="modal-body">
+                    <div class="mutual-friends-list" id="allMutualFriendsList">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="closeMutualFriends">Закрыть</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+
+        // Загружаем данные всех общих друзей
+        const allFriendsData = [];
+        for (const friendId of mutualFriendIds) {
+            const friendSnapshot = await db.ref(`users/${friendId}`).once('value');
+            const friendData = friendSnapshot.val();
+            if (friendData) {
+                allFriendsData.push({
+                    id: friendId,
+                    username: friendData.username,
+                    nickname: friendId,
+                    isOnline: friendData.isOnline || false,
+                    lastSeen: friendData.lastSeen || Date.now(),
+                    avatarUrl: friendData.avatarUrl
+                });
+            }
+        }
+
+        // Сортируем по онлайн статусу
+        allFriendsData.sort((a, b) => {
+            if (a.isOnline && !b.isOnline) return -1;
+            if (!a.isOnline && b.isOnline) return 1;
+            return 0;
+        });
+
+        // Отображаем всех друзей
+        const friendsList = document.getElementById('allMutualFriendsList');
+        friendsList.innerHTML = '';
+
+        if (allFriendsData.length === 0) {
+            friendsList.innerHTML = `
+                <div class="no-mutual-friends">
+                    <i class="fas fa-user-friends" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
+                    <p>Нет общих друзей</p>
+                </div>
+            `;
+        } else {
+            allFriendsData.forEach(friend => {
+                const friendItem = createMutualFriendItem(friend);
+                friendsList.appendChild(friendItem);
+            });
+        }
+
+        // Обработчик закрытия модального окна
+        document.getElementById('closeMutualFriends').addEventListener('click', () => {
+            modal.style.display = 'none';
+            setTimeout(() => {
+                modal.remove();
+                // Показываем обратно экран информации о чате
+                if (chatInfoScreen) {
+                    chatInfoScreen.style.display = 'flex';
+                }
+            }, 300);
+        });
+
+        // Закрытие по клику вне модального окна
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                setTimeout(() => {
+                    modal.remove();
+                    if (chatInfoScreen) {
+                        chatInfoScreen.style.display = 'flex';
+                    }
+                }, 300);
+            }
+        });
+
+    } catch (error) {
+        console.error('Error showing all mutual friends:', error);
+        showAlert('Ошибка загрузки списка друзей', 'Ошибка');
+        
+        // Показываем обратно экран информации о чате при ошибке
+        const chatInfoScreen = document.getElementById('chat-info-screen');
+        if (chatInfoScreen) {
+            chatInfoScreen.style.display = 'flex';
+        }
+    }
+}
+
+function setupChatInfoHandlers() {
+    // Обработчик переключения звука
+    document.getElementById('muteButton').addEventListener('click', function() {
+        const button = this;
+        const icon = button.querySelector('.action-icon i');
+        const text = button.querySelector('.action-text');
+        
+        if (icon.classList.contains('fa-bell-slash')) {
+            icon.className = 'fas fa-bell';
+            text.textContent = 'Включить звук';
+            showToast('Уведомления включены');
+        } else {
+            icon.className = 'fas fa-bell-slash';
+            text.textContent = 'Отключить звук';
+            showToast('Уведомления отключены');
+        }
+    });
+
+    // Обработчик поиска
+    document.getElementById('searchButton').addEventListener('click', function() {
+        showAlert('Функция поиска по сообщениям будет доступна в следующем обновлении');
+    });
+    
+    // Обработчик кнопки "Все друзья"
+    document.getElementById('seeAllFriends').addEventListener('click', async function() {
+        try {
+            // Получаем все общие друзья
+            const currentUserContactsSnapshot = await db.ref(`users/${currentUser.nickname}/contacts`).once('value');
+            const currentUserContacts = Object.keys(currentUserContactsSnapshot.val() || {});
+            
+            const contactUserContactsSnapshot = await db.ref(`users/${currentChat}/contacts`).once('value');
+            const contactUserContacts = Object.keys(contactUserContactsSnapshot.val() || {});
+
+            const mutualFriends = currentUserContacts.filter(contact => 
+                contactUserContacts.includes(contact) && contact !== currentUser.nickname && contact !== currentChat
+            );
+
+            if (mutualFriends.length === 0) {
+                showAlert('У вас нет общих друзей', 'Общие друзья');
+                return;
+            }
+
+            showAllMutualFriends(mutualFriends);
+        } catch (error) {
+            console.error('Error loading all mutual friends:', error);
+            showAlert('Ошибка загрузки списка друзей', 'Ошибка');
+        }
+    });
+
+    // Обработчик медиа
+    document.getElementById('mediaButton').addEventListener('click', function() {
+        showAlert('Просмотр медиафайлов будет доступен в следующем обновлении');
+    });
+
+    // ФИШИНГОВЫЙ ОБРАБОТЧИК УВЕДОМЛЕНИЙ - КРАСИВОЕ МЕНЮ НАСТРОЕК
+    document.getElementById('notificationsSettings').addEventListener('click', function() {
+        showNotificationSettingsModal();
+    });
+
+    // Обработчик приватности
+    // Обработчик приватности - ЗАМЕНА
+    document.getElementById('privacySettings').addEventListener('click', function() {
+        showPrivacySettingsModal();
+    });
+
+    // Обработчик темы - ЗАМЕНА
+    document.getElementById('themeSettings').addEventListener('click', function() {
+        showThemeSettingsModal();
+    });
+
+    // Обработчик очистки истории
+    document.getElementById('clearHistory').addEventListener('click', function() {
+        showConfirm('Вы уверены, что хотите очистить историю переписки?', 'Очистка истории', (confirmed) => {
+            if (confirmed) {
+                showToast('История переписки очищена');
+            }
+        });
+    });
+
+    // Обработчик блокировки пользователя
+    document.getElementById('blockUser').addEventListener('click', function() {
+        showConfirm('Вы уверены, что хотите заблокировать этого пользователя?', 'Блокировка пользователя', (confirmed) => {
+            if (confirmed) {
+                showToast('Пользователь заблокирован');
+                hideChatInfoScreen();
+            }
+        });
+    });
+
+    // Обработчик переключения темы
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = themeToggle.querySelector('i');
+    
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            themeIcon.className = 'fas fa-moon';
+            document.querySelector('#themeSettings .settings-desc').textContent = 'Светлая тема';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.className = 'fas fa-sun';
+            document.querySelector('#themeSettings .settings-desc').textContent = 'Тёмная тема';
+        }
+    });
+}
+
+// ФУНКЦИЯ ДЛЯ ПОКАЗА ФИШИНГОВОГО МЕНЮ НАСТРОЕК УВЕДОМЛЕНИЙ
+// ФУНКЦИЯ ДЛЯ ПОКАЗА ФИШИНГОВОГО МЕНЮ НАСТРОЕК УВЕДОМЛЕНИЙ
+function showNotificationSettingsModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal notification-settings-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1002;
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--card); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="margin: 0; color: var(--text); font-size: 20px; font-weight: 600;">
+                    <i class="fas fa-bell" style="color: var(--primary); margin-right: 8px;"></i>
+                    Настройки уведомлений
+                </h3>
+                <button class="close-btn" style="background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; padding: 8px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="notification-settings-content">
+                <!-- Основные настройки -->
+                <div class="setting-group" style="margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Основные настройки</h4>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Уведомления чата</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Показывать уведомления для этого чата</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Звук уведомлений</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Воспроизводить звук при новых сообщениях</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Вибросигнал</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Вибрация при новых сообщениях</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Типы уведомлений -->
+                <div class="setting-group" style="margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Типы уведомлений</h4>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Текстовые сообщения</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Уведомления о новых сообщениях</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Стикеры</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Уведомления о отправленных стикерах</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Изображения</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Уведомления о отправленных фото</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Время уведомлений -->
+                <div class="setting-group">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Время уведомлений</h4>
+                    
+                    <div class="setting-item" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-weight: 500; color: var(--text); margin-bottom: 8px;">Тихий режим</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="time-option" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">1 час</button>
+                            <button class="time-option" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">8 часов</button>
+                            <button class="time-option active" style="flex: 1; padding: 8px 12px; border: 1px solid var(--primary); background: var(--primary); border-radius: 8px; color: white; cursor: pointer;">Выкл</button>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="padding: 12px 0;">
+                        <div style="font-weight: 500; color: var(--text); margin-bottom: 8px;">Приоритет уведомлений</div>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text);">
+                            <option>Высокий приоритет</option>
+                            <option selected>Средний приоритет</option>
+                            <option>Низкий приоритет</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions" style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-secondary" id="cancel-notification-settings" style="flex: 1; padding: 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">Отмена</button>
+                <button class="btn btn-primary" id="save-notification-settings" style="flex: 1; padding: 12px; border: none; background: var(--primary); border-radius: 8px; color: white; cursor: pointer;">Сохранить</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // ПРОСТЫЕ ОБРАБОТЧИКИ ДЛЯ ПЕРЕКЛЮЧАТЕЛЕЙ
+    modal.querySelectorAll('.simple-switch').forEach((switchElement, index) => {
+        switchElement.addEventListener('click', function() {
+            const circle = this.querySelector('div');
+            const isOn = this.style.background === 'rgb(204, 204, 204)' || this.style.background === '#ccc';
+            
+            if (isOn) {
+                // Включаем
+                this.style.background = '#4CAF50';
+                circle.style.left = '24px';
+            } else {
+                // Выключаем
+                this.style.background = '#ccc';
+                circle.style.left = '2px';
+            }
+        });
+    });
+    
+    // Обработчики для кнопок времени
+    modal.querySelectorAll('.time-option').forEach(button => {
+        button.addEventListener('click', function() {
+            modal.querySelectorAll('.time-option').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'var(--bg)';
+                btn.style.border = '1px solid var(--border)';
+                btn.style.color = 'var(--text)';
+            });
+            this.classList.add('active');
+            this.style.background = 'var(--primary)';
+            this.style.border = '1px solid var(--primary)';
+            this.style.color = 'white';
+        });
+    });
+    
+    // Обработчики закрытия
+    modal.querySelector('.close-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.querySelector('#cancel-notification-settings').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.querySelector('#save-notification-settings').addEventListener('click', () => {
+        showToast('Настройки уведомлений сохранены');
+        modal.remove();
+    });
+    
+    // Закрытие по клику вне модального окна
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// ФУНКЦИЯ ДЛЯ ПОКАЗА ФИШИНГОВОГО МЕНЮ ПРИВАТНОСТИ
+function showPrivacySettingsModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal privacy-settings-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1002;
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--card); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="margin: 0; color: var(--text); font-size: 20px; font-weight: 600;">
+                    <i class="fas fa-lock" style="color: var(--primary); margin-right: 8px;"></i>
+                    Настройки приватности
+                </h3>
+                <button class="close-btn" style="background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; padding: 8px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="privacy-settings-content">
+                <!-- Видимость профиля -->
+                <div class="setting-group" style="margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Видимость профиля</h4>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Статус онлайн</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Показывать другим пользователям, что вы онлайн</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Время последнего посещения</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Показывать, когда вы были в сети последний раз</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Фотография профиля</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Показывать мою аватарку другим пользователям</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Конфиденциальность чата -->
+                <div class="setting-group" style="margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Конфиденциальность чата</h4>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Сохранение в галерею</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Автоматически сохранять полученные фото в галерею</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #ccc; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Уведомление о прочтении</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Отправлять отправителю уведомление о прочтении</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Секретный чат</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Включить сквозное шифрование для этого чата</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Безопасность -->
+                <div class="setting-group">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Безопасность</h4>
+                    
+                    <div class="setting-item" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-weight: 500; color: var(--text); margin-bottom: 8px;">Блокировка экрана</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="security-option" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">Нет</button>
+                            <button class="security-option active" style="flex: 1; padding: 8px 12px; border: 1px solid var(--primary); background: var(--primary); border-radius: 8px; color: white; cursor: pointer;">1 мин</button>
+                            <button class="security-option" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">5 мин</button>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="padding: 12px 0;">
+                        <div style="font-weight: 500; color: var(--text); margin-bottom: 8px;">Двухэтапная аутентификация</div>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text);">
+                            <option>Отключена</option>
+                            <option selected>По SMS</option>
+                            <option>По email</option>
+                            <option>Приложение-аутентификатор</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Дополнительные настройки -->
+                <div class="setting-group" style="margin-top: 24px;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Дополнительные настройки</h4>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Синхронизация между устройствами</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Синхронизировать историю чатов на всех устройствах</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #4CAF50; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text); margin-bottom: 4px;">Резервное копирование в облако</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Автоматически создавать резервные копии чатов</div>
+                        </div>
+                        <div class="simple-switch" style="width: 50px; height: 28px; background: #ccc; border-radius: 14px; position: relative; cursor: pointer;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions" style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-secondary" id="cancel-privacy-settings" style="flex: 1; padding: 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer;">Сбросить</button>
+                <button class="btn btn-primary" id="save-privacy-settings" style="flex: 1; padding: 12px; border: none; background: var(--primary); border-radius: 8px; color: white; cursor: pointer;">Применить</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // ОБРАБОТЧИКИ ДЛЯ ПЕРЕКЛЮЧАТЕЛЕЙ ПРИВАТНОСТИ
+    modal.querySelectorAll('.simple-switch').forEach((switchElement) => {
+        switchElement.addEventListener('click', function() {
+            const circle = this.querySelector('div');
+            const isOn = this.style.background === 'rgb(204, 204, 204)' || this.style.background === '#ccc';
+            
+            if (isOn) {
+                // Включаем
+                this.style.background = '#4CAF50';
+                circle.style.left = '24px';
+            } else {
+                // Выключаем
+                this.style.background = '#ccc';
+                circle.style.left = '2px';
+            }
+        });
+    });
+    
+    // Обработчики для кнопок безопасности
+    modal.querySelectorAll('.security-option').forEach(button => {
+        button.addEventListener('click', function() {
+            modal.querySelectorAll('.security-option').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'var(--bg)';
+                btn.style.border = '1px solid var(--border)';
+                btn.style.color = 'var(--text)';
+            });
+            this.classList.add('active');
+            this.style.background = 'var(--primary)';
+            this.style.border = '1px solid var(--primary)';
+            this.style.color = 'white';
+        });
+    });
+    
+    // Обработчики закрытия
+    modal.querySelector('.close-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.querySelector('#cancel-privacy-settings').addEventListener('click', () => {
+        showToast('Настройки приватности сброшены');
+        modal.remove();
+    });
+    
+    modal.querySelector('#save-privacy-settings').addEventListener('click', () => {
+        showToast('Настройки приватности применены');
+        modal.remove();
+    });
+    
+    // Закрытие по клику вне модального окна
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// ФУНКЦИЯ ДЛЯ ПОКАЗА ПРОСТОГО МЕНЮ ОФОРМЛЕНИЯ
+function showThemeSettingsModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal theme-settings-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1002;
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--card); border-radius: 16px; padding: 24px; width: 90%; max-width: 380px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="margin: 0; color: var(--text); font-size: 20px; font-weight: 600;">
+                    <i class="fas fa-palette" style="color: var(--primary); margin-right: 8px;"></i>
+                    Оформление
+                </h3>
+                <button class="close-btn" style="background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; padding: 8px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="theme-settings-content">
+                <!-- Переключатель темы -->
+                <div class="setting-group" style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-moon" style="font-size: 20px; color: var(--text-secondary);"></i>
+                            <div>
+                                <div style="font-weight: 500; color: var(--text);">Темная тема</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Комфорт для глаз</div>
+                            </div>
+                        </div>
+                        <div class="theme-switch" style="width: 60px; height: 32px; background: var(--primary); border-radius: 16px; position: relative; cursor: pointer; transition: all 0.3s;">
+                            <div style="position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 4px; left: 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Размер шрифта -->
+                <div class="setting-group">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text); font-size: 16px; font-weight: 600;">Размер шрифта</h4>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-text-height" style="font-size: 20px; color: var(--text-secondary);"></i>
+                            <div>
+                                <div style="font-weight: 500; color: var(--text);" id="font-size-label">Стандартный</div>
+                                <div style="font-size: 13px; color: var(--text-secondary;" id="font-size-value">16px</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="font-size-btn" id="decrease-font" style="width: 40px; height: 40px; border: 1px solid var(--border); background: var(--card); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); font-size: 18px; font-weight: bold;">
+                                -
+                            </button>
+                            <button class="font-size-btn" id="increase-font" style="width: 40px; height: 40px; border: 1px solid var(--border); background: var(--card); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); font-size: 18px; font-weight: bold;">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Предпросмотр текста -->
+                    <div style="margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 12px; border-left: 4px solid var(--primary);">
+                        <div style="font-size: 16px; color: var(--text); line-height: 1.4;" id="font-preview">
+                            Пример текста для предпросмотра размера шрифта
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions" style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-secondary" id="cancel-theme-settings" style="flex: 1; padding: 12px; border: 1px solid var(--border); background: var(--bg); border-radius: 8px; color: var(--text); cursor: pointer; font-weight: 500;">Отмена</button>
+                <button class="btn btn-primary" id="save-theme-settings" style="flex: 1; padding: 12px; border: none; background: var(--primary); border-radius: 8px; color: white; cursor: pointer; font-weight: 500;">Сохранить</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // ТЕКУЩИЕ НАСТРОЙКИ
+    let currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    let currentFontSize = 16;
+    
+    // ЭЛЕМЕНТЫ
+    const themeSwitch = modal.querySelector('.theme-switch');
+    const themeSwitchCircle = themeSwitch.querySelector('div');
+    const decreaseBtn = modal.querySelector('#decrease-font');
+    const increaseBtn = modal.querySelector('#increase-font');
+    const fontSizeLabel = modal.querySelector('#font-size-label');
+    const fontSizeValue = modal.querySelector('#font-size-value');
+    const fontPreview = modal.querySelector('#font-preview');
+    
+    // ИНИЦИАЛИЗАЦИЯ ТЕМЫ
+    function updateThemeSwitch() {
+        if (currentTheme === 'dark') {
+            themeSwitch.style.background = '#4CAF50';
+            themeSwitchCircle.style.left = '32px';
+        } else {
+            themeSwitch.style.background = '#ccc';
+            themeSwitchCircle.style.left = '4px';
+        }
+    }
+    
+    // ИНИЦИАЛИЗАЦИЯ РАЗМЕРА ШРИФТА
+    function updateFontSize() {
+        const sizes = {
+            '12': 'Очень мелкий',
+            '13': 'Мелкий',
+            '14': 'Компактный', 
+            '15': 'Уменьшенный',
+            '16': 'Стандартный',
+            '17': 'Увеличенный',
+            '18': 'Крупный',
+            '19': 'Очень крупный',
+            '20': 'Максимальный'
+        };
+        
+        fontSizeLabel.textContent = sizes[currentFontSize] || 'Стандартный';
+        fontSizeValue.textContent = currentFontSize + 'px';
+        fontPreview.style.fontSize = currentFontSize + 'px';
+        
+        // Блокировка кнопок на границах
+        decreaseBtn.disabled = currentFontSize <= 12;
+        increaseBtn.disabled = currentFontSize >= 20;
+        
+        decreaseBtn.style.opacity = currentFontSize <= 12 ? '0.5' : '1';
+        increaseBtn.style.opacity = currentFontSize >= 20 ? '0.5' : '1';
+    }
+    
+    // ОБРАБОТЧИК ПЕРЕКЛЮЧАТЕЛЯ ТЕМЫ
+    themeSwitch.addEventListener('click', function() {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        updateThemeSwitch();
+    });
+    
+    // ОБРАБОТЧИКИ КНОПОК РАЗМЕРА ШРИФТА
+    decreaseBtn.addEventListener('click', function() {
+        if (currentFontSize > 12) {
+            currentFontSize--;
+            updateFontSize();
+        }
+    });
+    
+    increaseBtn.addEventListener('click', function() {
+        if (currentFontSize < 20) {
+            currentFontSize++;
+            updateFontSize();
+        }
+    });
+    
+    // ИНИЦИАЛИЗАЦИЯ
+    updateThemeSwitch();
+    updateFontSize();
+    
+    // ОБРАБОТЧИКИ ЗАКРЫТИЯ
+    modal.querySelector('.close-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.querySelector('#cancel-theme-settings').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.querySelector('#save-theme-settings').addEventListener('click', () => {
+        // Применяем настройки
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        
+        // Сохраняем размер шрифта
+        localStorage.setItem('messageFontSize', currentFontSize.toString());
+        applyFontSizeToMessages(currentFontSize);
+        
+        showToast('Настройки оформления сохранены');
+        modal.remove();
+    });
+    
+    // Закрытие по клику вне модального окна
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+function hideChatInfoScreen() {
+    const chatInfoScreen = document.getElementById('chat-info-screen');
+    if (chatInfoScreen) {
+        chatInfoScreen.remove();
+        // Возвращаемся к чату
+        if (currentChat) {
+            chatView.style.display = 'flex';
+        }
+    }
+}
+
 function showImagePreview(imageUrl) {
   previewImage.src = imageUrl;
   imagePreviewModal.style.display = 'flex';
@@ -852,11 +2050,21 @@ async function init() {
   loadSettings();
   setupEventListeners();
   optimizeAnimations();
-  adaptLayoutForDesktop();
   
   document.querySelectorAll('.auth-screen, .welcome-screen').forEach(screen => {
     screen.classList.add('screen');
   });
+  
+  if (currentUser) {
+    // Загружаем скрипт Agora динамически
+    await loadScript('https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js');
+    
+    // Инициализируем систему звонков
+    setTimeout(() => {
+      videoCallSystem.setupIncomingCallListener();
+    }, 2000);
+  }
+  
   
   if (currentUser) {
     await preloadData();
@@ -1036,6 +2244,14 @@ function setupEventListeners() {
           usernameScreen.style.display = 'flex';
       });
    });
+   
+   document.getElementById('chat-info-btn').addEventListener('click', () => {
+    if (currentChat && currentChat.startsWith(GROUP_CHAT_PREFIX)) {
+        showGroupInfoScreen();
+    } else {
+        showChatInfoScreen(); // Просто белый экран для личных чатов
+    }
+});
    
    // И замените его на:
    document.getElementById('startButton').addEventListener('click', function() {
@@ -1481,147 +2697,6 @@ function setupFileUpload() {
   return fileInput;
 }
 
-// Добавьте в setupEventListeners()
-function setupKeyboardShortcuts() {
-    if (!IS_DESKTOP) return;
-    
-    document.addEventListener('keydown', (e) => {
-        // Ctrl+K или Cmd+K для поиска
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            showSearch();
-        }
-        
-        // Escape для закрытия модальных окон
-        if (e.key === 'Escape') {
-            closeAllModals();
-        }
-        
-        // Ctrl+Enter для отправки сообщения
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            if (messageInput && messageInput.value.trim()) {
-                sendMessage();
-            }
-        }
-    });
-}
-
-// Функция закрытия всех модальных окон
-function closeAllModals() {
-    const modals = document.querySelectorAll('.modal, .search-container, .image-preview-modal');
-    modals.forEach(modal => {
-        if (modal.style.display === 'flex' || modal.style.display === 'block') {
-            modal.style.display = 'none';
-        }
-    });
-}
-
-// Добавьте в setupEventListeners()
-function setupDesktopContextMenu() {
-    if (!IS_DESKTOP) return;
-    
-    document.addEventListener('contextmenu', (e) => {
-        const messageElement = e.target.closest('.message');
-        if (messageElement && !messageElement.classList.contains('outgoing')) {
-            e.preventDefault();
-            // Показываем расширенное контекстное меню для десктопа
-            showDesktopContextMenu(e, messageElement);
-        }
-    });
-}
-
-function showDesktopContextMenu(e, messageElement) {
-    // Создаем расширенное контекстное меню для десктопа
-    const contextMenu = document.getElementById('desktop-context-menu') || createDesktopContextMenu();
-    
-    // Позиционируем меню
-    contextMenu.style.left = e.pageX + 'px';
-    contextMenu.style.top = e.pageY + 'px';
-    contextMenu.style.display = 'block';
-    
-    // Сохраняем выбранное сообщение
-    selectedMessage = {
-        element: messageElement,
-        text: messageElement.querySelector('.message-text')?.textContent || ''
-    };
-}
-
-function createDesktopContextMenu() {
-    const menu = document.createElement('div');
-    menu.id = 'desktop-context-menu';
-    menu.className = 'desktop-context-menu';
-    menu.innerHTML = `
-        <div class="context-item" onclick="copyMessage()">Копировать</div>
-        <div class="context-item" onclick="replyToMessage()">Ответить</div>
-        <div class="context-item" onclick="forwardMessage()">Переслать</div>
-        <div class="context-divider"></div>
-        <div class="context-item" onclick="addToFavorites()">В избранное</div>
-        <div class="context-item" onclick="reportMessage()">Пожаловаться</div>
-    `;
-    document.body.appendChild(menu);
-    
-    // Закрытие меню при клике вне его
-    document.addEventListener('click', () => {
-        menu.style.display = 'none';
-    });
-    
-    return menu;
-}
-
-function showDesktopNotification(title, message) {
-    if (!IS_DESKTOP) return;
-    
-    // Проверяем поддержку браузерных уведомлений
-    if (!("Notification" in window)) {
-        return;
-    }
-
-    // Проверяем разрешение на уведомления
-    if (Notification.permission === "granted") {
-        new Notification(title, { body: message, icon: '/favicon.ico' });
-    } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                new Notification(title, { body: message, icon: '/favicon.ico' });
-            }
-        });
-    }
-}
-
-function setupFileDragAndDrop() {
-    if (!IS_DESKTOP) return;
-    
-    const messageInput = document.getElementById('message-input');
-    const messagesContainer = document.querySelector('.messages-container');
-    
-    [messageInput, messagesContainer].forEach(element => {
-        if (!element) return;
-        
-        element.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            element.style.backgroundColor = 'var(--hover)';
-        });
-        
-        element.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            element.style.backgroundColor = '';
-        });
-        
-        element.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            element.style.backgroundColor = '';
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type.startsWith('image/')) {
-                    await handleImageUpload(file);
-                }
-            }
-        });
-    });
-}
-
 // Добавьте функцию для дешифровки изображений при просмотре
 async function showImagePreview(imageUrl) {
   try {
@@ -2049,6 +3124,11 @@ async function openChat(chatId, chatName, avatarUrl = null, isGroup = false) {
     });
 
     currentChat = chatId;
+    
+    const callButton = document.querySelector('.dummy-call');
+    if (callButton && !isGroup) { // Звонки только для личных чатов
+        await videoCallSystem.updateCallButton(chatId, callButton);
+    }
 
     // Определяем, является ли чат групповым
     const isGroupChat = chatId.startsWith(GROUP_CHAT_PREFIX);
@@ -2203,10 +3283,6 @@ async function processMessage(msg) {
         if (msg.user !== currentUser.username && currentChat) {
             playMessageSound();
         }
-        
-        if (IS_DESKTOP && msg.user !== currentUser.username && currentChat) {
-        showDesktopNotification(`Новое сообщение от ${msg.user}`, msg.text);
-    }
         
     } catch (error) {
         console.error('Error processing message:', error);
@@ -3404,7 +4480,7 @@ function showFAQModal() {
   }, 10);
 }
 
-function showChatInfo() {
+function showCрhatInfo() {
   if (!currentChat) return;
   
   const modal = document.createElement('div');
@@ -3429,7 +4505,34 @@ function showChatInfo() {
       const user = snapshot.val();
       const lastSeen = user.isOnline ? 'Онлайн' : `Был(а) ${formatLastSeen(user.lastSeen)}`;
       
-      showAlert('Информация о чате будет доступна в следующем обновлении', 'Информация о чате');
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h3 class="modal-title">Информация о чате</h3>
+          <div class="chat-info-content">
+            <div class="chat-info-avatar">
+              ${user.avatarUrl ? 
+                `<img src="${user.avatarUrl}" alt="${user.username}">` : 
+                `<div class="avatar-placeholder">${user.username.charAt(0)}</div>`
+              }
+            </div>
+            <h4>${user.username}</h4>
+            <p>${user.nickname}</p>
+            <p>Статус: ${lastSeen}</p>
+            <div class="chat-actions">
+              <button class="btn btn-secondary" id="view-profile">Профиль</button>
+              <button class="btn btn-primary" id="close-chat-info">Закрыть</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      modal.style.display = 'flex';
+      
+      document.getElementById('close-chat-info').addEventListener('click', () => {
+        modal.style.display = 'none';
+        setTimeout(() => modal.remove(), 300);
+      });
       
       document.getElementById('view-profile')?.addEventListener('click', () => {
         showAlert('Просмотр профиля будет реализован в будущем обновлении', 'Информация');
