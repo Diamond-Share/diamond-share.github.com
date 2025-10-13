@@ -2,270 +2,243 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push Sender</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>📞 Diamond Phone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        input, textarea, button {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        
-        input:focus, textarea:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        
-        button:hover {
-            background: #0056b3;
-        }
-        
-        button:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
-        }
-        
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-        }
-        
-        .loading {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 2px solid #bee5eb;
-        }
-        
-        .instructions {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 14px;
-        }
+        :root{--primary:#3b82f6;--danger:#ef4444;--bg:#0f172a;--card:#1e293b;--text:#f8fafc;--text2:#94a3b8;--border:#334155}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+        body{background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
+        /* ---------- вход ---------- */
+        .login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center}
+        .login h1{margin-bottom:12px}
+        .login input{width:100%;max-width:300px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0f172a;color:var(--text);margin-top:8px}
+        .login button{margin-top:16px;width:100%;max-width:300px;padding:12px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
+        /* ---------- книжка ---------- */
+        .book{display:none;flex-direction:column;height:100%}
+        header{padding:14px 20px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+        .myAvatar{width:36px;height:36px;border-radius:50%}
+        .search{padding:10px 20px}
+        .search input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#0f172a;color:var(--text)}
+        .list{flex:1;overflow-y:auto;padding:0 20px 20px}
+        .contact{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:10px;background:var(--card);position:relative}
+        .contact img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--border)}
+        .contact .info{flex:1}
+        .contact .name{font-weight:600}
+        .contact .nick{font-size:.75rem;color:var(--text2)}
+        .contact .status{font-size:.65rem;position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px}
+        .online-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+        .callBtn{background:var(--primary);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:1rem;cursor:pointer}
+        /* ---------- звонок ---------- */
+        .call{display:none;position:fixed;inset:0;background:#000;flex-direction:column}
+        .call.active{display:flex}
+        .callHead{background:rgba(0,0,0,.6);padding:12px 16px;display:flex;align-items:center;gap:12px}
+        .callHead button{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:1rem;cursor:pointer}
+        .callTitle{flex:1;font-weight:600}
+        .videoBox{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+        .remoteVideo{width:100%;height:100%;object-fit:cover}
+        .localVideo{position:absolute;bottom:100px;right:20px;width:100px;height:150px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+        .controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:25px 20px;display:flex;justify-content:center;gap:40px}
+        .ctrl{width:60px;height:60px;border-radius:50%;border:none;color:#fff;font-size:1.3rem;cursor:pointer}
+        .ctrl.mic,.ctrl.cam{background:var(--primary)}
+        .ctrl.end{background:var(--danger)}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📱 Push Sender</h1>
-        
-        <div class="form-group">
-            <label for="title">Заголовок:</label>
-            <input type="text" id="title" value="Привет! 👋" placeholder="Введите заголовок">
-        </div>
-        
-        <div class="form-group">
-            <label for="message">Сообщение:</label>
-            <textarea id="message" rows="3" placeholder="Введите сообщение">Это тестовое push-уведомление! 🚀</textarea>
-        </div>
-        
-        <button onclick="sendPush()" id="sendBtn">
-            ОТПРАВИТЬ PUSH
-        </button>
-        
-        <div id="result" class="result"></div>
-        
-        <div class="instructions">
-            <strong>💡 Как использовать:</strong><br>
-            1. Открой эту страницу на телефоне<br>
-            2. Нажми кнопку "ОТПРАВИТЬ PUSH"<br>
-            3. Разреши уведомления если спросит<br>
-            4. Получи уведомление! 📲
-        </div>
+
+<!--------------------------------------------------
+      1.  ЭКРАН ВХОДА
+--------------------------------------------------->
+<div class="login" id="loginScreen">
+    <h1>📞 Diamond Phone</h1>
+    <p>Введите свой @ник</p>
+    <input id="nickInput" placeholder="@ivanov" maxlength="20">
+    <button id="enterBtn">Войти</button>
+</div>
+
+<!--------------------------------------------------
+      2.  ТЕЛЕФОННАЯ КНИЖКА
+--------------------------------------------------->
+<div class="book" id="bookScreen">
+    <header>
+        <img id="myAva" src="avatar/1.png"><span id="myNick"></span>
+    </header>
+    <div class="search"><input id="search" placeholder="Поиск по имени или @нику…"></div>
+    <div class="list" id="list"></div>
+</div>
+
+<!--------------------------------------------------
+      3.  ЭКРАН ЗВОНКА
+--------------------------------------------------->
+<div class="call" id="callScreen">
+    <div class="callHead">
+        <button id="hangUp"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="callTitle" id="callTitle">Входящий звонок</div>
     </div>
+    <div class="videoBox">
+        <video class="remoteVideo" id="remoteVideo" autoplay playsinline></video>
+        <video class="localVideo" id="localVideo" autoplay playsinline muted></video>
+    </div>
+    <div class="controls">
+        <button class="ctrl mic"  id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+        <button class="ctrl end"  id="endBtn"><i class="fa-solid fa-phone-slash"></i></button>
+        <button class="ctrl cam"  id="camBtn"><i class="fa-solid fa-video"></i></button>
+    </div>
+</div>
 
-    <script>
-        // Твой токен
-        const TOKEN = 'druRDN2znjT9oF3gy_-Me2:APA91bHlGKq_Aiqc0PDaOqPqq-IviFrCpU5Mbmlp6Fjvq_ZejFtXxBBMlD82-3QZsz8VhmECo5V3XV0Y9V0wtVcs4-CYMmZZAr7mo_OTvhAcL8WQFwRbyrE';
-        // Твой Server Key
-        const SERVER_KEY = 'AIzaSyDvvp3qyBsQsZQfuwaImeZUZ4C0M9I912Q';
+<script>
+/* =================================================
+      0.  КОНФИГИ  (ваши из app.js)
+================================================= */
+const firebaseCfg = {
+    apiKey: "AIzaSyB0ca3id5sWRk4a49s6OnYhpGQEtpi_h9Q",
+    authDomain: "diamond-russia-8e454.firebaseapp.com",
+    databaseURL: "https://diamond-russia-8e454-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "diamond-russia-8e454",
+    storageBucket: "diamond-russia-8e454.appspot.com",
+    messagingSenderId: "735387033487",
+    appId: "1:735387033487:web:7ec3ff71a2aaed612775fa"
+};
+const agoraAppId = "fc97c0f924ce4bec9389fa2cf4899e48";
 
-        async function sendPush() {
-            const title = document.getElementById('title').value || 'Тестовое уведомление';
-            const message = document.getElementById('message').value || 'Привет от Firebase!';
-            const resultDiv = document.getElementById('result');
-            const sendBtn = document.getElementById('sendBtn');
+firebase.initializeApp(firebaseCfg);
+const db = firebase.database();
+let client, localTracks={audio:null,video:null};
+let myNick='', micOn=true, camOn=true;
 
-            // Показываем загрузку
-            resultDiv.textContent = '⏳ Отправляем уведомление...';
-            resultDiv.className = 'result loading';
-            sendBtn.disabled = true;
-            sendBtn.textContent = '⏳ ОТПРАВЛЯЕМ...';
+/* =================================================
+      1.  ВХОД  (без проверок)
+================================================= */
+document.getElementById('enterBtn').onclick = ()=>{
+    const n = document.getElementById('nickInput').value.trim();
+    if(!n) return;
+    myNick = n.startsWith('@') ? n : '@'+n;
+    document.getElementById('myNick').textContent = myNick;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('bookScreen').style.display='flex';
+    loadAllUsers();
+    watchForCalls();          // слушаем входящие
+};
 
-            try {
-                // Пробуем отправить напрямую к Firebase
-                const response = await sendToFirebase(title, message);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success === 1 || data.message_id) {
-                        resultDiv.textContent = '✅ Уведомление отправлено! Проверь телефон 📱';
-                        resultDiv.className = 'result success';
-                    } else {
-                        resultDiv.textContent = '❌ Ошибка Firebase: ' + (data.results?.[0]?.error || 'Неизвестная ошибка');
-                        resultDiv.className = 'result error';
-                    }
-                } else {
-                    // Если прямой запрос не работает, используем альтернативный метод
-                    await sendAlternative(title, message, resultDiv);
-                }
-
-            } catch (error) {
-                console.error('Ошибка:', error);
-                // Пробуем альтернативный метод
-                await sendAlternative(title, message, resultDiv);
-            } finally {
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'ОТПРАВИТЬ PUSH';
-            }
-        }
-
-        // Прямой запрос к Firebase
-        async function sendToFirebase(title, message) {
-            const payload = {
-                notification: {
-                    title: title,
-                    body: message,
-                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png',
-                    click_action: 'https://skyberry-a31d8.firebaseapp.com'
-                },
-                to: TOKEN
-            };
-
-            return fetch('https://fcm.googleapis.com/fcm/send', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `key=${SERVER_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+/* =================================================
+      2.  ЗАГРУЖАЕМ  ВСЕХ  ИЗ  /users
+================================================= */
+let allUsers=[];
+function loadAllUsers(){
+    db.ref('users').on('value',snap=>{
+        allUsers=[];
+        snap.forEach(ch=>{
+            const d=ch.val();
+            allUsers.push({
+                nick : ch.key,
+                name : d.username||ch.key,
+                avatar: d.avatarUrl||`avatar/1.png`,
+                online: d.isOnline||false,
+                lastSeen: d.lastSeen||0
             });
-        }
-
-        // Альтернативный метод через FormData (обходит CORS)
-        async function sendAlternative(title, message, resultDiv) {
-            try {
-                // Создаем скрытую форму для отправки
-                const form = document.createElement('form');
-                form.style.display = 'none';
-                
-                // Добавляем данные в форму
-                const addField = (name, value) => {
-                    const input = document.createElement('input');
-                    input.name = name;
-                    input.value = value;
-                    form.appendChild(input);
-                };
-
-                addField('token', TOKEN);
-                addField('title', title);
-                addField('message', message);
-                addField('server_key', SERVER_KEY);
-
-                document.body.appendChild(form);
-
-                // Показываем сообщение об успехе (так как мы не можем реально отправить без сервера)
-                resultDiv.textContent = '✅ Запрос подготовлен! Для реальной отправки нужен сервер. Но уведомления уже работают! 🎉';
-                resultDiv.className = 'result success';
-
-                // Удаляем форму
-                document.body.removeChild(form);
-
-            } catch (error) {
-                resultDiv.textContent = '⚠️ Уведомления настроены! Для отправки с телефона нужен серверный endpoint.';
-                resultDiv.className = 'result loading';
-            }
-        }
-
-        // Создаем тестовое уведомление локально
-        function showLocalNotification(title, message) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: message,
-                    icon: 'https://skyberry-a31d8.firebaseapp.com/icon.png'
-                });
-            }
-        }
-
-        // Запрашиваем разрешение при загрузке
-        document.addEventListener('DOMContentLoaded', function() {
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-            
-            // Показываем тестовое уведомление через 3 секунды
-            setTimeout(() => {
-                if (Notification.permission === 'granted') {
-                    showLocalNotification('Готов к работе!', 'Нажми кнопку для отправки push');
-                }
-            }, 3000);
         });
-    </script>
+        renderList();
+    });
+}
+
+/* =================================================
+      3.  РЕНДЕР  (себя не показываем)
+================================================= */
+function renderList(filter=''){
+    const html = allUsers
+        .filter(u=> u.nick!==myNick && (u.name.toLowerCase().includes(filter)||u.nick.includes(filter)) )
+        .map(u=>{
+            const st = u.online ? '<span class="online-dot"></span> онлайн' : `был(а) ${timeAgo(u.lastSeen)}`;
+            return `
+            <div class="contact">
+                <img src="${u.avatar}" alt="">
+                <div class="info">
+                    <div class="name">${u.name}</div>
+                    <div class="nick">${u.nick}</div>
+                </div>
+                <div class="status">${st}</div>
+                <button class="callBtn" onclick="callUser('${u.nick}')" title="Позвонить"><i class="fa-solid fa-phone"></i></button>
+            </div>`;
+        }).join('');
+    document.getElementById('list').innerHTML = html || '<div style="text-align:center;margin-top:40px;color:var(--text2)">Никого не найдено</div>';
+}
+document.getElementById('search').oninput = e=> renderList(e.target.value.toLowerCase());
+
+/* =================================================
+      4.  ИСХОДЯЩИЙ  ЗВОНОК
+================================================= */
+async function callUser(peerNick){
+    const room = [myNick, peerNick].sort().join('_');
+    document.getElementById('callTitle').textContent = `Звонок ${peerNick}`;
+    openCallScreen();
+    await joinAgora(room);
+}
+
+/* =================================================
+      5.  ВХОДЯЩИЙ  ЗВОНОК  (следим за комнатой)
+================================================= */
+function watchForCalls(){
+    // комнаты, где я участник:  room=[xxx, myNick].sort().join('_')
+    db.ref('calls').on('child_added', snap=>{
+        const room = snap.key;
+        const from = snap.val().from;
+        if(!room.includes(myNick) || from===myNick) return;   // это не мой звонок
+        document.getElementById('callTitle').textContent = `Входящий от ${from}`;
+        openCallScreen();
+        joinAgora(room);
+    });
+}
+
+/* =================================================
+      6.  Agora  (упрощённо)
+================================================= */
+async function joinAgora(room){
+    client = AgoraRTC.createClient({mode:"rtc",codec:"vp8"});
+    await client.join(agoraAppId, room, null, null);
+
+    localTracks.audio = await AgoraRTC.createMicrophoneAudioTrack();
+    localTracks.video = await AgoraRTC.createCameraVideoTrack();
+    await client.publish([localTracks.audio, localTracks.video]);
+    localTracks.video.play(document.getElementById('localVideo'));
+
+    client.on("user-published", async (user,mediaType)=>{
+        await client.subscribe(user,mediaType);
+        if(mediaType==="video") user.videoTrack.play(document.getElementById('remoteVideo'));
+        if(mediaType==="audio") user.audioTrack.play();
+    });
+    // при завершении звонка собеседником – убираем экран
+    client.on("user-left", ()=> closeCallScreen() );
+}
+
+/* =================================================
+      7.  UI  звонка
+================================================= */
+function openCallScreen(){
+    document.getElementById('callScreen').classList.add('active');
+}
+function closeCallScreen(){
+    document.getElementById('callScreen').classList.remove('active');
+    if(client) client.leave();
+    if(localTracks.audio){ localTracks.audio.close(); localTracks.audio=null; }
+    if(localTracks.video){ localTracks.video.close(); localTracks.video=null; }
+}
+document.getElementById('hangUp').onclick = document.getElementById('endBtn').onclick = closeCallScreen;
+document.getElementById('micBtn').onclick  = ()=>{ micOn=!micOn; localTracks.audio.setEnabled(micOn); document.getElementById('micBtn').style.background = micOn?'var(--primary)':'#555'; };
+document.getElementById('camBtn').onclick  = ()=>{ camOn=!camOn; localTracks.video.setEnabled(camOn); document.getElementById('camBtn').style.background = camOn?'var(--primary)':'#555'; };
+
+/* =================================================
+      8.  Мелочь
+================================================= */
+function timeAgo(ts){
+    const min = Math.floor((Date.now()-ts)/60000);
+    if(min<1) return 'только что';
+    if(min<60) return `${min} мин назад`;
+    return `${Math.floor(min/60)} ч назад`;
+}
+</script>
 </body>
 </html>
