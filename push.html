@@ -10,49 +10,116 @@
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
 
     <style>
-        :root{--primary:#3b82f6;--danger:#ef4444;--bg:#0f172a;--card:#1e293b;--text:#f8fafc;--text2:#94a3b8;--border:#334155}
+        /* ==========  CSS-переменные из center.html  ========== */
+        :root{
+            --primary:#6e8efb;
+            --primary-hover:#5a7df9;
+            --bg:#f5f5f5;
+            --card:#ffffff;
+            --text:#333333;
+            --text-secondary:#666666;
+            --border:#e0e0e0;
+            --incoming-bubble:#ffffff;
+            --outgoing-bubble:#ffffff;
+            --time-color:#707579;
+            --shadow:rgba(0,0,0,0.08);
+            --hover:rgba(0,0,0,0.05);
+            --success:#25D366;
+            --danger:#ef4444;
+        }
+        [data-theme="dark"]{
+            --primary:#6366f1;
+            --primary-hover:#4f46e5;
+            --bg:#1a1a1a;
+            --card:#2d2d2d;
+            --text:#ffffff;
+            --text-secondary:#a0a0a0;
+            --border:#404040;
+            --incoming-bubble:#2d2d2d;
+            --outgoing-bubble:#1e3a5f;
+            --time-color:#a0a0a0;
+            --shadow:rgba(0,0,0,0.2);
+            --hover:rgba(255,255,255,0.05);
+        }
+
+        /* ----------  база  ---------- */
         *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-        body{background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
-        /* ---------- вход ---------- */
+        body{background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        a{text-decoration:none;color:inherit}
+
+        /* ----------  вход  ---------- */
         .login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center}
-        .login h1{margin-bottom:12px}
-        .login input{width:100%;max-width:300px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0f172a;color:var(--text);margin-top:8px}
-        .login button{margin-top:16px;width:100%;max-width:300px;padding:12px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
-        /* ---------- книжка ---------- */
+        .login h1{margin-bottom:12px;font-size:28px;font-weight:700}
+        .login input{width:100%;max-width:300px;padding:14px;border-radius:14px;border:2px solid var(--border);background:var(--card);color:var(--text);margin-top:8px;font-size:16px;outline:none;transition:border .3s}
+        .login input:focus{border-color:var(--primary)}
+        .login button{margin-top:16px;width:100%;max-width:300px;padding:14px;border:none;border-radius:14px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;transition:transform .2s}
+        .login button:hover{transform:translateY(-2px)}
+
+        /* ----------  телефонная книжка  ---------- */
         .book{display:none;flex-direction:column;height:100%}
-        header{padding:14px 20px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-        .myAvatar{width:36px;height:36px;border-radius:50%}
-        .search{padding:10px 20px}
-        .search input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#0f172a;color:var(--text)}
-        .list{flex:1;overflow-y:auto;padding:0 20px 20px}
-        .contact{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:10px;background:var(--card);position:relative}
+        header{padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;min-height:56px}
+        header img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px}
+        .search{padding:10px 16px;background:var(--card)}
+        .search-input{width:100%;padding:12px 14px 12px 40px;border-radius:14px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:15px;outline:none;position:relative}
+        .search-input:focus{border-color:var(--primary)}
+        .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:16px;pointer-events:none}
+        .list{flex:1;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+
+        /* ----------  контакт  ---------- */
+        .contact{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--card);border:1px solid var(--border);transition:all .2s;cursor:pointer;position:relative}
+        .contact:hover{transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow)}
         .contact img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--border)}
-        .contact .info{flex:1}
-        .contact .name{font-weight:600}
-        .contact .nick{font-size:.75rem;color:var(--text2)}
-        .contact .status{font-size:.65rem;position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px}
-        .online-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
-        .callBtn{background:var(--primary);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:1rem;cursor:pointer}
-        /* ---------- звонок ---------- */
-        .call{display:none;position:fixed;inset:0;background:#000;flex-direction:column}
+        .contact .info{flex:1;min-width:0}
+        .contact .name{font-weight:600;font-size:16px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .contact .nick{font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .contact .status{font-size:12px;position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px;color:var(--text-secondary)}
+        .online-dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+        .callBtn{background:var(--primary);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;cursor:pointer;transition:transform .2s;flex-shrink:0}
+        .callBtn:hover{transform:scale(1.1)}
+
+        /* ----------  звонок  ---------- */
+        .call{display:none;position:fixed;inset:0;background:#000;flex-direction:column;z-index:1000}
         .call.active{display:flex}
-        .callHead{background:rgba(0,0,0,.6);padding:12px 16px;display:flex;align-items:center;gap:12px}
-        .callHead button{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:1rem;cursor:pointer}
-        .callTitle{flex:1;font-weight:600}
-        .videoBox{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+        .callHead{background:rgba(0,0,0,.6);padding:10px 16px;display:flex;align-items:center;gap:10px;min-height:48px}
+        .callHead button{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;cursor:pointer}
+        .callTitle{flex:1;font-weight:600;font-size:16px}
+        .videoBox{flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:#000}
         .remoteVideo{width:100%;height:100%;object-fit:cover}
-        .localVideo{position:absolute;bottom:100px;right:20px;width:100px;height:150px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
-        .controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:25px 20px;display:flex;justify-content:center;gap:40px}
-        .ctrl{width:60px;height:60px;border-radius:50%;border:none;color:#fff;font-size:1.3rem;cursor:pointer}
+        .localVideo{position:absolute;bottom:80px;right:16px;width:90px;height:120px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3);z-index:2}
+        .controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:20px 16px;display:flex;justify-content:center;gap:32px}
+        .ctrl{width:52px;height:52px;border-radius:50%;border:none;color:#fff;font-size:20px;cursor:pointer;transition:transform .2s}
         .ctrl.mic,.ctrl.cam{background:var(--primary)}
         .ctrl.end{background:var(--danger)}
+        .ctrl:hover{transform:scale(1.1)}
+
+        /* ----------  индикатор набора  ---------- */
+        .typing-indicator{display:flex;gap:4px;padding:10px 14px;background:var(--card);border-radius:18px;align-self:flex-start;margin:0 16px 8px;box-shadow:0 1px 2px var(--shadow)}
+        .typing-dot{width:8px;height:8px;border-radius:50%;background-color:var(--text-secondary);animation:typing 1.4s infinite ease-in-out}
+        .typing-dot:nth-child(1){animation-delay:-.32s}.typing-dot:nth-child(2){animation-delay:-.16s}
+        @keyframes typing{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1);opacity:1}}
+
+        /* ----------  скроллбар  ---------- */
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:3px}
+        [data-theme="dark"] ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2)}
+
+        /* ----------  адаптив  ---------- */
+        @media(max-width:480px){
+            header{min-height:48px;padding:8px 12px}
+            .search{padding:8px 12px}
+            .list{padding:4px 12px 12px}
+            .contact{padding:10px;border-radius:12px}
+            .callHead{padding:8px 12px;min-height:44px}
+            .localVideo{width:80px;height:110px;bottom:70px;right:12px}
+            .controls{padding:16px 12px;gap:24px}
+            .ctrl{width:48px;height:48px;font-size:18px}
+        }
     </style>
 </head>
 <body>
 
-<!--------------------------------------------------
-      1.  ЭКРАН ВХОДА
---------------------------------------------------->
+<!-- 1.  ЭКРАН ВХОДА  -->
 <div class="login" id="loginScreen">
     <h1>📞 Diamond Phone</h1>
     <p>Введите свой @ник</p>
@@ -60,24 +127,23 @@
     <button id="enterBtn">Войти</button>
 </div>
 
-<!--------------------------------------------------
-      2.  ТЕЛЕФОННАЯ КНИЖКА
---------------------------------------------------->
+<!-- 2.  ТЕЛЕФОННАЯ КНИЖКА  -->
 <div class="book" id="bookScreen">
     <header>
         <img id="myAva" src="avatar/1.png"><span id="myNick"></span>
     </header>
-    <div class="search"><input id="search" placeholder="Поиск по имени или @нику…"></div>
+    <div class="search">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input id="search" placeholder="Поиск по имени или @нику…">
+    </div>
     <div class="list" id="list"></div>
 </div>
 
-<!--------------------------------------------------
-      3.  ЭКРАН ЗВОНКА
---------------------------------------------------->
+<!-- 3.  ЭКРАН ЗВОНКА  -->
 <div class="call" id="callScreen">
     <div class="callHead">
         <button id="hangUp"><i class="fa-solid fa-arrow-left"></i></button>
-        <div class="callTitle" id="callTitle">Входящий звонок</div>
+        <div class="callTitle" id="callTitle">Видеозвонок</div>
     </div>
     <div class="videoBox">
         <video class="remoteVideo" id="remoteVideo" autoplay playsinline></video>
@@ -121,7 +187,7 @@ document.getElementById('enterBtn').onclick = ()=>{
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('bookScreen').style.display='flex';
     loadAllUsers();
-    watchForCalls();          // слушаем входящие
+    watchForCalls();
 };
 
 /* =================================================
@@ -150,7 +216,7 @@ function loadAllUsers(){
 ================================================= */
 function renderList(filter=''){
     const html = allUsers
-        .filter(u=> u.nick!==myNick && (u.name.toLowerCase().includes(filter)||u.nick.includes(filter)) )
+        .filter(u=> u.nick!==myNick && (u.name.toLowerCase().includes(filter)||u.nick.includes(filter)))
         .map(u=>{
             const st = u.online ? '<span class="online-dot"></span> онлайн' : `был(а) ${timeAgo(u.lastSeen)}`;
             return `
@@ -161,10 +227,12 @@ function renderList(filter=''){
                     <div class="nick">${u.nick}</div>
                 </div>
                 <div class="status">${st}</div>
-                <button class="callBtn" onclick="callUser('${u.nick}')" title="Позвонить"><i class="fa-solid fa-phone"></i></button>
+                <button class="callBtn" onclick="callUser('${u.nick}')" title="Позвонить">
+                    <i class="fa-solid fa-phone"></i>
+                </button>
             </div>`;
         }).join('');
-    document.getElementById('list').innerHTML = html || '<div style="text-align:center;margin-top:40px;color:var(--text2)">Никого не найдено</div>';
+    document.getElementById('list').innerHTML = html || '<div style="text-align:center;margin-top:40px;color:var(--text-secondary)">Никого не найдено</div>';
 }
 document.getElementById('search').oninput = e=> renderList(e.target.value.toLowerCase());
 
@@ -176,17 +244,18 @@ async function callUser(peerNick){
     document.getElementById('callTitle').textContent = `Звонок ${peerNick}`;
     openCallScreen();
     await joinAgora(room);
+    // пишем в /calls чтобы у второго всплыл входящий
+    db.ref('calls').child(room).set({from:myNick,ts:Date.now()});
 }
 
 /* =================================================
-      5.  ВХОДЯЩИЙ  ЗВОНОК  (следим за комнатой)
+      5.  ВХОДЯЩИЙ  ЗВОНОК
 ================================================= */
 function watchForCalls(){
-    // комнаты, где я участник:  room=[xxx, myNick].sort().join('_')
     db.ref('calls').on('child_added', snap=>{
         const room = snap.key;
         const from = snap.val().from;
-        if(!room.includes(myNick) || from===myNick) return;   // это не мой звонок
+        if(!room.includes(myNick) || from===myNick) return;
         document.getElementById('callTitle').textContent = `Входящий от ${from}`;
         openCallScreen();
         joinAgora(room);
@@ -194,23 +263,20 @@ function watchForCalls(){
 }
 
 /* =================================================
-      6.  Agora  (упрощённо)
+      6.  Agora
 ================================================= */
 async function joinAgora(room){
     client = AgoraRTC.createClient({mode:"rtc",codec:"vp8"});
     await client.join(agoraAppId, room, null, null);
-
     localTracks.audio = await AgoraRTC.createMicrophoneAudioTrack();
     localTracks.video = await AgoraRTC.createCameraVideoTrack();
     await client.publish([localTracks.audio, localTracks.video]);
     localTracks.video.play(document.getElementById('localVideo'));
-
     client.on("user-published", async (user,mediaType)=>{
         await client.subscribe(user,mediaType);
         if(mediaType==="video") user.videoTrack.play(document.getElementById('remoteVideo'));
         if(mediaType==="audio") user.audioTrack.play();
     });
-    // при завершении звонка собеседником – убираем экран
     client.on("user-left", ()=> closeCallScreen() );
 }
 
@@ -225,13 +291,16 @@ function closeCallScreen(){
     if(client) client.leave();
     if(localTracks.audio){ localTracks.audio.close(); localTracks.audio=null; }
     if(localTracks.video){ localTracks.video.close(); localTracks.video=null; }
+    // убираем запись о звонке
+    const room = [myNick, document.getElementById('callTitle').textContent.replace('Входящий от ','').replace('Звонок ','')].sort().join('_');
+    db.ref('calls').child(room).remove();
 }
 document.getElementById('hangUp').onclick = document.getElementById('endBtn').onclick = closeCallScreen;
 document.getElementById('micBtn').onclick  = ()=>{ micOn=!micOn; localTracks.audio.setEnabled(micOn); document.getElementById('micBtn').style.background = micOn?'var(--primary)':'#555'; };
 document.getElementById('camBtn').onclick  = ()=>{ camOn=!camOn; localTracks.video.setEnabled(camOn); document.getElementById('camBtn').style.background = camOn?'var(--primary)':'#555'; };
 
 /* =================================================
-      8.  Мелочь
+      8.  МЕЛОЧЬ
 ================================================= */
 function timeAgo(ts){
     const min = Math.floor((Date.now()-ts)/60000);
