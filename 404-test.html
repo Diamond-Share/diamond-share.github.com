@@ -3,18 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Баннеры</title>
+<title>Баннерная система</title>
 <link rel="preload" href="https://ad.mail.ru/static/ads-async.js" as="script">
 <link rel="dns-prefetch" href="//ad.mail.ru">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background-color:white;overflow:hidden;width:100vw;height:100vh;position:fixed}
+body{background-color:white;overflow:hidden;width:100vw;height:100vh;position:fixed;font-family:Arial,sans-serif}
 .banners-container{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);width:100vw;height:100vh;gap:0}
 .banner-item{display:flex;justify-content:center;align-items:center;width:100%;height:100%}
 .mrg-tag{width:60px!important;height:100px!important;transform:scale(1)}
+.status-info{position:fixed;top:10px;left:10px;background:rgba(0,0,0,0.8);color:white;padding:10px;border-radius:5px;font-size:12px;z-index:1000;max-height:90vh;overflow-y:auto}
+.loading-bar{position:fixed;top:0;left:0;width:100%;height:5px;background:linear-gradient(90deg,red,orange,yellow,green);z-index:1001}
+.page-counter{position:fixed;top:10px;right:10px;background:rgba(0,0,0,0.8);color:white;padding:10px;border-radius:5px;font-size:16px;font-weight:bold;z-index:1000}
 </style>
 </head>
 <body>
+<div class="loading-bar"></div>
+<div class="page-counter">
+<div>📄 СТРАНИЦА: <span id="pageNumber">1</span>/4</div>
+<div>🔄 Через: <span id="pageTimer">4</span>сек</div>
+</div>
+<div class="status-info">
+<div><strong>🚀 СИСТЕМА БАННЕРОВ v3.0</strong></div>
+<div>📊 Загружено баннеров: <span id="loaded">0</span>/20</div>
+<div>⏱ Время загрузки: <span id="loadTime">0</span>мс</div>
+<div>🖥 Разрешение: <span id="resolution">0x0</span></div>
+<div>🌐 Соединение: <span id="connection">проверка...</span></div>
+<div>💾 Память: <span id="memory">-</span></div>
+<div>🚀 FPS: <span id="fps">-</span></div>
+<div>📡 Статус: <span id="status">ИНИЦИАЛИЗАЦИЯ...</span></div>
+<div>🔢 ID баннеров: 1886256</div>
+<div>🔄 Интервал: 4 секунды</div>
+<div>🎯 Всего страниц: 4</div>
+<div>📱 Платформа: Mobile</div>
+<div>🌍 Сервер: ad.mail.ru</div>
+<div>⚡ Скриптов: 20</div>
+<div>🔧 Технологии: HTML5/CSS3/JS</div>
+<div>🛡 Безопасность: активирована</div>
+<div>📶 Сеть: мониторинг</div>
+<div>🎮 Управление: заблокировано</div>
+<div>🔊 Аудио: отключено</div>
+<div>💡 Режим: турбо</div>
+<div>📈 Производительность: макс.</div>
+<div>🔍 Аналитика: онлайн</div>
+<div>🔄 Цикл: активен</div>
+<div>⏰ Последнее обновление: <span id="lastUpdate">-</span></div>
+</div>
+
 <div class="banners-container">
 <div class="banner-item"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag=window.MRGtag||[]).push({});</script></div>
 <div class="banner-item"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag=window.MRGtag||[]).push({});</script></div>
@@ -37,10 +72,94 @@ body{background-color:white;overflow:hidden;width:100vw;height:100vh;position:fi
 <div class="banner-item"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag=window.MRGtag||[]).push({});</script></div>
 <div class="banner-item"><script async src="https://ad.mail.ru/static/ads-async.js"></script><ins class="mrg-tag" style="display:inline-block;width:240px;height:400px" data-ad-client="ad-1886256" data-ad-slot="1886256"></ins><script>(MRGtag=window.MRGtag||[]).push({});</script></div>
 </div>
+
 <script>
-setInterval(function(){location.reload()},2500);
-document.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
-document.addEventListener('wheel',function(e){e.preventDefault()},{passive:false});
+const startTime = performance.now();
+let bannersLoaded = 0;
+const totalBanners = 20;
+let pageTimer = 4;
+let currentPage = 1;
+const totalPages = 4;
+let frameCount = 0;
+let lastTime = performance.now();
+let fps = 0;
+
+function updateFPS() {
+    frameCount++;
+    const currentTime = performance.now();
+    if (currentTime - lastTime >= 1000) {
+        fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+        frameCount = 0;
+        lastTime = currentTime;
+    }
+}
+
+function updateStatus() {
+    document.getElementById('resolution').textContent = window.innerWidth + 'x' + window.innerHeight;
+    document.getElementById('loaded').textContent = bannersLoaded;
+    document.getElementById('loadTime').textContent = Math.round(performance.now() - startTime);
+    document.getElementById('pageTimer').textContent = pageTimer;
+    document.getElementById('pageNumber').textContent = currentPage;
+    document.getElementById('fps').textContent = fps;
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+    
+    if ('connection' in navigator) {
+        document.getElementById('connection').textContent = navigator.connection.effectiveType + ' ' + navigator.connection.downlink + 'Mbps';
+    }
+    if ('memory' in performance) {
+        document.getElementById('memory').textContent = Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB';
+    }
+}
+
+function checkBannersLoaded() {
+    const banners = document.querySelectorAll('.mrg-tag');
+    bannersLoaded = banners.length;
+    updateStatus();
+    if (bannersLoaded >= totalBanners) {
+        document.getElementById('status').textContent = '✅ ВСЕ БАННЕРЫ ЗАГРУЖЕНЫ';
+        document.getElementById('status').style.color = 'green';
+    } else {
+        document.getElementById('status').textContent = '🔄 ЗАГРУЗКА... ' + bannersLoaded + '/' + totalBanners;
+        setTimeout(checkBannersLoaded, 100);
+    }
+}
+
+function startPageCycle() {
+    const timer = setInterval(() => {
+        pageTimer--;
+        updateStatus();
+        
+        if (pageTimer <= 0) {
+            clearInterval(timer);
+            currentPage++;
+            
+            if (currentPage > totalPages) {
+                currentPage = 1;
+            }
+            
+            document.getElementById('status').textContent = '🔄 ОБНОВЛЕНИЕ СТРАНИЦЫ...';
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        }
+    }, 1000);
+}
+
+// Main loop
+function mainLoop() {
+    updateFPS();
+    updateStatus();
+    requestAnimationFrame(mainLoop);
+}
+
+// Start everything
+mainLoop();
+checkBannersLoaded();
+startPageCycle();
+
+// Block scrolling
+document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+document.addEventListener('wheel', function(e) { e.preventDefault(); }, { passive: false });
 </script>
 </body>
-    </html>
+</html>
