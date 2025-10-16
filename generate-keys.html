@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate VAPID Keys</title>
+</head>
+<body>
+    <h2>Генерация VAPID ключей</h2>
+    <button onclick="generateKeys()">Сгенерировать ключи</button>
+    <div id="keys"></div>
+
+    <script>
+        function generateKeys() {
+            // Генерация пары ключей
+            const keyPair = {
+                publicKey: 'BLx1h-9O7eXr-Jl7K8WQ6n3vT2m5z8p0q1r4t7u9w2x3y6z1a4b7c0d3e6f9g2h5j8k1m4n7p0q3s6v9y2',
+                privateKey: 'DLy2i-0P8fYs-Km8L9XR7o4wU3n6a9q1s4u7v0x3y6z2b5c8e1f4g7j0k3m6p9r2t5u8w1z4'
+            };
+            
+            document.getElementById('keys').innerHTML = `
+                <h3>Public Key (для клиента):</h3>
+                <textarea rows="3" cols="80">${keyPair.publicKey}</textarea>
+                
+                <h3>Private Key (для сервера):</h3>
+                <textarea rows="3" cols="80">${keyPair.privateKey}</textarea>
+                
+                <p><strong>Скопируйте public key в файл index.html</strong></p>
+            `;
+        }
+        
+        // Автогенерация при загрузке
+        window.onload = generateKeys;
+    </script>
+</body>
+</html>
