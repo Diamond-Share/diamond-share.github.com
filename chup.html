@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Уведомления для Brave</title>
+    <title>Авто-уведомления каждые 20 сек</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,19 +74,33 @@
         .error { color: #dc3545; }
         .warning { color: #ffc107; }
         .info { color: #17a2b8; }
+        
+        .auto-status {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🔔 Уведомления для Brave (GitHub Pages)</h2>
+        <h2>🔔 Авто-уведомления каждые 20 сек</h2>
         
         <div id="status" class="status default">
             Инициализация...
         </div>
 
+        <div id="autoStatus" class="auto-status" style="display: none;">
+            ⏰ Авто-уведомления: <span id="timer">20</span> сек до следующего
+        </div>
+
         <button onclick="initServiceWorker()" id="initBtn">1. Инициализировать Service Worker</button>
         <button onclick="requestPermission()" id="permissionBtn" disabled>2. Разрешить уведомления</button>
-        <button onclick="sendNotification()" id="notificationBtn" disabled>3. Отправить уведомление</button>
+        <button onclick="sendNotification()" id="notificationBtn" disabled>3. Тестовое уведомление</button>
+        <button onclick="startAutoNotifications()" id="autoBtn" disabled>🚀 Запустить авто-уведомления</button>
+        <button onclick="stopAutoNotifications()" id="stopBtn" disabled>⏹️ Остановить авто-уведомления</button>
         <button onclick="clearLog()">Очистить лог</button>
 
         <div class="log" id="log">
@@ -98,11 +111,17 @@
     <script>
         const statusDiv = document.getElementById('status');
         const logDiv = document.getElementById('log');
+        const autoStatusDiv = document.getElementById('autoStatus');
+        const timerSpan = document.getElementById('timer');
         const initBtn = document.getElementById('initBtn');
         const permissionBtn = document.getElementById('permissionBtn');
         const notificationBtn = document.getElementById('notificationBtn');
+        const autoBtn = document.getElementById('autoBtn');
+        const stopBtn = document.getElementById('stopBtn');
 
         let serviceWorkerRegistration = null;
+        let autoNotificationInterval = null;
+        let notificationCounter = 1;
 
         function addLog(message, type = 'info') {
             const item = document.createElement('div');
@@ -126,7 +145,6 @@
             }
 
             try {
-                // Регистрируем Service Worker из отдельного файла
                 serviceWorkerRegistration = await navigator.serviceWorker.register('sw.js');
                 addLog('✅ Service Worker зарегистрирован', 'success');
                 
@@ -151,59 +169,6 @@
 
             } catch (error) {
                 addLog(`❌ Ошибка регистрации Service Worker: ${error.message}`, 'error');
-                addLog('Создаем файл sw.js вручную...', 'info');
-                createFallbackServiceWorker();
-            }
-        }
-
-        // Альтернативный метод для GitHub Pages
-        async function createFallbackServiceWorker() {
-            try {
-                // Пробуем создать sw.js динамически через fetch
-                const response = await fetch('sw.js');
-                if (!response.ok) throw new Error('Файл sw.js не найден');
-                
-                addLog('Файл sw.js найден, пробуем снова...', 'info');
-                await initServiceWorker();
-                
-            } catch (error) {
-                addLog('Создаем inline Service Worker...', 'info');
-                await createInlineServiceWorker();
-            }
-        }
-
-        // Создание Service Worker через eval (последний вариант)
-        async function createInlineServiceWorker() {
-            try {
-                const swCode = `
-                    self.addEventListener('install', (e) => {
-                        console.log('SW installed');
-                        self.skipWaiting();
-                    });
-                    self.addEventListener('activate', (e) => {
-                        console.log('SW activated');
-                        e.waitUntil(self.clients.claim());
-                    });
-                    self.addEventListener('notificationclick', (e) => {
-                        e.notification.close();
-                        e.waitUntil(clients.openWindow('/'));
-                    });
-                `;
-                
-                const blob = new Blob([swCode], {type: 'application/javascript'});
-                const swUrl = URL.createObjectURL(blob);
-                
-                serviceWorkerRegistration = await navigator.serviceWorker.register(swUrl);
-                addLog('✅ Inline Service Worker зарегистрирован', 'success');
-                
-                initBtn.disabled = true;
-                permissionBtn.disabled = false;
-                statusDiv.textContent = '✅ Service Worker готов!';
-                statusDiv.className = 'status granted';
-                
-            } catch (error) {
-                addLog(`❌ Не удалось создать Service Worker: ${error.message}`, 'error');
-                addLog('⚠️ Для GitHub Pages нужен отдельный файл sw.js', 'warning');
             }
         }
 
@@ -220,7 +185,13 @@
                     statusDiv.className = 'status granted';
                     permissionBtn.disabled = true;
                     notificationBtn.disabled = false;
+                    autoBtn.disabled = false;
                     addLog('Разрешение получено! Можно отправлять уведомления', 'success');
+                    
+                    // Автоматически отправляем первое тестовое уведомление
+                    setTimeout(() => {
+                        sendNotification('Добро пожаловать!', 'Авто-уведомления готовы к работе!');
+                    }, 1000);
                     
                 } else {
                     statusDiv.textContent = '❌ Разрешение не получено';
@@ -234,7 +205,7 @@
         }
 
         // Отправка уведомления через Service Worker
-        async function sendNotification() {
+        async function sendNotification(title = null, body = null) {
             if (!serviceWorkerRegistration) {
                 addLog('❌ Service Worker не инициализирован', 'error');
                 return;
@@ -245,22 +216,88 @@
                 return;
             }
 
-            addLog('Отправляем уведомление через Service Worker...');
+            const notificationTitle = title || `Авто-уведомление #${notificationCounter}`;
+            const notificationBody = body || `Это автоматическое уведомление №${notificationCounter}. Следующее через 20 секунд.`;
+            
+            addLog(`Отправляем уведомление: ${notificationTitle}`);
             
             try {
-                await serviceWorkerRegistration.showNotification('🎉 Уведомление из Brave!', {
-                    body: 'Это уведомление работает через Service Worker на GitHub Pages!',
+                await serviceWorkerRegistration.showNotification(notificationTitle, {
+                    body: notificationBody,
                     icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
                     badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
-                    tag: 'github-notification',
-                    requireInteraction: true
+                    tag: `auto-notification-${notificationCounter}`,
+                    requireInteraction: false
                 });
 
-                addLog('✅ Уведомление успешно отправлено!', 'success');
+                addLog(`✅ Уведомление #${notificationCounter} отправлено!`, 'success');
+                notificationCounter++;
 
             } catch (error) {
                 addLog(`❌ Ошибка отправки уведомления: ${error.message}`, 'error');
             }
+        }
+
+        // Запуск автоматических уведомлений
+        function startAutoNotifications() {
+            if (autoNotificationInterval) {
+                addLog('⚠️ Авто-уведомления уже запущены', 'warning');
+                return;
+            }
+
+            addLog('🚀 Запускаем авто-уведомления каждые 20 секунд...', 'success');
+            
+            autoBtn.disabled = true;
+            stopBtn.disabled = false;
+            autoStatusDiv.style.display = 'block';
+            
+            // Сразу отправляем первое уведомление
+            sendNotification('Авто-уведомления запущены!', 'Теперь уведомления будут приходить каждые 20 секунд');
+            
+            // Запускаем интервал
+            let secondsLeft = 20;
+            updateTimer(secondsLeft);
+            
+            autoNotificationInterval = setInterval(() => {
+                secondsLeft--;
+                updateTimer(secondsLeft);
+                
+                if (secondsLeft <= 0) {
+                    sendNotification();
+                    secondsLeft = 20;
+                    updateTimer(secondsLeft);
+                }
+            }, 1000);
+        }
+
+        // Остановка автоматических уведомлений
+        function stopAutoNotifications() {
+            if (!autoNotificationInterval) {
+                addLog('⚠️ Авто-уведомления не запущены', 'warning');
+                return;
+            }
+
+            addLog('⏹️ Останавливаем авто-уведомления', 'info');
+            
+            clearInterval(autoNotificationInterval);
+            autoNotificationInterval = null;
+            
+            autoBtn.disabled = false;
+            stopBtn.disabled = true;
+            autoStatusDiv.style.display = 'none';
+            
+            // Отправляем уведомление о остановке
+            sendNotification('Авто-уведомления остановлены', 'Вы больше не будете получать автоматические уведомления');
+        }
+
+        // Обновление таймера
+        function updateTimer(seconds) {
+            timerSpan.textContent = seconds;
+        }
+
+        // Ручное тестовое уведомление
+        function sendManualNotification() {
+            sendNotification('Тестовое уведомление', 'Это ручное тестовое уведомление');
         }
 
         // Автоматическая инициализация при загрузке
@@ -276,6 +313,22 @@
 
             addLog('✅ Brave + GitHub Pages обнаружены', 'info');
             addLog('Нажмите "Инициализировать Service Worker"', 'info');
+            
+            // Если уже есть разрешение, активируем кнопки
+            if (Notification.permission === 'granted') {
+                permissionBtn.disabled = true;
+                notificationBtn.disabled = false;
+                autoBtn.disabled = false;
+                statusDiv.textContent = '✅ Уведомления уже разрешены';
+                statusDiv.className = 'status granted';
+            }
+        });
+
+        // Останавливаем авто-уведомления при закрытии страницы
+        window.addEventListener('beforeunload', function() {
+            if (autoNotificationInterval) {
+                stopAutoNotifications();
+            }
         });
 
     </script>
