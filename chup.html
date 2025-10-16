@@ -3,226 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Разрешить уведомления</title>
+    <title>Проверка уведомлений</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-        
-        .granted { 
-            background: rgba(76, 175, 80, 0.3); 
-            border: 2px solid #4CAF50;
-        }
-        .denied { 
-            background: rgba(244, 67, 54, 0.3); 
-            border: 2px solid #F44336;
-        }
-        .default { 
-            background: rgba(255, 193, 7, 0.3); 
-            border: 2px solid #FFC107;
-        }
-        
-        .notification-btn {
-            background: #fff;
-            color: #667eea;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .notification-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .notification-btn:disabled {
-            background: #ccc;
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .debug { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">🔔</div>
-        <h1>Уведомления от сайта</h1>
-        
-        <div id="status" class="status default">
-            Запрос разрешения на уведомления...
-        </div>
-
-        <button id="testBtn" class="notification-btn" disabled>
-            Тестовое уведомление
-        </button>
-
-        <button id="autoBtn" class="notification-btn" disabled>
-            Авто-уведомление через 3 сек
-        </button>
+    <h1>🔍 Диагностика уведомлений</h1>
+    
+    <div id="debugInfo" class="debug">
+        <h3>Информация о системе:</h3>
+        <div id="systemInfo"></div>
     </div>
+
+    <div id="status"></div>
+
+    <button onclick="requestPermission()">Запросить разрешение</button>
+    <button onclick="testNotification()" id="testBtn" disabled>Тест уведомления</button>
+    <button onclick="checkEverything()">Проверить всё</button>
 
     <script>
         const statusDiv = document.getElementById('status');
+        const systemInfoDiv = document.getElementById('systemInfo');
         const testBtn = document.getElementById('testBtn');
-        const autoBtn = document.getElementById('autoBtn');
 
-        // Функция для автоматического запроса уведомлений
-        async function requestNotificationPermission() {
-            // Проверяем поддержку уведомлений
+        // Проверка системы
+        function checkEverything() {
+            let info = '';
+            
+            // Проверка поддержки Notification API
             if (!('Notification' in window)) {
-                statusDiv.innerHTML = '❌ Ваш браузер не поддерживает уведомления';
+                info += '<p class="error">❌ Браузер не поддерживает уведомления</p>';
+            } else {
+                info += '<p class="success">✅ Notification API поддерживается</p>';
+                info += `<p>Текущий статус: <strong>${Notification.permission}</strong></p>`;
+            }
+
+            // Проверка HTTPS
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                info += '<p class="warning">⚠️ Нужен HTTPS (кроме localhost)</p>';
+            } else {
+                info += '<p class="success">✅ Протокол OK</p>';
+            }
+
+            // Проверка фокуса окна
+            info += `<p>Окно в фокусе: <strong>${document.hasFocus() ? 'Да' : 'Нет'}</strong></p>`;
+
+            systemInfoDiv.innerHTML = info;
+        }
+
+        // Запрос разрешения
+        async function requestPermission() {
+            if (!('Notification' in window)) {
+                statusDiv.innerHTML = '<p class="error">Ваш браузер не поддерживает уведомления</p>';
                 return;
             }
 
-            // Если уже разрешено
-            if (Notification.permission === 'granted') {
-                showGrantedStatus();
-                return;
-            }
-
-            // Если запрещено
-            if (Notification.permission === 'denied') {
-                showDeniedStatus();
-                return;
-            }
-
-            // Запрашиваем разрешение (автоматически при загрузке)
             try {
-                statusDiv.innerHTML = '🔄 Запрос разрешения...';
-                
                 const permission = await Notification.requestPermission();
+                statusDiv.innerHTML = `<p>Результат: <strong>${permission}</strong></p>`;
                 
                 if (permission === 'granted') {
-                    showGrantedStatus();
-                    // Показываем первое уведомление
-                    setTimeout(() => {
-                        showNotification(
-                            'Спасибо за разрешение!', 
-                            'Теперь вы будете получать важные уведомления от нашего сайта.'
-                        );
-                    }, 1000);
-                } else if (permission === 'denied') {
-                    showDeniedStatus();
+                    testBtn.disabled = false;
+                    statusDiv.innerHTML += '<p class="success">✅ Разрешение получено! Теперь проверьте уведомление</p>';
+                    // Автоматически показываем тестовое уведомление
+                    setTimeout(() => testNotification(), 1000);
+                } else {
+                    statusDiv.innerHTML += '<p class="error">❌ Разрешение не получено</p>';
                 }
             } catch (error) {
-                statusDiv.innerHTML = '❌ Ошибка при запросе разрешения';
-                console.error('Ошибка:', error);
+                statusDiv.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
             }
         }
 
-        // Функции для отображения статуса
-        function showGrantedStatus() {
-            statusDiv.innerHTML = '✅ Уведомления разрешены! Вы будете получать важные обновления.';
-            statusDiv.className = 'status granted';
-            testBtn.disabled = false;
-            autoBtn.disabled = false;
-        }
+        // Тестовое уведомление
+        function testNotification() {
+            if (Notification.permission !== 'granted') {
+                statusDiv.innerHTML = '<p class="error">Сначала разрешите уведомления</p>';
+                return;
+            }
 
-        function showDeniedStatus() {
-            statusDiv.innerHTML = '❌ Уведомления заблокированы. Чтобы разрешить:<br>1. Нажмите 🔒 в адресной строке<br>2. Выберите "Разрешить" в разделе Уведомления<br>3. Перезагрузите страницу';
-            statusDiv.className = 'status denied';
-            testBtn.disabled = true;
-            autoBtn.disabled = true;
-        }
-
-        // Функция показа уведомления
-        function showNotification(title, body) {
-            if (Notification.permission === 'granted') {
-                const notification = new Notification(title, {
-                    body: body,
-                    icon: '/favicon.ico',
-                    badge: '/favicon.ico',
-                    tag: 'website-notification',
-                    requireInteraction: true
+            try {
+                const notification = new Notification('🎉 Тестовое уведомление!', {
+                    body: 'Если вы видите это сообщение - уведомления работают!',
+                    icon: 'https://cdn-icons-png.flaticon.com/512/733/733585.png', // Используем стандартную иконку
+                    badge: 'https://cdn-icons-png.flaticon.com/512/733/733585.png',
+                    tag: 'test-notification',
+                    requireInteraction: true, // Остается пока пользователь не закроет
+                    actions: [
+                        {
+                            action: 'open',
+                            title: 'Открыть сайт'
+                        }
+                    ]
                 });
 
-                // Обработчик клика по уведомлению
+                statusDiv.innerHTML = '<p class="success">✅ Уведомление отправлено! Проверьте его.</p>';
+
                 notification.onclick = () => {
+                    console.log('Уведомление clicked');
                     window.focus();
                     notification.close();
                 };
 
-                // Автоматическое закрытие через 7 секунд
-                setTimeout(() => {
-                    notification.close();
-                }, 7000);
+                notification.onshow = () => {
+                    console.log('Уведомление показано');
+                    statusDiv.innerHTML += '<p>🟢 Уведомление показано в системе</p>';
+                };
+
+                notification.onclose = () => {
+                    console.log('Уведомление закрыто');
+                    statusDiv.innerHTML += '<p>🔴 Уведомление закрыто</p>';
+                };
+
+                notification.onerror = (error) => {
+                    console.error('Ошибка уведомления:', error);
+                    statusDiv.innerHTML += '<p class="error">❌ Ошибка при показе уведомления</p>';
+                };
+
+            } catch (error) {
+                statusDiv.innerHTML = `<p class="error">❌ Ошибка: ${error.message}</p>`;
+                console.error('Ошибка создания уведомления:', error);
             }
         }
 
-        // Обработчики кнопок
-        testBtn.addEventListener('click', () => {
-            showNotification(
-                'Тестовое уведомление', 
-                'Отлично! Уведомления работают корректно. 🎉'
-            );
-        });
+        // Проверяем при загрузке
+        checkEverything();
 
-        autoBtn.addEventListener('click', () => {
-            statusDiv.innerHTML = '📲 Уведомление будет через 3 секунды...';
-            setTimeout(() => {
-                showNotification(
-                    'Автоматическое уведомление', 
-                    'Это демонстрация автоматической отправки уведомлений!'
-                );
-                showGrantedStatus();
-            }, 3000);
-        });
-
-        // Запускаем автоматический запрос при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Небольшая задержка для лучшего UX
-            setTimeout(requestNotificationPermission, 1000);
-        });
-
-        // Также можно вызвать при взаимодействии с пользователем (для некоторых браузеров)
-        document.addEventListener('click', function() {
+        // Автоматически запрашиваем разрешение через 2 секунды
+        setTimeout(() => {
             if (Notification.permission === 'default') {
-                requestNotificationPermission();
+                statusDiv.innerHTML = '<p>🔄 Автоматически запрашиваем разрешение...</p>';
+                requestPermission();
+            } else if (Notification.permission === 'granted') {
+                testBtn.disabled = false;
+                statusDiv.innerHTML = '<p class="success">✅ Уведомления уже разрешены</p>';
             }
-        });
+        }, 2000);
     </script>
 </body>
 </html>
