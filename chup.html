@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Быстрые уведомления</title>
+    <title>Уведомления для Brave</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -78,29 +78,31 @@
 </head>
 <body>
     <div class="container">
-        <h2>🔔 Быстрые уведомления</h2>
+        <h2>🔔 Уведомления для Brave</h2>
         
         <div id="status" class="status default">
-            Загрузка...
+            Инициализация для Brave браузера...
         </div>
 
-        <button onclick="requestPermission()" id="permissionBtn">Разрешить уведомления</button>
-        <button onclick="sendNotification()" id="notificationBtn" disabled>Отправить тестовое уведомление</button>
+        <button onclick="initServiceWorker()" id="initBtn">Инициализировать Service Worker</button>
+        <button onclick="requestPermission()" id="permissionBtn" disabled>Разрешить уведомления</button>
+        <button onclick="sendNotification()" id="notificationBtn" disabled>Отправить уведомление</button>
         <button onclick="clearLog()">Очистить лог</button>
 
         <div class="log" id="log">
-            <div class="log-item info">Система запущена...</div>
+            <div class="log-item info">Система запущена для Brave браузера...</div>
         </div>
     </div>
 
     <script>
-        // Элементы страницы
         const statusDiv = document.getElementById('status');
         const logDiv = document.getElementById('log');
+        const initBtn = document.getElementById('initBtn');
         const permissionBtn = document.getElementById('permissionBtn');
         const notificationBtn = document.getElementById('notificationBtn');
 
-        // Быстрое логгирование
+        let serviceWorkerRegistration = null;
+
         function addLog(message, type = 'info') {
             const item = document.createElement('div');
             item.className = `log-item ${type}`;
@@ -113,56 +115,83 @@
             logDiv.innerHTML = '<div class="log-item info">Лог очищен</div>';
         }
 
-        // Быстрая инициализация
-        function init() {
-            addLog('Проверка поддержки уведомлений...');
+        // Инициализация Service Worker
+        async function initServiceWorker() {
+            addLog('Регистрируем Service Worker...');
             
-            if (!('Notification' in window)) {
-                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
-                statusDiv.className = 'status denied';
-                addLog('Ошибка: Notification API не поддерживается', 'error');
+            if (!('serviceWorker' in navigator)) {
+                addLog('❌ Service Worker не поддерживается', 'error');
                 return;
             }
-            
-            addLog('✅ Notification API поддерживается', 'success');
-            
-            // Проверяем текущий статус
-            checkPermissionStatus();
-        }
 
-        // Проверка статуса разрешения
-        function checkPermissionStatus() {
-            const permission = Notification.permission;
-            
-            switch(permission) {
-                case 'granted':
-                    statusDiv.textContent = '✅ Уведомления уже разрешены';
-                    statusDiv.className = 'status granted';
-                    permissionBtn.disabled = true;
-                    notificationBtn.disabled = false;
-                    addLog('Уведомления уже разрешены', 'success');
-                    break;
-                    
-                case 'denied':
-                    statusDiv.textContent = '❌ Уведомления заблокированы';
-                    statusDiv.className = 'status denied';
-                    permissionBtn.disabled = true;
-                    notificationBtn.disabled = true;
-                    addLog('Уведомления заблокированы браузером', 'error');
-                    break;
-                    
-                default:
-                    statusDiv.textContent = '⚠️ Нажмите кнопку для разрешения уведомлений';
-                    statusDiv.className = 'status default';
-                    permissionBtn.disabled = false;
-                    notificationBtn.disabled = true;
-                    addLog('Готово к запросу разрешения', 'info');
+            try {
+                // Создаем простой Service Worker динамически
+                const swUrl = URL.createObjectURL(
+                    new Blob([`
+                        self.addEventListener('install', (event) => {
+                            self.skipWaiting();
+                        });
+
+                        self.addEventListener('activate', (event) => {
+                            event.waitUntil(self.clients.claim());
+                        });
+
+                        self.addEventListener('push', (event) => {
+                            const data = event.data ? event.data.json() : {};
+                            const title = data.title || 'Уведомление';
+                            const options = {
+                                body: data.body || 'Новое уведомление',
+                                icon: data.icon || '/icon.png',
+                                badge: data.badge || '/badge.png',
+                                vibrate: [100, 50, 100],
+                                data: data.data || {}
+                            };
+
+                            event.waitUntil(
+                                self.registration.showNotification(title, options)
+                            );
+                        });
+
+                        self.addEventListener('notificationclick', (event) => {
+                            event.notification.close();
+                            event.waitUntil(
+                                self.clients.matchAll({type: 'window'}).then((clientList) => {
+                                    for (const client of clientList) {
+                                        if (client.url === self.location.origin && 'focus' in client) {
+                                            return client.focus();
+                                        }
+                                    }
+                                    if (self.clients.openWindow) {
+                                        return self.clients.openWindow('/');
+                                    }
+                                })
+                            );
+                        });
+                    `], { type: 'application/javascript' })
+                );
+
+                serviceWorkerRegistration = await navigator.serviceWorker.register(swUrl);
+                addLog('✅ Service Worker зарегистрирован', 'success');
+                
+                // Ждем активации
+                await serviceWorkerRegistration.update();
+                addLog('✅ Service Worker активирован', 'success');
+                
+                initBtn.disabled = true;
+                permissionBtn.disabled = false;
+                statusDiv.textContent = '✅ Service Worker готов. Теперь запросите разрешение.';
+                statusDiv.className = 'status granted';
+
+                URL.revokeObjectURL(swUrl);
+
+            } catch (error) {
+                addLog(`❌ Ошибка регистрации Service Worker: ${error.message}`, 'error');
             }
         }
 
         // Запрос разрешения
         async function requestPermission() {
-            addLog('Запрашиваем разрешение...');
+            addLog('Запрашиваем разрешение для уведомлений...');
             
             try {
                 const permission = await Notification.requestPermission();
@@ -173,96 +202,83 @@
                     statusDiv.className = 'status granted';
                     permissionBtn.disabled = true;
                     notificationBtn.disabled = false;
-                    addLog('Разрешение получено!', 'success');
-                    
-                    // Автоматически отправляем тестовое уведомление
-                    setTimeout(sendNotification, 500);
+                    addLog('Разрешение получено! Можно отправлять уведомления', 'success');
                     
                 } else {
                     statusDiv.textContent = '❌ Разрешение не получено';
                     statusDiv.className = 'status denied';
-                    permissionBtn.disabled = true;
                     addLog('Пользователь отказал в разрешении', 'warning');
                 }
                 
             } catch (error) {
                 addLog(`Ошибка: ${error.message}`, 'error');
-                statusDiv.textContent = '❌ Ошибка при запросе';
-                statusDiv.className = 'status denied';
             }
         }
 
-        // Отправка уведомления
-        function sendNotification() {
-            if (Notification.permission !== 'granted') {
-                addLog('Ошибка: нет разрешения на уведомления', 'error');
+        // Отправка уведомления через Service Worker
+        async function sendNotification() {
+            if (!serviceWorkerRegistration) {
+                addLog('❌ Service Worker не инициализирован', 'error');
                 return;
             }
 
-            addLog('Создаем уведомление...');
+            if (Notification.permission !== 'granted') {
+                addLog('❌ Нет разрешения на уведомления', 'error');
+                return;
+            }
+
+            addLog('Отправляем уведомление через Service Worker...');
             
             try {
-                // Простое уведомление без сложных опций
-                const notification = new Notification('🎉 Тест уведомления!', {
-                    body: 'Это тестовое уведомление от сайта',
+                // Используем Service Worker для показа уведомления
+                await serviceWorkerRegistration.showNotification('🎉 Уведомление из Brave!', {
+                    body: 'Это уведомление работает через Service Worker!',
                     icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
-                    tag: 'test'
+                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
+                    tag: 'brave-notification',
+                    requireInteraction: true,
+                    actions: [
+                        {
+                            action: 'open',
+                            title: '📧 Открыть'
+                        },
+                        {
+                            action: 'close',
+                            title: '❌ Закрыть'
+                        }
+                    ]
                 });
 
-                addLog('✅ Уведомление отправлено!', 'success');
-
-                // Обработчики событий
-                notification.onclick = function() {
-                    addLog('Пользователь кликнул на уведомление', 'info');
-                    window.focus();
-                    this.close();
-                };
-
-                notification.onshow = function() {
-                    addLog('Уведомление показано', 'success');
-                };
-
-                notification.onclose = function() {
-                    addLog('Уведомление закрыто', 'info');
-                };
-
-                notification.onerror = function(error) {
-                    addLog(`Ошибка уведомления: ${error}`, 'error');
-                };
-
-                // Авто-закрытие через 5 секунд
-                setTimeout(() => {
-                    try {
-                        notification.close();
-                        addLog('Уведомление автоматически закрыто', 'info');
-                    } catch (e) {}
-                }, 5000);
+                addLog('✅ Уведомление успешно отправлено!', 'success');
 
             } catch (error) {
-                addLog(`Ошибка создания: ${error.message}`, 'error');
-                
-                if (error.message.includes('ServiceWorkerRegistration')) {
-                    addLog('Этот браузер требует Service Worker', 'warning');
-                    showServiceWorkerInfo();
-                }
+                addLog(`❌ Ошибка отправки уведомления: ${error.message}`, 'error');
             }
         }
 
-        // Информация о Service Worker
-        function showServiceWorkerInfo() {
-            addLog('Информация: некоторые браузеры требуют Service Worker для уведомлений', 'warning');
-            addLog('Для работы нужно зарегистрировать Service Worker', 'info');
-        }
+        // Автоматическая инициализация при загрузке
+        window.addEventListener('load', async function() {
+            addLog('Проверяем поддержку Service Worker...');
+            
+            if (!('serviceWorker' in navigator)) {
+                addLog('❌ Ваш браузер не поддерживает Service Worker', 'error');
+                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
+                statusDiv.className = 'status denied';
+                return;
+            }
 
-        // Запускаем сразу при загрузке
-        window.addEventListener('DOMContentLoaded', function() {
-            addLog('Страница загружена, инициализация...');
-            init();
-        });
+            if (!('Notification' in window)) {
+                addLog('❌ Notification API не поддерживается', 'error');
+                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
+                statusDiv.className = 'status denied';
+                return;
+            }
 
-        // Быстрый перехват ошибок
-        window.addEventListener('error', function(e) {
-            addLog(`Глобальная ошибка: ${e.message}`, 'error');
+            addLog('✅ Brave браузер обнаружен. Требуется Service Worker.', 'info');
+            addLog('Нажмите "Инициализировать Service Worker" чтобы начать', 'info');
+            
+            statusDiv.textContent = '⚠️ Нажмите "Инициализировать Service Worker"';
+            statusDiv.className = 'status default';
         });
 
     </script>
