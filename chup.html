@@ -5,17 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Авто-уведомления с OneSignal</title>
     
-    <!-- OneSignal -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "87184848-253c-4555-b1fc-d1b3117c0882",
-            });
-        });
-    </script>
-    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,22 +103,26 @@
         <h2>🚀 Авто-уведомления каждые 20 сек</h2>
         
         <div id="status" class="status default">
-            Инициализация OneSignal...
+            Загрузка OneSignal...
         </div>
 
         <div id="autoStatus" class="auto-status" style="display: none;">
             ⏰ Авто-уведомления: <span id="timer">20</span> сек до следующего
         </div>
 
-        <button onclick="initOneSignal()" id="initBtn">1. Инициализировать OneSignal</button>
+        <button onclick="loadOneSignal()" id="loadBtn">1. Загрузить OneSignal</button>
         <button onclick="subscribeToNotifications()" id="subscribeBtn" disabled>2. Подписаться на уведомления</button>
         <button onclick="sendTestNotification()" id="testBtn" disabled>3. Тестовое уведомление</button>
         <button onclick="startAutoNotifications()" id="autoBtn" disabled>🚀 Запустить авто-уведомления</button>
         <button onclick="stopAutoNotifications()" id="stopBtn" disabled>⏹️ Остановить авто-уведомления</button>
         <button onclick="clearLog()">Очистить лог</button>
 
+        <div style="margin: 15px 0; padding: 10px; background: #fff3cd; border-radius: 5px;">
+            <strong>App ID для OneSignal:</strong> 87184848-253c-4555-b1fc-d1b3117c0882
+        </div>
+
         <div class="log" id="log">
-            <div class="log-item info">Система запущена с OneSignal...</div>
+            <div class="log-item info">Система запущена. Нажмите "Загрузить OneSignal"</div>
         </div>
     </div>
 
@@ -138,13 +131,13 @@
         const logDiv = document.getElementById('log');
         const autoStatusDiv = document.getElementById('autoStatus');
         const timerSpan = document.getElementById('timer');
-        const initBtn = document.getElementById('initBtn');
+        const loadBtn = document.getElementById('loadBtn');
         const subscribeBtn = document.getElementById('subscribeBtn');
         const testBtn = document.getElementById('testBtn');
         const autoBtn = document.getElementById('autoBtn');
         const stopBtn = document.getElementById('stopBtn');
 
-        let oneSignalInitialized = false;
+        let oneSignalLoaded = false;
         let autoNotificationInterval = null;
         let notificationCounter = 1;
 
@@ -160,58 +153,93 @@
             logDiv.innerHTML = '<div class="log-item info">Лог очищен</div>';
         }
 
+        // Загрузка OneSignal
+        function loadOneSignal() {
+            addLog('Начинаем загрузку OneSignal...');
+            
+            if (window.OneSignal) {
+                addLog('OneSignal уже загружен', 'success');
+                initOneSignal();
+                return;
+            }
+
+            // Создаем скрипт динамически
+            const script = document.createElement('script');
+            script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+            script.defer = true;
+            
+            script.onload = function() {
+                addLog('✅ OneSignal SDK загружен', 'success');
+                initOneSignal();
+            };
+            
+            script.onerror = function() {
+                addLog('❌ Ошибка загрузки OneSignal SDK', 'error');
+                statusDiv.textContent = '❌ Ошибка загрузки OneSignal';
+                statusDiv.className = 'status denied';
+            };
+            
+            document.head.appendChild(script);
+        }
+
         // Инициализация OneSignal
         async function initOneSignal() {
             addLog('Инициализируем OneSignal...');
             
             try {
-                // Ждем пока OneSignal загрузится
-                await waitForOneSignal();
-                
-                const oneSignal = window.OneSignal;
-                
-                // Проверяем статус подписки
-                const isSubscribed = await oneSignal.User.PushSubscription.optedIn;
-                
-                if (isSubscribed) {
-                    statusDiv.textContent = '✅ Уже подписаны на уведомления!';
-                    statusDiv.className = 'status granted';
-                    subscribeBtn.disabled = true;
-                    testBtn.disabled = false;
-                    autoBtn.disabled = false;
-                    addLog('Уже подписаны на уведомления OneSignal', 'success');
-                } else {
-                    statusDiv.textContent = '✅ OneSignal готов. Подпишитесь на уведомления.';
-                    statusDiv.className = 'status granted';
-                    subscribeBtn.disabled = false;
-                    addLog('OneSignal инициализирован, готов к подписке', 'success');
+                if (!window.OneSignalDeferred) {
+                    window.OneSignalDeferred = [];
                 }
-                
-                oneSignalInitialized = true;
-                initBtn.disabled = true;
+
+                // Инициализация OneSignal
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.init({
+                            appId: "87184848-253c-4555-b1fc-d1b3117c0882",
+                            allowLocalhostAsSecureOrigin: true,
+                            welcomeNotification: {
+                                title: "Добро пожаловать!",
+                                message: "Уведомления активированы"
+                            }
+                        });
+
+                        addLog('✅ OneSignal инициализирован', 'success');
+                        
+                        // Проверяем статус подписки
+                        const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+                        
+                        if (isSubscribed) {
+                            statusDiv.textContent = '✅ Уже подписаны на уведомления!';
+                            statusDiv.className = 'status granted';
+                            subscribeBtn.disabled = true;
+                            testBtn.disabled = false;
+                            autoBtn.disabled = false;
+                            addLog('Уже подписаны на уведомления OneSignal', 'success');
+                        } else {
+                            statusDiv.textContent = '✅ OneSignal готов. Подпишитесь на уведомления.';
+                            statusDiv.className = 'status granted';
+                            subscribeBtn.disabled = false;
+                            addLog('OneSignal инициализирован, готов к подписке', 'success');
+                        }
+                        
+                        loadBtn.disabled = true;
+                        oneSignalLoaded = true;
+
+                    } catch (error) {
+                        addLog(`❌ Ошибка инициализации OneSignal: ${error.message}`, 'error');
+                    }
+                });
+
+                // Запускаем deferred
+                if (window.OneSignal && window.OneSignalDeferred) {
+                    for (const deferredFunc of window.OneSignalDeferred) {
+                        deferredFunc(window.OneSignal);
+                    }
+                }
 
             } catch (error) {
-                addLog(`❌ Ошибка инициализации OneSignal: ${error.message}`, 'error');
+                addLog(`❌ Ошибка: ${error.message}`, 'error');
             }
-        }
-
-        // Ожидание загрузки OneSignal
-        function waitForOneSignal() {
-            return new Promise((resolve, reject) => {
-                const checkOneSignal = () => {
-                    if (window.OneSignal && window.OneSignal.Deferred) {
-                        window.OneSignalDeferred.push(async function(OneSignal) {
-                            resolve(OneSignal);
-                        });
-                    } else {
-                        setTimeout(checkOneSignal, 100);
-                    }
-                };
-                checkOneSignal();
-                
-                // Таймаут через 10 секунд
-                setTimeout(() => reject(new Error('OneSignal не загрузился')), 10000);
-            });
         }
 
         // Подписка на уведомления
@@ -219,31 +247,39 @@
             addLog('Запрашиваем подписку на уведомления...');
             
             try {
-                const oneSignal = await waitForOneSignal();
+                if (!window.OneSignal) {
+                    addLog('❌ OneSignal не загружен', 'error');
+                    return;
+                }
+
+                // Получаем экземпляр OneSignal
+                const oneSignal = window.OneSignal;
                 
                 // Запрашиваем разрешение
-                await oneSignal.Notifications.requestPermission();
+                const permission = await oneSignal.Notifications.requestPermission();
                 
-                // Проверяем статус после запроса
-                const isSubscribed = await oneSignal.User.PushSubscription.optedIn;
-                
-                if (isSubscribed) {
-                    statusDiv.textContent = '✅ Подписка оформлена!';
-                    statusDiv.className = 'status granted';
-                    subscribeBtn.disabled = true;
-                    testBtn.disabled = false;
-                    autoBtn.disabled = false;
-                    addLog('Успешно подписались на уведомления OneSignal', 'success');
+                if (permission) {
+                    // Проверяем статус после запроса
+                    const isSubscribed = await oneSignal.User.PushSubscription.optedIn;
                     
-                    // Автоматически отправляем тестовое уведомление
-                    setTimeout(() => {
-                        sendOneSignalNotification('Добро пожаловать!', 'OneSignal уведомления работают!');
-                    }, 1000);
-                    
-                } else {
-                    statusDiv.textContent = '❌ Подписка не оформлена';
-                    statusDiv.className = 'status denied';
-                    addLog('Пользователь отказался от подписки', 'warning');
+                    if (isSubscribed) {
+                        statusDiv.textContent = '✅ Подписка оформлена!';
+                        statusDiv.className = 'status granted';
+                        subscribeBtn.disabled = true;
+                        testBtn.disabled = false;
+                        autoBtn.disabled = false;
+                        addLog('Успешно подписались на уведомления OneSignal', 'success');
+                        
+                        // Показываем тестовое уведомление
+                        setTimeout(() => {
+                            showLocalNotification('Добро пожаловать!', 'OneSignal уведомления работают!');
+                        }, 1000);
+                        
+                    } else {
+                        statusDiv.textContent = '❌ Подписка не оформлена';
+                        statusDiv.className = 'status denied';
+                        addLog('Пользователь отказался от подписки', 'warning');
+                    }
                 }
                 
             } catch (error) {
@@ -251,16 +287,12 @@
             }
         }
 
-        // Отправка уведомления через OneSignal API
-        async function sendOneSignalNotification(title, message) {
-            addLog(`Отправляем уведомление: ${title}`);
+        // Локальное уведомление (для демо)
+        function showLocalNotification(title, message) {
+            addLog(`Показываем уведомление: ${title}`);
             
-            try {
-                // OneSignal автоматически отправит уведомление всем подписчикам
-                // В реальном приложении вам нужно использовать OneSignal API с сервера
-                // Но для демо мы просто показываем локальное уведомление
-                
-                if ('Notification' in window && Notification.permission === 'granted') {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
                     const notification = new Notification(title, {
                         body: message,
                         icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K'
@@ -270,20 +302,22 @@
                         window.focus();
                         notification.close();
                     };
+                    
+                    addLog(`✅ Уведомление "${title}" показано!`, 'success');
+                    
+                } catch (error) {
+                    addLog(`❌ Ошибка показа уведомления: ${error.message}`, 'error');
                 }
-                
-                addLog(`✅ Уведомление "${title}" отправлено!`, 'success');
-                
-            } catch (error) {
-                addLog(`❌ Ошибка отправки: ${error.message}`, 'error');
+            } else {
+                addLog('⚠️ Нет разрешения на уведомления', 'warning');
             }
         }
 
         // Тестовое уведомление
-        async function sendTestNotification() {
-            await sendOneSignalNotification(
-                'Тестовое уведомление OneSignal', 
-                'Это тестовое уведомление через OneSignal!'
+        function sendTestNotification() {
+            showLocalNotification(
+                'Тестовое уведомление', 
+                'Это тестовое уведомление! OneSignal настроен.'
             );
         }
 
@@ -301,9 +335,9 @@
             autoStatusDiv.style.display = 'block';
             
             // Сразу отправляем первое уведомление
-            sendOneSignalNotification(
+            showLocalNotification(
                 'Авто-уведомления запущены!', 
-                'Теперь уведомления будут приходить каждые 20 секунд через OneSignal!'
+                'Теперь уведомления будут приходить каждые 20 секунд!'
             );
             
             // Запускаем интервал
@@ -315,7 +349,7 @@
                 updateTimer(secondsLeft);
                 
                 if (secondsLeft <= 0) {
-                    sendOneSignalNotification(
+                    showLocalNotification(
                         `Авто-уведомление #${notificationCounter}`,
                         `Это автоматическое уведомление №${notificationCounter}. Следующее через 20 секунд.`
                     );
@@ -343,7 +377,7 @@
             autoStatusDiv.style.display = 'none';
             
             // Отправляем уведомление о остановке
-            sendOneSignalNotification(
+            showLocalNotification(
                 'Авто-уведомления остановлены', 
                 'Вы больше не будете получать автоматические уведомления'
             );
@@ -354,15 +388,17 @@
             timerSpan.textContent = seconds;
         }
 
-        // Автоматическая инициализация при загрузке
+        // Проверяем при загрузке
         window.addEventListener('load', function() {
-            addLog('OneSignal загружается автоматически...');
-            addLog('Нажмите "Инициализировать OneSignal" когда будет готово', 'info');
+            addLog('Страница загружена. Нажмите "Загрузить OneSignal"');
             
-            // Автоматически инициализируем через 2 секунды
-            setTimeout(() => {
-                initOneSignal();
-            }, 2000);
+            // Если уже есть разрешение на уведомления, активируем кнопки
+            if (Notification.permission === 'granted') {
+                testBtn.disabled = false;
+                autoBtn.disabled = false;
+                statusDiv.textContent = '✅ Уведомления уже разрешены';
+                statusDiv.className = 'status granted';
+            }
         });
 
         // Останавливаем авто-уведомления при закрытии страницы
