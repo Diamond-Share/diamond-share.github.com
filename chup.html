@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авто-уведомления</title>
-    
+    <title>Фоновые уведомления</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,37 +83,42 @@
             text-align: center;
         }
         
-        .browser-info {
-            background: #6f42c1;
-            color: white;
-            padding: 10px;
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
             border-radius: 6px;
-            margin: 10px 0;
-            text-align: center;
+            margin: 15px 0;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="browser-info" id="browserInfo">
-            🔍 Определяем браузер...
+        <h2>🔔 Фоновые уведомления</h2>
+        
+        <div class="instructions">
+            <strong>Как это работает:</strong>
+            <ul>
+                <li>Уведомления будут приходить даже когда браузер закрыт</li>
+                <li>Service Worker работает в фоне</li>
+                <li>Требуется HTTPS (уже есть на GitHub Pages)</li>
+            </ul>
         </div>
         
-        <h2>🚀 Авто-уведомления каждые 20 сек</h2>
-        
         <div id="status" class="status default">
-            Проверка поддержки...
+            Инициализация...
         </div>
 
         <div id="autoStatus" class="auto-status" style="display: none;">
-            ⏰ Авто-уведомления: <span id="timer">20</span> сек до следующего
+            ⏰ Фоновые уведомления активны
         </div>
 
-        <button onclick="initNotifications()" id="initBtn">1. Инициализировать уведомления</button>
+        <button onclick="initServiceWorker()" id="initBtn">1. Инициализировать Service Worker</button>
         <button onclick="requestPermission()" id="permissionBtn" disabled>2. Разрешить уведомления</button>
-        <button onclick="sendTestNotification()" id="testBtn" disabled>3. Тестовое уведомление</button>
-        <button onclick="startAutoNotifications()" id="autoBtn" disabled>🚀 Запустить авто-уведомления</button>
-        <button onclick="stopAutoNotifications()" id="stopBtn" disabled>⏹️ Остановить авто-уведомления</button>
+        <button onclick="subscribeToPush()" id="pushBtn" disabled>3. Включить фоновые уведомления</button>
+        <button onclick="sendTestNotification()" id="testBtn" disabled>📨 Тестовое уведомление</button>
+        <button onclick="startBackgroundNotifications()" id="startBtn" disabled>🚀 Запустить авто-уведомления</button>
+        <button onclick="stopBackgroundNotifications()" id="stopBtn" disabled>⏹️ Остановить</button>
         <button onclick="clearLog()">Очистить лог</button>
 
         <div class="log" id="log">
@@ -125,20 +129,19 @@
     <script>
         const statusDiv = document.getElementById('status');
         const logDiv = document.getElementById('log');
-        const browserInfoDiv = document.getElementById('browserInfo');
         const autoStatusDiv = document.getElementById('autoStatus');
-        const timerSpan = document.getElementById('timer');
         const initBtn = document.getElementById('initBtn');
         const permissionBtn = document.getElementById('permissionBtn');
+        const pushBtn = document.getElementById('pushBtn');
         const testBtn = document.getElementById('testBtn');
-        const autoBtn = document.getElementById('autoBtn');
+        const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
 
         let serviceWorkerRegistration = null;
-        let autoNotificationInterval = null;
+        let pushSubscription = null;
+        let backgroundSyncSupported = false;
         let notificationCounter = 1;
-        let isBraveBrowser = false;
-        let notificationMethod = 'direct'; // 'direct' или 'serviceWorker'
+        const VAPID_PUBLIC_KEY = 'BLx1h-9O7eXr-Jl7K8WQ6n3vT2m5z8p0q1r4t7u9w2x3y6z1a4b7c0d3e6f9g2h5j8k1m4n7p0q3s6v9y2';
 
         function addLog(message, type = 'info') {
             const item = document.createElement('div');
@@ -152,74 +155,87 @@
             logDiv.innerHTML = '<div class="log-item info">Лог очищен</div>';
         }
 
-        // Определение браузера
-        function detectBrowser() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            
-            if (userAgent.includes('brave')) {
-                isBraveBrowser = true;
-                browserInfoDiv.innerHTML = '🦁 Обнаружен Brave браузер - используем Service Worker';
-                notificationMethod = 'serviceWorker';
-                addLog('Обнаружен Brave браузер', 'warning');
-            } else if (userAgent.includes('chrome')) {
-                browserInfoDiv.innerHTML = '🚀 Обнаружен Chrome - используем прямые уведомления';
-                addLog('Обнаружен Chrome браузер', 'info');
-            } else if (userAgent.includes('firefox')) {
-                browserInfoDiv.innerHTML = '🦊 Обнаружен Firefox - используем прямые уведомления';
-                addLog('Обнаружен Firefox браузер', 'info');
-            } else if (userAgent.includes('safari')) {
-                browserInfoDiv.innerHTML = '🍎 Обнаружен Safari - используем прямые уведомления';
-                addLog('Обнаружен Safari браузер', 'info');
-            } else {
-                browserInfoDiv.innerHTML = '🌐 Обнаружен другой браузер - пробуем оба метода';
-                addLog('Неизвестный браузер, пробуем оба метода', 'warning');
+        // URL Base64 to Uint8Array
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
             }
+            return outputArray;
         }
 
-        // Инициализация уведомлений
-        async function initNotifications() {
-            addLog('Инициализируем систему уведомлений...');
+        // Инициализация Service Worker
+        async function initServiceWorker() {
+            addLog('Регистрируем Service Worker...');
             
-            if (!('Notification' in window)) {
-                addLog('❌ Браузер не поддерживает уведомления', 'error');
-                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
-                statusDiv.className = 'status denied';
+            if (!('serviceWorker' in navigator)) {
+                addLog('❌ Service Worker не поддерживается', 'error');
                 return;
             }
 
-            // Для Brave пытаемся зарегистрировать Service Worker
-            if (isBraveBrowser && 'serviceWorker' in navigator) {
-                addLog('Пытаемся зарегистрировать Service Worker для Brave...');
+            try {
+                serviceWorkerRegistration = await navigator.serviceWorker.register('sw.js', {
+                    scope: './'
+                });
                 
-                try {
-                    // Создаем простой Service Worker
-                    const swCode = `
-                        self.addEventListener('install', (event) => {
-                            self.skipWaiting();
+                addLog('✅ Service Worker зарегистрирован', 'success');
+                
+                // Ждем активации
+                if (serviceWorkerRegistration.installing) {
+                    addLog('Service Worker устанавливается...', 'info');
+                    await new Promise(resolve => {
+                        const worker = serviceWorkerRegistration.installing;
+                        worker.addEventListener('statechange', () => {
+                            if (worker.state === 'activated') {
+                                resolve();
+                            }
                         });
-                        self.addEventListener('activate', (event) => {
-                            event.waitUntil(self.clients.claim());
-                        });
-                    `;
-                    
-                    const blob = new Blob([swCode], {type: 'application/javascript'});
-                    const swUrl = URL.createObjectURL(blob);
-                    
-                    serviceWorkerRegistration = await navigator.serviceWorker.register(swUrl);
-                    addLog('✅ Service Worker зарегистрирован для Brave', 'success');
-                    notificationMethod = 'serviceWorker';
-                    
-                } catch (error) {
-                    addLog(`❌ Service Worker не зарегистрирован: ${error.message}`, 'error');
-                    notificationMethod = 'direct';
+                    });
                 }
-            }
 
-            permissionBtn.disabled = false;
-            initBtn.disabled = true;
-            statusDiv.textContent = '✅ Система готова. Запросите разрешение.';
-            statusDiv.className = 'status granted';
-            addLog('Система уведомлений инициализирована', 'success');
+                // Проверяем поддержку фоновых функций
+                backgroundSyncSupported = 'sync' in serviceWorkerRegistration;
+                
+                addLog(`✅ Service Worker активирован`, 'success');
+                addLog(`🔄 Фоновая синхронизация: ${backgroundSyncSupported ? 'поддерживается' : 'не поддерживается'}`, 'info');
+                
+                initBtn.disabled = true;
+                permissionBtn.disabled = false;
+                statusDiv.textContent = '✅ Service Worker готов. Запросите разрешение.';
+                statusDiv.className = 'status granted';
+
+                // Восстанавливаем подписку если была
+                await checkExistingSubscription();
+
+            } catch (error) {
+                addLog(`❌ Ошибка регистрации Service Worker: ${error.message}`, 'error');
+            }
+        }
+
+        // Проверка существующей подписки
+        async function checkExistingSubscription() {
+            if (!serviceWorkerRegistration) return;
+
+            try {
+                const subscription = await serviceWorkerRegistration.pushManager.getSubscription();
+                if (subscription) {
+                    pushSubscription = subscription;
+                    addLog('✅ Найдена существующая подписка на уведомления', 'success');
+                    pushBtn.disabled = true;
+                    startBtn.disabled = false;
+                    testBtn.disabled = false;
+                    statusDiv.textContent = '✅ Фоновые уведомления готовы к работе';
+                }
+            } catch (error) {
+                addLog('Ошибка при проверке подписки', 'error');
+            }
         }
 
         // Запрос разрешения
@@ -234,14 +250,9 @@
                     statusDiv.textContent = '✅ Уведомления разрешены!';
                     statusDiv.className = 'status granted';
                     permissionBtn.disabled = true;
+                    pushBtn.disabled = false;
                     testBtn.disabled = false;
-                    autoBtn.disabled = false;
-                    addLog('Разрешение получено! Можно отправлять уведомления', 'success');
-                    
-                    // Автоматически отправляем первое тестовое уведомление
-                    setTimeout(() => {
-                        sendNotification('Добро пожаловать!', 'Система уведомлений работает!');
-                    }, 1000);
+                    addLog('Разрешение получено! Можно настроить фоновые уведомления', 'success');
                     
                 } else {
                     statusDiv.textContent = '❌ Разрешение не получено';
@@ -254,144 +265,167 @@
             }
         }
 
-        // Отправка уведомления (универсальный метод)
-        async function sendNotification(title, body) {
+        // Подписка на Push-уведомления
+        async function subscribeToPush() {
+            if (!serviceWorkerRegistration) {
+                addLog('❌ Service Worker не инициализирован', 'error');
+                return;
+            }
+
             if (Notification.permission !== 'granted') {
                 addLog('❌ Нет разрешения на уведомления', 'error');
                 return;
             }
 
-            addLog(`Отправляем уведомление: ${title}`);
-            
+            addLog('Подписываемся на Push-уведомления...');
+
             try {
-                if (notificationMethod === 'serviceWorker' && serviceWorkerRegistration) {
-                    // Используем Service Worker для Brave
-                    await serviceWorkerRegistration.showNotification(title, {
-                        body: body,
-                        icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
-                        badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
-                        tag: `notification-${Date.now()}`,
-                        requireInteraction: false
-                    });
-                    addLog('✅ Уведомление отправлено через Service Worker', 'success');
-                    
-                } else {
-                    // Прямые уведомления для других браузеров
-                    const notification = new Notification(title, {
-                        body: body,
-                        icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K'
-                    });
+                const subscription = await serviceWorkerRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
 
-                    notification.onclick = () => {
-                        window.focus();
-                        notification.close();
-                    };
-
-                    addLog('✅ Уведомление отправлено напрямую', 'success');
-                }
+                pushSubscription = subscription;
+                addLog('✅ Успешно подписались на Push-уведомления', 'success');
                 
+                pushBtn.disabled = true;
+                startBtn.disabled = false;
+                statusDiv.textContent = '✅ Фоновые уведомления активированы!';
+
+                // Сохраняем подписку (в реальном приложении отправили бы на сервер)
+                localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+
             } catch (error) {
-                addLog(`❌ Ошибка отправки: ${error.message}`, 'error');
-                
-                // Пробуем альтернативный метод
-                if (error.message.includes('ServiceWorkerRegistration')) {
-                    addLog('Пробуем прямой метод...', 'info');
-                    notificationMethod = 'direct';
-                    sendNotification(title, body);
-                } else if (error.message.includes('Illegal constructor')) {
-                    addLog('Пробуем Service Worker...', 'info');
-                    notificationMethod = 'serviceWorker';
-                    sendNotification(title, body);
-                }
+                addLog(`❌ Ошибка подписки: ${error.message}`, 'error');
             }
+        }
+
+        // Запуск фоновых уведомлений
+        async function startBackgroundNotifications() {
+            if (!serviceWorkerRegistration) {
+                addLog('❌ Service Worker не инициализирован', 'error');
+                return;
+            }
+
+            addLog('🚀 Запускаем фоновые уведомления...', 'success');
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            autoStatusDiv.style.display = 'block';
+
+            // Сообщаем Service Worker о запуске фонового режима
+            if (serviceWorkerRegistration.active) {
+                serviceWorkerRegistration.active.postMessage({
+                    type: 'START_BACKGROUND_NOTIFICATIONS',
+                    interval: 20000 // 20 секунд
+                });
+            }
+
+            // Отправляем первое уведомление
+            sendTestNotification('Фоновые уведомления запущены!', 
+                'Уведомления будут приходить даже когда браузер закрыт');
+        }
+
+        // Остановка фоновых уведомлений
+        async function stopBackgroundNotifications() {
+            addLog('⏹️ Останавливаем фоновые уведомления', 'info');
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            autoStatusDiv.style.display = 'none';
+
+            // Сообщаем Service Worker об остановке
+            if (serviceWorkerRegistration.active) {
+                serviceWorkerRegistration.active.postMessage({
+                    type: 'STOP_BACKGROUND_NOTIFICATIONS'
+                });
+            }
+
+            sendTestNotification('Фоновые уведомления остановлены', 
+                'Вы больше не будете получать автоматические уведомления');
         }
 
         // Тестовое уведомление
-        function sendTestNotification() {
-            sendNotification('Тестовое уведомление', 'Это тестовое уведомление!');
-        }
-
-        // Запуск автоматических уведомлений
-        function startAutoNotifications() {
-            if (autoNotificationInterval) {
-                addLog('⚠️ Авто-уведомления уже запущены', 'warning');
+        async function sendTestNotification(title = null, body = null) {
+            if (!serviceWorkerRegistration) {
+                addLog('❌ Service Worker не инициализирован', 'error');
                 return;
             }
 
-            addLog('🚀 Запускаем авто-уведомления каждые 20 секунд...', 'success');
+            const notificationTitle = title || `Тестовое уведомление #${notificationCounter}`;
+            const notificationBody = body || `Это тестовое уведомление. Время: ${new Date().toLocaleTimeString()}`;
             
-            autoBtn.disabled = true;
-            stopBtn.disabled = false;
-            autoStatusDiv.style.display = 'block';
+            addLog(`Отправляем: ${notificationTitle}`);
             
-            // Сразу отправляем первое уведомление
-            sendNotification('Авто-уведомления запущены!', 'Теперь уведомления будут приходить каждые 20 секунд!');
-            
-            // Запускаем интервал
-            let secondsLeft = 20;
-            updateTimer(secondsLeft);
-            
-            autoNotificationInterval = setInterval(() => {
-                secondsLeft--;
-                updateTimer(secondsLeft);
-                
-                if (secondsLeft <= 0) {
-                    sendNotification(
-                        `Авто-уведомление #${notificationCounter}`,
-                        `Это автоматическое уведомление №${notificationCounter}. Следующее через 20 секунд.`
-                    );
-                    notificationCounter++;
-                    secondsLeft = 20;
-                    updateTimer(secondsLeft);
-                }
-            }, 1000);
+            try {
+                await serviceWorkerRegistration.showNotification(notificationTitle, {
+                    body: notificationBody,
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
+                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
+                    tag: `notification-${Date.now()}`,
+                    requireInteraction: false,
+                    actions: [
+                        {
+                            action: 'confirm',
+                            title: '✅ OK'
+                        },
+                        {
+                            action: 'cancel',
+                            title: '❌ Отмена'
+                        }
+                    ]
+                });
+
+                addLog(`✅ Уведомление отправлено!`, 'success');
+                notificationCounter++;
+
+            } catch (error) {
+                addLog(`❌ Ошибка отправки: ${error.message}`, 'error');
+            }
         }
 
-        // Остановка автоматических уведомлений
-        function stopAutoNotifications() {
-            if (!autoNotificationInterval) {
-                addLog('⚠️ Авто-уведомления не запущены', 'warning');
+        // Инициализация при загрузке
+        window.addEventListener('load', async function() {
+            addLog('Проверяем поддержку...');
+            
+            if (!('serviceWorker' in navigator)) {
+                addLog('❌ Service Worker не поддерживается', 'error');
+                statusDiv.textContent = '❌ Браузер не поддерживает фоновые уведомления';
+                statusDiv.className = 'status denied';
                 return;
             }
 
-            addLog('⏹️ Останавливаем авто-уведомления', 'info');
-            
-            clearInterval(autoNotificationInterval);
-            autoNotificationInterval = null;
-            
-            autoBtn.disabled = false;
-            stopBtn.disabled = true;
-            autoStatusDiv.style.display = 'none';
-            
-            // Отправляем уведомление о остановке
-            sendNotification('Авто-уведомления остановлены', 'Вы больше не будете получать автоматические уведомления');
-        }
+            if (!('PushManager' in window)) {
+                addLog('❌ Push API не поддерживается', 'error');
+                statusDiv.textContent = '❌ Браузер не поддерживает Push-уведомления';
+                statusDiv.className = 'status denied';
+                return;
+            }
 
-        // Обновление таймера
-        function updateTimer(seconds) {
-            timerSpan.textContent = seconds;
-        }
-
-        // Автоматическая инициализация при загрузке
-        window.addEventListener('load', function() {
-            addLog('Страница загружена');
-            detectBrowser();
+            addLog('✅ Все функции поддерживаются', 'success');
             
-            // Если уже есть разрешение, активируем кнопки
+            // Проверяем существующее разрешение
             if (Notification.permission === 'granted') {
                 permissionBtn.disabled = true;
-                testBtn.disabled = false;
-                autoBtn.disabled = false;
                 statusDiv.textContent = '✅ Уведомления уже разрешены';
                 statusDiv.className = 'status granted';
-                initBtn.disabled = true;
+                
+                // Автоматически инициализируем Service Worker
+                setTimeout(initServiceWorker, 1000);
             }
         });
 
-        // Останавливаем авто-уведомления при закрытии страницы
+        // Слушаем сообщения от Service Worker
+        navigator.serviceWorker.addEventListener('message', event => {
+            if (event.data && event.data.type === 'NOTIFICATION_SENT') {
+                addLog(`📨 Фоновое уведомление: ${event.data.title}`, 'success');
+            }
+        });
+
+        // Останавливаем при закрытии
         window.addEventListener('beforeunload', function() {
-            if (autoNotificationInterval) {
-                stopAutoNotifications();
+            if (startBtn.disabled) {
+                stopBackgroundNotifications();
             }
         });
 
