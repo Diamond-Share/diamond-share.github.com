@@ -3,147 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Проверка уведомлений</title>
+    <title>Уведомления с логом</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .debug { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; }
-        .success { color: green; }
-        .error { color: red; }
-        .warning { color: orange; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .log-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #333;
+        }
+        
+        .log-info { border-left-color: #2196F3; }
+        .log-success { border-left-color: #4CAF50; }
+        .log-warning { border-left-color: #FF9800; }
+        .log-error { border-left-color: #f44336; }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .granted { background: #E8F5E8; color: #2E7D32; }
+        .denied { background: #FFEBEE; color: #C62828; }
+        .default { background: #FFF3E0; color: #EF6C00; }
     </style>
 </head>
 <body>
-    <h1>🔍 Диагностика уведомлений</h1>
-    
-    <div id="debugInfo" class="debug">
-        <h3>Информация о системе:</h3>
-        <div id="systemInfo"></div>
+    <div class="container">
+        <h1>🔔 Тест уведомлений с полным логом</h1>
+        
+        <div id="status" class="status default">
+            Инициализация...
+        </div>
+
+        <div>
+            <button onclick="requestPermission()">Запросить разрешение</button>
+            <button onclick="testNotification()" id="testBtn" disabled>Тест уведомления</button>
+            <button onclick="clearLog()">Очистить лог</button>
+            <button onclick="checkEnvironment()">Проверить окружение</button>
+        </div>
+
+        <h3>Лог выполнения:</h3>
+        <div id="log" class="log-container"></div>
     </div>
-
-    <div id="status"></div>
-
-    <button onclick="requestPermission()">Запросить разрешение</button>
-    <button onclick="testNotification()" id="testBtn" disabled>Тест уведомления</button>
-    <button onclick="checkEverything()">Проверить всё</button>
 
     <script>
         const statusDiv = document.getElementById('status');
-        const systemInfoDiv = document.getElementById('systemInfo');
+        const logDiv = document.getElementById('log');
         const testBtn = document.getElementById('testBtn');
 
-        // Проверка системы
-        function checkEverything() {
-            let info = '';
+        // Система логгирования
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // Также выводим в консоль браузера
+            const consoleMethod = type === 'error' ? 'error' : 
+                                 type === 'warning' ? 'warn' : 'log';
+            console[consoleMethod](`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            logDiv.innerHTML = '';
+            addLog('Лог очищен', 'info');
+        }
+
+        // Проверка окружения
+        function checkEnvironment() {
+            addLog('=== ПРОВЕРКА ОКРУЖЕНИЯ ===', 'info');
             
             // Проверка поддержки Notification API
             if (!('Notification' in window)) {
-                info += '<p class="error">❌ Браузер не поддерживает уведомления</p>';
-            } else {
-                info += '<p class="success">✅ Notification API поддерживается</p>';
-                info += `<p>Текущий статус: <strong>${Notification.permission}</strong></p>`;
+                addLog('❌ Браузер не поддерживает Notification API', 'error');
+                statusDiv.innerHTML = '❌ Браузер не поддерживает уведомления';
+                statusDiv.className = 'status denied';
+                return false;
             }
-
-            // Проверка HTTPS
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                info += '<p class="warning">⚠️ Нужен HTTPS (кроме localhost)</p>';
+            addLog('✅ Notification API поддерживается', 'success');
+            
+            // Проверка протокола
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
+            addLog(`🔒 Протокол: ${location.protocol} (${isSecure ? 'безопасный' : 'небезопасный'})`, 
+                   isSecure ? 'success' : 'warning');
+            
+            // Проверка статуса разрешения
+            addLog(`📊 Текущий статус разрешения: ${Notification.permission}`, 'info');
+            
+            // Проверка Service Worker
+            if ('serviceWorker' in navigator) {
+                addLog('✅ Service Worker API поддерживается', 'success');
             } else {
-                info += '<p class="success">✅ Протокол OK</p>';
+                addLog('⚠️ Service Worker API не поддерживается', 'warning');
             }
-
-            // Проверка фокуса окна
-            info += `<p>Окно в фокусе: <strong>${document.hasFocus() ? 'Да' : 'Нет'}</strong></p>`;
-
-            systemInfoDiv.innerHTML = info;
+            
+            // Проверка фокуса
+            addLog(`👀 Окно в фокусе: ${document.hasFocus()}`, 'info');
+            
+            // Информация о браузере
+            addLog(`🌐 Браузер: ${navigator.userAgent.split(' ')[0]}`, 'info');
+            
+            return true;
         }
 
         // Запрос разрешения
         async function requestPermission() {
+            addLog('=== ЗАПРОС РАЗРЕШЕНИЯ ===', 'info');
+            
             if (!('Notification' in window)) {
-                statusDiv.innerHTML = '<p class="error">Ваш браузер не поддерживает уведомления</p>';
+                addLog('❌ Notification API не поддерживается', 'error');
                 return;
             }
 
             try {
+                addLog('🔄 Запрашиваем разрешение...', 'info');
                 const permission = await Notification.requestPermission();
-                statusDiv.innerHTML = `<p>Результат: <strong>${permission}</strong></p>`;
+                addLog(`📋 Результат запроса: ${permission}`, 'info');
                 
                 if (permission === 'granted') {
+                    addLog('✅ Разрешение получено! Уведомления разрешены.', 'success');
+                    statusDiv.innerHTML = '✅ Уведомления разрешены!';
+                    statusDiv.className = 'status granted';
                     testBtn.disabled = false;
-                    statusDiv.innerHTML += '<p class="success">✅ Разрешение получено! Теперь проверьте уведомление</p>';
-                    // Автоматически показываем тестовое уведомление
-                    setTimeout(() => testNotification(), 1000);
+                    
+                    // Автоматически тестируем уведомление
+                    setTimeout(() => {
+                        addLog('🔄 Автоматически запускаем тест уведомления...', 'info');
+                        testNotification();
+                    }, 1000);
+                    
+                } else if (permission === 'denied') {
+                    addLog('❌ Разрешение отклонено. Нужно разрешить в настройках браузера.', 'error');
+                    statusDiv.innerHTML = '❌ Уведомления заблокированы';
+                    statusDiv.className = 'status denied';
+                    testBtn.disabled = true;
                 } else {
-                    statusDiv.innerHTML += '<p class="error">❌ Разрешение не получено</p>';
+                    addLog('⚠️ Пользователь отложил решение', 'warning');
+                    statusDiv.innerHTML = '⚠️ Разрешение не получено';
+                    statusDiv.className = 'status default';
                 }
+                
             } catch (error) {
-                statusDiv.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
+                addLog(`❌ Ошибка при запросе разрешения: ${error.message}`, 'error');
+                console.error('Ошибка:', error);
             }
         }
 
-        // Тестовое уведомление
+        // Тестовое уведомление с обработкой ошибки конструктора
         function testNotification() {
+            addLog('=== ТЕСТ УВЕДОМЛЕНИЯ ===', 'info');
+            
             if (Notification.permission !== 'granted') {
-                statusDiv.innerHTML = '<p class="error">Сначала разрешите уведомления</p>';
+                addLog('❌ Нет разрешения на уведомления', 'error');
                 return;
             }
 
             try {
+                addLog('🔄 Создаем уведомление...', 'info');
+                
+                // Пробуем создать уведомление стандартным способом
                 const notification = new Notification('🎉 Тестовое уведомление!', {
-                    body: 'Если вы видите это сообщение - уведомления работают!',
-                    icon: 'https://cdn-icons-png.flaticon.com/512/733/733585.png', // Используем стандартную иконку
-                    badge: 'https://cdn-icons-png.flaticon.com/512/733/733585.png',
-                    tag: 'test-notification',
-                    requireInteraction: true, // Остается пока пользователь не закроет
-                    actions: [
-                        {
-                            action: 'open',
-                            title: 'Открыть сайт'
-                        }
-                    ]
+                    body: 'Если вы видите это - уведомления работают корректно!',
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
+                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
+                    tag: 'test-notification-' + Date.now(),
+                    requireInteraction: true
                 });
 
-                statusDiv.innerHTML = '<p class="success">✅ Уведомление отправлено! Проверьте его.</p>';
+                addLog('✅ Уведомление успешно создано!', 'success');
+                statusDiv.innerHTML = '✅ Уведомление отправлено! Проверьте его.';
+
+                // Обработчики событий уведомления
+                notification.onshow = () => {
+                    addLog('🟢 Уведомление показано в системе', 'success');
+                };
 
                 notification.onclick = () => {
-                    console.log('Уведомление clicked');
+                    addLog('👆 Пользователь кликнул на уведомление', 'info');
                     window.focus();
                     notification.close();
                 };
 
-                notification.onshow = () => {
-                    console.log('Уведомление показано');
-                    statusDiv.innerHTML += '<p>🟢 Уведомление показано в системе</p>';
-                };
-
                 notification.onclose = () => {
-                    console.log('Уведомление закрыто');
-                    statusDiv.innerHTML += '<p>🔴 Уведомление закрыто</p>';
+                    addLog('🔴 Уведомление закрыто', 'info');
                 };
 
                 notification.onerror = (error) => {
-                    console.error('Ошибка уведомления:', error);
-                    statusDiv.innerHTML += '<p class="error">❌ Ошибка при показе уведомления</p>';
+                    addLog(`❌ Ошибка уведомления: ${error}`, 'error');
                 };
 
+                // Автоматическое закрытие через 10 секунд
+                setTimeout(() => {
+                    if (notification.close) {
+                        notification.close();
+                        addLog('⏰ Уведомление автоматически закрыто по таймауту', 'info');
+                    }
+                }, 10000);
+
             } catch (error) {
-                statusDiv.innerHTML = `<p class="error">❌ Ошибка: ${error.message}</p>`;
-                console.error('Ошибка создания уведомления:', error);
+                addLog(`❌ Ошибка при создании уведомления: ${error.message}`, 'error');
+                
+                if (error.message.includes('ServiceWorkerRegistration')) {
+                    addLog('ℹ️ Этот браузер требует использование Service Worker для уведомлений', 'warning');
+                    addLog('🔄 Пробуем альтернативный метод...', 'info');
+                    tryAlternativeMethod();
+                }
             }
         }
 
-        // Проверяем при загрузке
-        checkEverything();
-
-        // Автоматически запрашиваем разрешение через 2 секунды
-        setTimeout(() => {
-            if (Notification.permission === 'default') {
-                statusDiv.innerHTML = '<p>🔄 Автоматически запрашиваем разрешение...</p>';
-                requestPermission();
-            } else if (Notification.permission === 'granted') {
-                testBtn.disabled = false;
-                statusDiv.innerHTML = '<p class="success">✅ Уведомления уже разрешены</p>';
+        // Альтернативный метод для браузеров, требующих Service Worker
+        function tryAlternativeMethod() {
+            addLog('=== АЛЬТЕРНАТИВНЫЙ МЕТОД ===', 'info');
+            
+            if ('serviceWorker' in navigator) {
+                addLog('🔄 Регистрируем Service Worker...', 'info');
+                
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    addLog('✅ Service Worker зарегистрирован', 'success');
+                    
+                    // Используем Service Worker для уведомления
+                    registration.showNotification('Уведомление через Service Worker', {
+                        body: 'Это уведомление отправлено через Service Worker',
+                        icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
+                        badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg=='
+                    });
+                    
+                    addLog('✅ Уведомление отправлено через Service Worker', 'success');
+                    
+                }).catch(error => {
+                    addLog(`❌ Ошибка регистрации Service Worker: ${error.message}`, 'error');
+                });
+            } else {
+                addLog('❌ Service Worker не поддерживается, альтернативный метод недоступен', 'error');
             }
-        }, 2000);
+        }
+
+        // Инициализация при загрузке
+        window.addEventListener('load', function() {
+            addLog('=== СИСТЕМА ЗАПУЩЕНА ===', 'info');
+            addLog('🔄 Проверяем окружение...', 'info');
+            
+            if (checkEnvironment()) {
+                // Если разрешение уже есть, активируем кнопку теста
+                if (Notification.permission === 'granted') {
+                    addLog('✅ Уведомления уже разрешены', 'success');
+                    statusDiv.innerHTML = '✅ Уведомления разрешены';
+                    statusDiv.className = 'status granted';
+                    testBtn.disabled = false;
+                } else if (Notification.permission === 'denied') {
+                    addLog('❌ Уведомления заблокированы', 'error');
+                    statusDiv.innerHTML = '❌ Уведомления заблокированы';
+                    statusDiv.className = 'status denied';
+                } else {
+                    addLog('⚠️ Разрешение не запрошено', 'warning');
+                    statusDiv.innerHTML = '⚠️ Нажмите "Запросить разрешение"';
+                    statusDiv.className = 'status default';
+                }
+            }
+        });
+
+        // Перехватываем console.log для отображения в интерфейсе
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const originalConsoleInfo = console.info;
+
+        console.log = function(...args) {
+            addLog(args.join(' '), 'info');
+            originalConsoleLog.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            addLog(args.join(' '), 'error');
+            originalConsoleError.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            addLog(args.join(' '), 'warning');
+            originalConsoleWarn.apply(console, args);
+        };
+
+        console.info = function(...args) {
+            addLog(args.join(' '), 'info');
+            originalConsoleInfo.apply(console, args);
+        };
     </script>
 </body>
 </html>
