@@ -3,382 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404</title>
+    <title>Уведомления сайта</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
         }
-        
-        body, html {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f0f0f0;
+        .notification-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
         }
-        
-        .banner-container {
-            width: 100vw;
-            height: 100vh;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 2px;
+        .notification-btn:hover {
+            background: #0056b3;
         }
-        
-        .banner-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: white;
-            overflow: hidden;
+        .notification-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
         }
-        
-        .mrg-tag {
-            transform: scale(0.3);
-            transform-origin: center;
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
         }
+        .granted { background: #d4edda; color: #155724; }
+        .denied { background: #f8d7da; color: #721c24; }
+        .default { background: #fff3cd; color: #856404; }
     </style>
 </head>
 <body>
-    <div class="banner-container">
-        <!-- Баннер 1 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 2 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 3 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 4 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 5 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 6 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 7 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 8 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 9 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 10 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 11 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 12 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 13 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 14 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 15 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 16 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 17 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 18 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 19 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 20 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 21 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 22 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 23 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 24 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 25 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 26 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 27 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 28 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 29 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
-
-        <!-- Баннер 30 -->
-        <div class="banner-item">
-            <script async src="https://ad.mail.ru/static/ads-async.js"></script>
-            <ins class="mrg-tag" 
-                style="display:inline-block;width:240px;height:400px"
-                data-ad-client="ad-1886256" 
-                data-ad-slot="1886256">
-            </ins>
-            <script>(MRGtag = window.MRGtag || []).push({});</script>
-        </div>
+    <h1>Уведомления от сайта</h1>
+    
+    <div id="status" class="status default">
+        Проверяем статус уведомлений...
     </div>
 
+    <button id="enableBtn" class="notification-btn">
+        Разрешить уведомления
+    </button>
+
+    <button id="testBtn" class="notification-btn" disabled>
+        Тестовое уведомление
+    </button>
+
+    <button id="scheduleBtn" class="notification-btn" disabled>
+        Авто-уведомление через 5 сек
+    </button>
+
     <script>
-        // Автоматическое обновление страницы каждые 8 секунд
-        setTimeout(function() {
-            window.location.reload();
-        }, 8000);
+        const statusDiv = document.getElementById('status');
+        const enableBtn = document.getElementById('enableBtn');
+        const testBtn = document.getElementById('testBtn');
+        const scheduleBtn = document.getElementById('scheduleBtn');
+
+        // Проверяем поддержку уведомлений
+        if (!('Notification' in window)) {
+            statusDiv.innerHTML = 'Ваш браузер не поддерживает уведомления';
+            enableBtn.disabled = true;
+            return;
+        }
+
+        // Функция для обновления статуса
+        function updateStatus() {
+            switch(Notification.permission) {
+                case 'granted':
+                    statusDiv.innerHTML = '✅ Уведомления разрешены!';
+                    statusDiv.className = 'status granted';
+                    enableBtn.disabled = true;
+                    testBtn.disabled = false;
+                    scheduleBtn.disabled = false;
+                    break;
+                case 'denied':
+                    statusDiv.innerHTML = '❌ Уведомления заблокированы. Разрешите в настройках браузера.';
+                    statusDiv.className = 'status denied';
+                    enableBtn.disabled = true;
+                    testBtn.disabled = true;
+                    scheduleBtn.disabled = true;
+                    break;
+                default:
+                    statusDiv.innerHTML = '⚠️ Уведомления не разрешены. Нажмите кнопку ниже.';
+                    statusDiv.className = 'status default';
+                    enableBtn.disabled = false;
+                    testBtn.disabled = true;
+                    scheduleBtn.disabled = true;
+            }
+        }
+
+        // Запрос разрешения
+        enableBtn.addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            updateStatus();
+            
+            if (permission === 'granted') {
+                // Показываем первое уведомление
+                showNotification('Спасибо!', 'Вы разрешили уведомления от нашего сайта.');
+            }
+        });
+
+        // Тестовое уведомление
+        testBtn.addEventListener('click', () => {
+            showNotification('Тестовое уведомление', 'Это работает! Уведомления активны.');
+        });
+
+        // Автоматическое уведомление через 5 секунд
+        scheduleBtn.addEventListener('click', () => {
+            statusDiv.innerHTML = 'Уведомление будет показано через 5 секунд...';
+            setTimeout(() => {
+                showNotification('Авто-уведомление', 'Это автоматическое уведомление!');
+                updateStatus();
+            }, 5000);
+        });
+
+        // Функция показа уведомления
+        function showNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: '/favicon.ico', // Можно заменить на свою иконку
+                    badge: '/favicon.ico',
+                    tag: 'website-notification'
+                });
+
+                // Обработчик клика по уведомлению
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+
+                // Автоматическое закрытие через 5 секунд
+                setTimeout(() => {
+                    notification.close();
+                }, 5000);
+            }
+        }
+
+        // Проверяем статус при загрузке
+        updateStatus();
+
+        // Автоматически запрашиваем разрешение при загрузке (опционально)
+        // window.addEventListener('load', () => {
+        //     if (Notification.permission === 'default') {
+        //         // Можно автоматически показать запрос
+        //         // enableBtn.click();
+        //     }
+        // });
     </script>
 </body>
 </html>
