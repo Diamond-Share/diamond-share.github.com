@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авто-уведомления</title>
+    <title>Уведомления PushAlert</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,337 +12,137 @@
             padding: 20px;
             background: #f0f2f5;
         }
-        
         .container {
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        
         button {
             background: #007bff;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 15px 30px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 5px;
-            font-size: 16px;
-            width: 100%;
+            margin: 10px;
+            font-size: 18px;
+            width: 90%;
         }
-        
         button:hover {
             background: #0056b3;
         }
-        
-        button:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        
         .status {
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin: 15px 0;
-            text-align: center;
             font-weight: bold;
         }
-        
-        .granted { background: #d4edda; color: #155724; }
-        .denied { background: #f8d7da; color: #721c24; }
-        .default { background: #fff3cd; color: #856404; }
-        
-        .log {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 14px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .log-item {
-            margin: 5px 0;
-            padding: 3px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .success { color: #28a745; }
-        .error { color: #dc3545; }
-        .warning { color: #ffc107; }
-        .info { color: #17a2b8; }
-        
-        .auto-status {
-            background: #e7f3ff;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 10px 0;
-            text-align: center;
-        }
-        
-        .instructions {
-            background: #e7f3ff;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 15px 0;
-            font-size: 14px;
-        }
+        .success { background: #d4edda; color: #155724; }
+        .info { background: #e7f3ff; color: #004085; }
     </style>
+    
+    <!-- PushAlert -->
+    <script type="text/javascript">
+        (function(d, t) {
+            var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+            g.src = "https://cdn.pushalert.co/integrate_1de4761e05d30eb59a06dfc065165cae.js";
+            s.parentNode.insertBefore(g, s);
+        }(document, "script"));
+    </script>
+    <!-- End PushAlert -->
 </head>
 <body>
     <div class="container">
-        <h2>🔔 Авто-уведомления каждые 20 сек</h2>
+        <h1>🔔 Уведомления PushAlert</h1>
         
-        <div class="instructions">
-            <strong>Как работает:</strong>
-            <ul>
-                <li>Уведомления работают когда вкладка/браузер открыты</li>
-                <li>Service Worker может показывать уведомления когда вкладка закрыта</li>
-                <li>Не требует Push-сервера</li>
-            </ul>
+        <div class="status info">
+            Нажмите кнопку ниже чтобы подписаться на уведомления!
         </div>
+
+        <button onclick="subscribeToPush()">📩 Подписаться на уведомления</button>
+        <button onclick="sendTestNotification()">🚀 Тестовое уведомление</button>
+        <button onclick="scheduleAutoNotifications()">⏰ Авто-уведомления</button>
+
+        <div id="status" class="status"></div>
         
-        <div id="status" class="status default">
-            Инициализация...
-        </div>
-
-        <div id="autoStatus" class="auto-status" style="display: none;">
-            ⏰ Авто-уведомления: <span id="timer">20</span> сек до следующего
-        </div>
-
-        <button onclick="initServiceWorker()" id="initBtn">1. Инициализировать Service Worker</button>
-        <button onclick="requestPermission()" id="permissionBtn" disabled>2. Разрешить уведомления</button>
-        <button onclick="sendTestNotification()" id="notificationBtn" disabled>3. Тестовое уведомление</button>
-        <button onclick="startAutoNotifications()" id="autoBtn" disabled>🚀 Запустить авто-уведомления</button>
-        <button onclick="stopAutoNotifications()" id="stopBtn" disabled>⏹️ Остановить авто-уведомления</button>
-        <button onclick="clearLog()">Очистить лог</button>
-
-        <div class="log" id="log">
-            <div class="log-item info">Система запущена...</div>
+        <div style="margin-top: 20px; font-size: 14px; color: #666;">
+            <p>✅ Уведомления будут приходить даже когда браузер закрыт</p>
+            <p>✅ Работает на GitHub Pages</p>
+            <p>✅ Бесплатно</p>
         </div>
     </div>
 
     <script>
-        const statusDiv = document.getElementById('status');
-        const logDiv = document.getElementById('log');
-        const autoStatusDiv = document.getElementById('autoStatus');
-        const timerSpan = document.getElementById('timer');
-        const initBtn = document.getElementById('initBtn');
-        const permissionBtn = document.getElementById('permissionBtn');
-        const notificationBtn = document.getElementById('notificationBtn');
-        const autoBtn = document.getElementById('autoBtn');
-        const stopBtn = document.getElementById('stopBtn');
-
-        let serviceWorkerRegistration = null;
-        let autoNotificationInterval = null;
-        let notificationCounter = 1;
-
-        function addLog(message, type = 'info') {
-            const item = document.createElement('div');
-            item.className = `log-item ${type}`;
-            item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logDiv.appendChild(item);
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        function clearLog() {
-            logDiv.innerHTML = '<div class="log-item info">Лог очищен</div>';
-        }
-
-        // Инициализация Service Worker
-        async function initServiceWorker() {
-            addLog('Регистрируем Service Worker...');
+        function subscribeToPush() {
+            // PushAlert автоматически покажет диалог подписки
+            // когда пользователь нажмет кнопку
+            PushAlert('subscribe');
             
-            if (!('serviceWorker' in navigator)) {
-                addLog('❌ Service Worker не поддерживается', 'error');
-                return;
-            }
-
-            try {
-                serviceWorkerRegistration = await navigator.serviceWorker.register('sw.js');
-                addLog('✅ Service Worker зарегистрирован', 'success');
-                
-                // Ждем готовности
-                if (serviceWorkerRegistration.installing) {
-                    addLog('Service Worker устанавливается...', 'info');
-                    await new Promise(resolve => {
-                        serviceWorkerRegistration.installing.addEventListener('statechange', () => {
-                            if (serviceWorkerRegistration.installing.state === 'activated') {
-                                resolve();
-                            }
-                        });
-                    });
-                }
-                
-                addLog('✅ Service Worker активирован и готов', 'success');
-                
-                initBtn.disabled = true;
-                permissionBtn.disabled = false;
-                statusDiv.textContent = '✅ Service Worker готов. Теперь запросите разрешение.';
-                statusDiv.className = 'status granted';
-
-            } catch (error) {
-                addLog(`❌ Ошибка регистрации Service Worker: ${error.message}`, 'error');
-            }
+            document.getElementById('status').innerHTML = 
+                '✅ Запрос на подписку отправлен! Разрешите уведомления в браузере.';
+            document.getElementById('status').className = 'status success';
         }
 
-        // Запрос разрешения
-        async function requestPermission() {
-            addLog('Запрашиваем разрешение для уведомлений...');
+        function sendTestNotification() {
+            // Отправляем тестовое уведомление через API PushAlert
+            // ЗАМЕНИ API_KEY на свой из кабинета PushAlert
+            const API_KEY = 'твой_api_key_здесь'; // Найди в кабинете PushAlert
             
-            try {
-                const permission = await Notification.requestPermission();
-                addLog(`Результат: ${permission}`, 'info');
-                
-                if (permission === 'granted') {
-                    statusDiv.textContent = '✅ Уведомления разрешены!';
-                    statusDiv.className = 'status granted';
-                    permissionBtn.disabled = true;
-                    notificationBtn.disabled = false;
-                    autoBtn.disabled = false;
-                    addLog('Разрешение получено! Можно отправлять уведомления', 'success');
-                    
-                    // Автоматически отправляем первое тестовое уведомление
-                    setTimeout(() => {
-                        sendTestNotification('Добро пожаловать!', 'Авто-уведомления готовы к работе!');
-                    }, 1000);
-                    
+            fetch('https://api.pushalert.co/rest/v1/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'api_key=' + API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: 'Тестовое уведомление! 🎉',
+                    message: 'Привет! Это работает даже когда браузер закрыт!',
+                    url: window.location.href
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('status').innerHTML = 
+                        '✅ Тестовое уведомление отправлено!';
+                    document.getElementById('status').className = 'status success';
                 } else {
-                    statusDiv.textContent = '❌ Разрешение не получено';
-                    statusDiv.className = 'status denied';
-                    addLog('Пользователь отказал в разрешении', 'warning');
+                    document.getElementById('status').innerHTML = 
+                        '❌ Ошибка: ' + (data.error || 'Неизвестная ошибка');
+                    document.getElementById('status').className = 'status error';
                 }
-                
-            } catch (error) {
-                addLog(`Ошибка: ${error.message}`, 'error');
-            }
+            })
+            .catch(error => {
+                document.getElementById('status').innerHTML = 
+                    '❌ Ошибка отправки: ' + error.message;
+                document.getElementById('status').className = 'status error';
+            });
         }
 
-        // Отправка уведомления через Service Worker
-        async function sendTestNotification(title = null, body = null) {
-            if (!serviceWorkerRegistration) {
-                addLog('❌ Service Worker не инициализирован', 'error');
-                return;
-            }
-
-            if (Notification.permission !== 'granted') {
-                addLog('❌ Нет разрешения на уведомления', 'error');
-                return;
-            }
-
-            const notificationTitle = title || `Авто-уведомление #${notificationCounter}`;
-            const notificationBody = body || `Это автоматическое уведомление №${notificationCounter}. Следующее через 20 секунд.`;
+        function scheduleAutoNotifications() {
+            // Запускаем авто-уведомления каждые 30 секунд
+            setInterval(() => {
+                sendTestNotification();
+            }, 30000); // 30 секунд
             
-            addLog(`Отправляем уведомление: ${notificationTitle}`);
+            document.getElementById('status').innerHTML = 
+                '✅ Авто-уведомления запущены! Каждые 30 секунд.';
+            document.getElementById('status').className = 'status success';
             
-            try {
-                await serviceWorkerRegistration.showNotification(notificationTitle, {
-                    body: notificationBody,
-                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPHBhdGggZD0iTTI0IDMyTDMwIDM4TDQwIDI4IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K',
-                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMyMTk2RjMiLz4KPC9zdmc+Cg==',
-                    tag: `auto-notification-${notificationCounter}`,
-                    requireInteraction: false
-                });
-
-                addLog(`✅ Уведомление #${notificationCounter} отправлено!`, 'success');
-                notificationCounter++;
-
-            } catch (error) {
-                addLog(`❌ Ошибка отправки уведомления: ${error.message}`, 'error');
-            }
+            // Первое уведомление сразу
+            setTimeout(sendTestNotification, 2000);
         }
 
-        // Запуск автоматических уведомлений
-        function startAutoNotifications() {
-            if (autoNotificationInterval) {
-                addLog('⚠️ Авто-уведомления уже запущены', 'warning');
-                return;
-            }
-
-            addLog('🚀 Запускаем авто-уведомления каждые 20 секунд...', 'success');
-            
-            autoBtn.disabled = true;
-            stopBtn.disabled = false;
-            autoStatusDiv.style.display = 'block';
-            
-            // Сразу отправляем первое уведомление
-            sendTestNotification('Авто-уведомления запущены!', 'Теперь уведомления будут приходить каждые 20 секунд');
-            
-            // Запускаем интервал
-            let secondsLeft = 20;
-            updateTimer(secondsLeft);
-            
-            autoNotificationInterval = setInterval(() => {
-                secondsLeft--;
-                updateTimer(secondsLeft);
-                
-                if (secondsLeft <= 0) {
-                    sendTestNotification();
-                    secondsLeft = 20;
-                    updateTimer(secondsLeft);
-                }
-            }, 1000);
-        }
-
-        // Остановка автоматических уведомлений
-        function stopAutoNotifications() {
-            if (!autoNotificationInterval) {
-                addLog('⚠️ Авто-уведомления не запущены', 'warning');
-                return;
-            }
-
-            addLog('⏹️ Останавливаем авто-уведомления', 'info');
-            
-            clearInterval(autoNotificationInterval);
-            autoNotificationInterval = null;
-            
-            autoBtn.disabled = false;
-            stopBtn.disabled = true;
-            autoStatusDiv.style.display = 'none';
-            
-            // Отправляем уведомление о остановке
-            sendTestNotification('Авто-уведомления остановлены', 'Вы больше не будете получать автоматические уведомления');
-        }
-
-        // Обновление таймера
-        function updateTimer(seconds) {
-            timerSpan.textContent = seconds;
-        }
-
-        // Автоматическая инициализация при загрузке
-        window.addEventListener('load', async function() {
-            addLog('Проверяем поддержку...');
-            
-            if (!('serviceWorker' in navigator)) {
-                addLog('❌ Service Worker не поддерживается', 'error');
-                statusDiv.textContent = '❌ Браузер не поддерживает уведомления';
-                statusDiv.className = 'status denied';
-                return;
-            }
-
-            addLog('✅ Service Worker поддерживается', 'info');
-            
-            // Если уже есть разрешение, активируем кнопки
-            if (Notification.permission === 'granted') {
-                permissionBtn.disabled = true;
-                notificationBtn.disabled = false;
-                autoBtn.disabled = false;
-                statusDiv.textContent = '✅ Уведомления уже разрешены';
-                statusDiv.className = 'status granted';
-                
-                // Авто-инициализация
-                setTimeout(initServiceWorker, 1000);
-            }
-        });
-
-        // Останавливаем авто-уведомления при закрытии страницы
-        window.addEventListener('beforeunload', function() {
-            if (autoNotificationInterval) {
-                stopAutoNotifications();
-            }
+        // Автоматически предлагаем подписку при загрузке
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('status').innerHTML = 
+                    'Нажмите "Подписаться на уведомления" чтобы получать уведомления даже когда браузер закрыт!';
+                document.getElementById('status').className = 'status info';
+            }, 3000);
         });
     </script>
 </body>
