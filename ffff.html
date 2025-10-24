@@ -3,44 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeonCall • Групповые видеозвонки</title>
+    <title>NeoPhone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #8b5cf6;
-            --secondary: #06d6a0;
-            --accent: #f59e0b;
-            --danger: #ef4444;
-            --background: #0f0f23;
-            --surface: #1a1b2e;
-            --surface-light: #2d2e42;
-            --text: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --border: #334155;
-            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06d6a0 100%);
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0056CC;
+            --background: #000000;
+            --surface: #1C1C1E;
+            --card: #2C2C2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --accent: #FF2D55;
+            --success: #32D74B;
+            --gradient: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            --glass: rgba(255, 255, 255, 0.1);
         }
 
         body {
             background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
         /* Анимированный фон */
@@ -50,241 +44,174 @@
             left: 0;
             width: 100%;
             height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 45, 85, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 122, 255, 0.15) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
             z-index: -1;
-            opacity: 0.3;
         }
 
-        .bg-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: var(--gradient);
-            filter: blur(60px);
-            animation: float 20s infinite linear;
+        @keyframes bgMove {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
         }
 
-        .bg-circle:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
+        .screen { 
+            display: none; 
+            padding: 20px; 
+            height: 100vh; 
+            overflow-y: auto;
+        }
+        
+        .screen.active { 
+            display: block; 
         }
 
-        .bg-circle:nth-child(2) {
-            width: 400px;
-            height: 400px;
-            top: 60%;
-            right: 10%;
-            animation-delay: -5s;
-        }
-
-        .bg-circle:nth-child(3) {
-            width: 250px;
-            height: 250px;
-            bottom: 10%;
-            left: 20%;
-            animation-delay: -10s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(20px, 20px) rotate(90deg); }
-            50% { transform: translate(0, 40px) rotate(180deg); }
-            75% { transform: translate(-20px, 20px) rotate(270deg); }
-        }
-
-        /* Основные контейнеры */
-        .app-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .groups-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .call-container {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            background: var(--surface);
-        }
-
-        .call-container.active {
-            display: flex;
-        }
-
-        /* Хедер */
-        .app-header {
+        .header {
+            padding: 50px 30px 25px;
             text-align: center;
-            margin-bottom: 3rem;
+            position: relative;
+            flex-shrink: 0;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .logo-icon {
             width: 60px;
             height: 60px;
             background: var(--gradient);
-            border-radius: 20px;
+            border-radius: 16px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: var(--shadow);
+            font-size: 24px;
+            box-shadow: 0 8px 32px rgba(0, 122, 255, 0.3);
+            animation: logoFloat 3s ease-in-out infinite;
         }
 
-        .logo-text {
-            font-size: 2.5rem;
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 36px;
             font-weight: 800;
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
         }
 
-        .app-subtitle {
-            font-size: 1.2rem;
+        .header p {
             color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto;
+            font-size: 16px;
+            font-weight: 500;
         }
 
-        /* Карточка интерфейса */
-        .interface-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 500px;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .interface-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient);
-        }
-
-        /* Табы */
-        .tabs {
+        .tab-bar {
             display: flex;
-            background: var(--surface-light);
-            border-radius: 16px;
+            background: var(--surface);
+            margin: 0 20px 20px;
+            border-radius: 20px;
             padding: 6px;
-            margin-bottom: 2rem;
             position: relative;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass);
+            flex-shrink: 0;
         }
 
         .tab {
             flex: 1;
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 16px;
             font-weight: 600;
+            color: var(--text-secondary);
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1;
+            border-radius: 14px;
         }
 
         .tab.active {
-            color: var(--text);
+            color: var(--text-primary);
         }
 
-        .tab-slider {
+        .tab-indicator {
             position: absolute;
             top: 6px;
             left: 6px;
+            width: calc(25% - 12px);
             height: calc(100% - 12px);
-            width: calc(50% - 6px);
             background: var(--gradient);
-            border-radius: 12px;
-            transition: transform 0.3s ease;
-            box-shadow: var(--shadow);
+            border-radius: 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
         }
 
-        .tab-slider.join { transform: translateX(0); }
-        .tab-slider.create { transform: translateX(100%); }
-
-        /* Формы */
-        .form-group {
-            margin-bottom: 1.5rem;
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .tab-content {
+            display: none;
+            flex: 1;
+            animation: fadeIn 0.5s ease;
+            overflow-y: auto;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            background: var(--surface-light);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.3s ease;
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .form-input::placeholder {
-            color: var(--text-secondary);
+        /* Избранное */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 10px 0;
+            flex: 1;
         }
 
-        /* Кнопки */
-        .btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .favorite-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        .favorite-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .btn::before {
+        .favorite-avatar::before {
             content: '';
             position: absolute;
             top: 0;
@@ -295,610 +222,867 @@
             transition: left 0.5s;
         }
 
-        .btn:hover::before {
+        .favorite-avatar:active::before {
             left: 100%;
         }
 
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-            box-shadow: var(--shadow);
+        .favorite-avatar:active {
+            transform: scale(0.95);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+        .favorite-name {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-primary);
         }
 
-        .btn-primary:disabled {
-            background: var(--surface-light);
+        .favorite-add {
+            background: var(--card);
+            border: 2px dashed var(--text-secondary);
             color: var(--text-secondary);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            font-size: 28px;
+            font-weight: 300;
         }
 
-        .btn-secondary {
-            background: var(--surface-light);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
+        /* Недавние */
+        .recent-calls {
             background: var(--surface);
-            border-color: var(--primary);
-        }
-
-        /* Список групп */
-        .groups-section {
-            margin-bottom: 2rem;
-        }
-
-        .section-header {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass);
+            flex: 1;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        .call-item {
+            display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .refresh-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            color: var(--primary);
-            background: var(--surface-light);
-        }
-
-        .groups-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            background: var(--surface-light);
-        }
-
-        .groups-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .groups-list::-webkit-scrollbar-track {
-            background: var(--surface);
-            border-radius: 3px;
-        }
-
-        .groups-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
-        }
-
-        .group-card {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .group-card:last-child {
+        .call-item:last-child {
             border-bottom: none;
         }
 
-        .group-card:hover {
-            background: var(--glass);
+        .call-item:active {
+            background: var(--card);
         }
 
-        .group-card.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
-            border-left: 3px solid var(--primary);
-        }
-
-        .group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-        }
-
-        .group-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .group-users {
+        .call-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            background: var(--primary);
+            justify-content: center;
+            margin-right: 15px;
             color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 16px;
+        }
+
+        .call-incoming {
+            background: var(--success);
+        }
+
+        .call-outgoing {
+            background: var(--primary);
+        }
+
+        .call-missed {
+            background: var(--accent);
+        }
+
+        .call-info {
+            flex-grow: 1;
+        }
+
+        .call-name {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .call-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .call-time {
+            font-size: 14px;
+            color: var(--text-secondary);
             font-weight: 600;
         }
 
-        .group-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .group-creator {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .group-time {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text-secondary);
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* Интерфейс звонка */
-        .call-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
+        /* Контакты */
+        .search-container {
+            padding: 16px 20px;
+            position: relative;
             background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--glass);
+            flex-shrink: 0;
         }
 
-        .caller-info {
+        .search-box {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            background: var(--card);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .contact-list {
+            background: var(--surface);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .caller-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-item:active {
+            background: var(--card);
+        }
+
+        .contact-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-weight: 700;
-            font-size: 1.2rem;
-            box-shadow: var(--shadow);
+            font-size: 18px;
+            margin-right: 15px;
         }
 
-        .caller-details h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.2rem;
+        .contact-info {
+            flex-grow: 1;
         }
 
-        .group-badge {
-            background: var(--primary);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .contact-name {
+            font-size: 17px;
             font-weight: 600;
+            margin-bottom: 4px;
         }
 
-        .call-duration {
-            font-size: 1rem;
+        .contact-phone {
+            font-size: 14px;
             color: var(--text-secondary);
-            font-feature-settings: "tnum";
         }
 
-        .call-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            background: var(--surface-light);
-            border: none;
-            color: var(--text);
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .video-container {
+        /* Клавиатура */
+        .keypad-container {
             flex: 1;
-            position: relative;
-            background: var(--background);
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
         }
 
-        .remote-video-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .local-video-container {
-            position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            width: 200px;
-            height: 150px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid var(--primary);
+        .phone-number {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            padding: 20px;
+            text-align: center;
             background: var(--surface);
-            box-shadow: var(--shadow-lg);
-            z-index: 10;
-            transition: all 0.3s ease;
+            border-radius: 20px;
+            border: 1px solid var(--glass);
+            font-feature-settings: "tnum";
+            flex-shrink: 0;
         }
 
-        .local-video-container:hover {
-            transform: scale(1.05);
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+            margin-bottom: 20px;
         }
 
-        .video-element {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
+        .key {
+            width: 70px;
+            height: 70px;
+            border-radius: 35px;
+            background: var(--card);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: var(--surface);
-            color: var(--text-secondary);
-            gap: 1rem;
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--glass);
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .video-placeholder i {
-            font-size: 3rem;
-            opacity: 0.5;
+        .key::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .key:active::before {
+            opacity: 0.1;
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .key .letters {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .key .number {
+            position: relative;
+            z-index: 1;
+        }
+
+        .key-call {
+            background: var(--success);
+            grid-column: 2;
+        }
+
+        .key-call:active {
+            background: #28a745;
+        }
+
+        .key-delete {
+            background: transparent;
+            color: var(--accent);
+            font-size: 22px;
         }
 
         .call-controls {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 2rem;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
+            justify-content: space-between;
+            padding: 0 30px;
+            flex-shrink: 0;
         }
 
-        .control-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 20px;
-            border: none;
+        .control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .control-button {
+            width: 55px;
+            height: 55px;
+            border-radius: 28px;
+            background: var(--card);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
+            margin-bottom: 6px;
+            color: var(--primary);
+            font-size: 22px;
             transition: all 0.3s ease;
-            position: relative;
-            box-shadow: var(--shadow);
+            border: 1px solid var(--glass);
         }
 
-        .control-btn.video, .control-btn.audio {
-            background: var(--surface-light);
-            color: var(--text);
-        }
-
-        .control-btn.video.active, .control-btn.audio.active {
+        .control-button:active {
+            transform: scale(0.95);
             background: var(--primary);
             color: white;
         }
 
-        .control-btn.end-call {
-            background: var(--danger);
-            color: white;
-            width: 80px;
-            height: 80px;
+        .control-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
 
-        .control-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .groups-screen {
-                padding: 1rem;
-            }
-
-            .interface-card {
-                padding: 2rem 1.5rem;
-                border-radius: 20px;
-            }
-
-            .logo {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .logo-text {
-                font-size: 2rem;
-            }
-
-            .local-video-container {
-                width: 120px;
-                height: 90px;
-                bottom: 1rem;
-                right: 1rem;
-            }
-
-            .call-controls {
-                gap: 1rem;
-                padding: 1.5rem;
-            }
-
-            .control-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 1.2rem;
-            }
-
-            .control-btn.end-call {
-                width: 70px;
-                height: 70px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .interface-card {
-                padding: 1.5rem 1rem;
-            }
-
-            .tab {
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .form-input {
-                padding: 0.8rem 1rem;
-            }
-
-            .btn {
-                padding: 0.8rem 1.5rem;
-            }
-
-            .group-header {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .group-users {
-                align-self: flex-start;
-            }
-        }
-
-        /* Анимации */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
-        }
-
-        /* Уведомления */
-        .notification {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
+        /* Регистрация */
+        .register-card {
             background: var(--surface);
-            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 0 20px;
+            border: 1px solid var(--glass);
+        }
+
+        .register-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--card);
+            border: 1px solid var(--glass);
             border-radius: 12px;
-            padding: 1rem 1.5rem;
-            box-shadow: var(--shadow-lg);
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Входящий звонок */
+        .incoming-call {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .incoming-call.active {
+            display: flex;
+        }
+        
+        .caller-info {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .caller-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+            background: var(--gradient);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        
+        .caller-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .caller-phone {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+        
+        .call-actions {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .accept-call {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background: var(--success);
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        .reject-call {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Звонок */
+        .video-container { 
+            position: relative; 
+            width: 100%; 
+            height: 70vh; 
+            background: var(--surface); 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 1px solid var(--glass);
+        }
+        
+        .local-video { 
+            position: absolute; 
+            bottom: 20px; 
+            right: 20px; 
+            width: 120px; 
+            height: 160px; 
+            border-radius: 10px; 
+            border: 2px solid var(--text-primary); 
+            object-fit: cover; 
+            z-index: 10;
+        }
+        
+        .remote-video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        .call-controls { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 0; 
+            right: 0; 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+        }
+        
+        .call-control-btn { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            border: none; 
+            background: var(--gradient); 
+            color: white; 
+            font-size: 20px; 
+            cursor: pointer; 
+        }
+        
+        .end-call { 
+            background: var(--accent); 
+            width: 70px; 
+            height: 70px; 
+        }
+
+        .loader { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+        }
+        
+        .loader.active { 
+            display: flex; 
+        }
+        
+        .spinner { 
+            width: 40px; 
+            height: 40px; 
+            border: 4px solid rgba(255,255,255,0.3); 
+            border-radius: 50%; 
+            border-top-color: var(--primary); 
+            animation: spin 1s linear infinite; 
+        }
+
+        .notification { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: var(--surface); 
+            border-left: 4px solid var(--primary); 
+            padding: 15px; 
+            border-radius: 10px; 
+            display: none; 
             z-index: 1000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+        }
+        
+        .notification.show { 
+            display: block; 
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes spin { 
+            to { 
+                transform: rotate(360deg); 
+            } 
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        .notification.success { border-left: 4px solid var(--secondary); }
-        .notification.error { border-left: 4px solid var(--danger); }
-        .notification.warning { border-left: 4px solid var(--accent); }
-
-        .notification-icon {
-            font-size: 1.2rem;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .notification.success .notification-icon { color: var(--secondary); }
-        .notification.error .notification-icon { color: var(--danger); }
-        .notification.warning .notification-icon { color: var(--accent); }
+        .slide-up {
+            animation: slideUp 0.6s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Прокрутка */
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        /* Исправления для мобильных устройств */
+        @media (max-height: 700px) {
+            .header {
+                padding: 30px 20px 15px;
+            }
+            
+            .favorite-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .key {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .phone-number {
+                font-size: 30px;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="bg-animation">
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
+    <!-- Анимированный фон -->
+    <div class="bg-animation"></div>
+
+    <!-- Загрузчик -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <div id="loaderText">Загрузка...</div>
     </div>
 
-    <div class="app-container">
-        <!-- Экран групп -->
-        <div class="groups-screen" id="groupsScreen">
-            <div class="app-header slide-in">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <h1 class="logo-text">NeonCall</h1>
+    <!-- Экран регистрации -->
+    <div id="registerScreen" class="screen active">
+        <div class="header slide-up">
+            <div class="logo">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <h1>NeoPhone</h1>
+            <p>Премиум видеозвонки</p>
+        </div>
+
+        <div class="register-card">
+            <h3 style="text-align: center; margin-bottom: 20px;">Регистрация</h3>
+            <input type="text" id="usernameInput" class="register-input" placeholder="Ваше имя" maxlength="20">
+            <input type="tel" id="phoneInput" class="register-input" placeholder="Ваш номер телефона" maxlength="15">
+            <button id="registerBtn" class="register-btn">Продолжить</button>
+        </div>
+    </div>
+
+    <!-- Главный экран -->
+    <div id="mainScreen" class="screen">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <h1>NeoPhone</h1>
+            <p>Добро пожаловать, <span id="userName"></span></p>
+        </div>
+
+        <!-- Панель вкладок -->
+        <div class="tab-bar fade-in">
+            <div class="tab-indicator"></div>
+            <div class="tab active" data-tab="favorites">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="tab" data-tab="recent">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="tab" data-tab="contacts">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="tab" data-tab="keypad">
+                <i class="fas fa-square"></i>
+            </div>
+        </div>
+
+        <!-- Контейнер содержимого -->
+        <div class="content">
+            <!-- Вкладка Избранное -->
+            <div class="tab-content active" id="favorites">
+                <div class="favorites-grid">
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar">М</div>
+                        <div class="favorite-name">Мама</div>
+                    </a>
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar">П</div>
+                        <div class="favorite-name">Папа</div>
+                    </a>
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar">А</div>
+                        <div class="favorite-name">Анна</div>
+                    </a>
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar">И</div>
+                        <div class="favorite-name">Иван</div>
+                    </a>
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar">Д</div>
+                        <div class="favorite-name">Друг</div>
+                    </a>
+                    <a href="#" class="favorite-item">
+                        <div class="favorite-avatar favorite-add">+</div>
+                        <div class="favorite-name">Добавить</div>
+                    </a>
                 </div>
-                <p class="app-subtitle">Премиум видеозвонки с искусственным интеллектом и кристально чистым звуком</p>
             </div>
 
-            <div class="interface-card slide-in">
-                <div class="tabs">
-                    <div class="tab-slider join"></div>
-                    <button class="tab active" data-tab="join">
-                        <i class="fas fa-users"></i> Присоединиться
-                    </button>
-                    <button class="tab" data-tab="create">
-                        <i class="fas fa-plus"></i> Создать группу
-                    </button>
-                </div>
-
-                <!-- Вкладка присоединения -->
-                <div class="tab-content active" id="joinTab">
-                    <div class="form-group">
-                        <label class="form-label">Ваше имя</label>
-                        <input type="text" class="form-input" id="usernameInput" placeholder="Как вас зовут?" maxlength="20">
-                    </div>
-                    
-                    <div class="groups-section">
-                        <div class="section-header">
-                            <h3 class="section-title">Активные группы</h3>
-                            <button class="refresh-btn" id="refreshGroupsBtn" title="Обновить список">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
+            <!-- Вкладка Недавние -->
+            <div class="tab-content" id="recent">
+                <div class="recent-calls">
+                    <div class="call-item">
+                        <div class="call-icon call-incoming">
+                            <i class="fas fa-phone-alt"></i>
                         </div>
-                        <div class="groups-list" id="groupsList">
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <p>Пока нет активных групп</p>
-                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">Создайте первую или подождите...</p>
+                        <div class="call-info">
+                            <div class="call-name">Мама</div>
+                            <div class="call-details">
+                                <span>Входящий</span> • <span>5 мин назад</span>
                             </div>
                         </div>
+                        <div class="call-time">14:25</div>
                     </div>
-                    
-                    <button class="btn btn-primary" id="joinGroupBtn" disabled>
-                        <i class="fas fa-sign-in-alt"></i> Присоединиться к группе
-                    </button>
-                </div>
-
-                <!-- Вкладка создания -->
-                <div class="tab-content" id="createTab">
-                    <div class="form-group">
-                        <label class="form-label">Ваше имя</label>
-                        <input type="text" class="form-input" id="creatorNameInput" placeholder="Как вас зовут?" maxlength="20">
+                    <div class="call-item">
+                        <div class="call-icon call-outgoing">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="call-info">
+                            <div class="call-name">Анна</div>
+                            <div class="call-details">
+                                <span>Исходящий</span> • <span>1 час назад</span>
+                            </div>
+                        </div>
+                        <div class="call-time">13:30</div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Название группы</label>
-                        <input type="text" class="form-input" id="groupNameInput" placeholder="Придумайте название" maxlength="30">
-                    </div>
-                    
-                    <button class="btn btn-primary" id="createGroupBtn" disabled>
-                        <i class="fas fa-rocket"></i> Создать группу
-                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Интерфейс звонка -->
-        <div class="call-container" id="callContainer">
-            <div class="call-header">
-                <div class="caller-info">
-                    <div class="caller-avatar" id="userAvatar">U</div>
-                    <div class="caller-details">
-                        <h3 id="userName">Пользователь</h3>
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-                            <div class="group-badge" id="groupBadge">Группа</div>
-                            <div class="call-duration" id="callDuration">00:00</div>
+            <!-- Вкладка Контакты -->
+            <div class="tab-content" id="contacts">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-box" placeholder="Поиск контактов...">
+                </div>
+                <div class="contact-list">
+                    <div class="contact-item">
+                        <div class="contact-avatar">А</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Анна</div>
+                            <div class="contact-phone">+7 (123) 456-78-90</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">И</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Иван</div>
+                            <div class="contact-phone">+7 (123) 456-78-91</div>
                         </div>
                     </div>
                 </div>
-                <div class="call-actions">
-                    <button class="action-btn" id="leaveGroupBtn" title="Выйти из группы">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
             </div>
 
-            <div class="video-container">
-                <div class="remote-video-container">
-                    <div id="remoteVideo" class="video-placeholder">
-                        <i class="fas fa-users"></i>
-                        <p>Ожидание участников...</p>
-                        <p style="font-size: 0.9rem;" id="groupInfo">Присоединяйтесь к разговору</p>
+            <!-- Вкладка Клавиатура -->
+            <div class="tab-content" id="keypad">
+                <div class="keypad-container">
+                    <div class="phone-number" id="phoneNumberDisplay">+7 (123) 456-78-94</div>
+                    <div class="keypad">
+                        <div class="key" data-number="1">
+                            <div class="number">1</div>
+                            <div class="letters"></div>
+                        </div>
+                        <div class="key" data-number="2">
+                            <div class="number">2</div>
+                            <div class="letters">ABC</div>
+                        </div>
+                        <div class="key" data-number="3">
+                            <div class="number">3</div>
+                            <div class="letters">DEF</div>
+                        </div>
+                        <div class="key" data-number="4">
+                            <div class="number">4</div>
+                            <div class="letters">GHI</div>
+                        </div>
+                        <div class="key" data-number="5">
+                            <div class="number">5</div>
+                            <div class="letters">JKL</div>
+                        </div>
+                        <div class="key" data-number="6">
+                            <div class="number">6</div>
+                            <div class="letters">MNO</div>
+                        </div>
+                        <div class="key" data-number="7">
+                            <div class="number">7</div>
+                            <div class="letters">PQRS</div>
+                        </div>
+                        <div class="key" data-number="8">
+                            <div class="number">8</div>
+                            <div class="letters">TUV</div>
+                        </div>
+                        <div class="key" data-number="9">
+                            <div class="number">9</div>
+                            <div class="letters">WXYZ</div>
+                        </div>
+                        <div class="key" data-number="*">
+                            <div class="number">*</div>
+                        </div>
+                        <div class="key" data-number="0">
+                            <div class="number">0</div>
+                            <div class="letters">+</div>
+                        </div>
+                        <div class="key" data-number="#">
+                            <div class="number">#</div>
+                        </div>
+                    </div>
+                    <div class="call-controls">
+                        <div class="control">
+                            <div class="control-button">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="control-label">Контакты</div>
+                        </div>
+                        <div class="control">
+                            <div class="control-button key-call" id="makeCallBtn">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="control-label">Вызов</div>
+                        </div>
+                        <div class="control">
+                            <div class="control-button key-delete" id="deleteBtn">
+                                <i class="fas fa-delete-left"></i>
+                            </div>
+                            <div class="control-label">Удалить</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="local-video-container">
-                    <div id="localVideo" class="video-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="call-controls">
-                <button class="control-btn video active" id="toggleVideoBtn" title="Включить/выключить видео">
-                    <i class="fas fa-video"></i>
-                </button>
-                <button class="control-btn audio active" id="toggleAudioBtn" title="Включить/выключить звук">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="control-btn end-call" id="endCallBtn" title="Завершить звонок">
-                    <i class="fas fa-phone"></i>
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Уведомления -->
-    <div class="notification" id="notification">
-        <div class="notification-icon">
-            <i class="fas fa-info-circle"></i>
+    <!-- Экран звонка -->
+    <div id="callScreen" class="screen">
+        <div class="header">
+            <div class="logo">NeoPhone</div>
+            <p id="roomInfo">Звонок...</p>
         </div>
-        <div class="notification-content">
-            <div class="notification-title" id="notificationTitle">Уведомление</div>
-            <div class="notification-message" id="notificationMessage">Сообщение</div>
+
+        <div class="video-container">
+            <video id="remoteVideo" class="remote-video" autoplay playsinline></video>
+            <video id="localVideo" class="local-video" autoplay playsinline muted></video>
+            <div id="waitingText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-secondary); text-align: center;">
+                Ожидание ответа...
+            </div>
+        </div>
+
+        <div class="call-controls">
+            <button id="micBtn" class="call-control-btn">🎤</button>
+            <button id="cameraBtn" class="call-control-btn">📹</button>
+            <button id="endCallBtn" class="call-control-btn end-call">📞</button>
         </div>
     </div>
 
+    <!-- Входящий звонок -->
+    <div id="incomingCall" class="incoming-call">
+        <div class="caller-info">
+            <div class="caller-avatar" id="callerAvatar">?</div>
+            <div class="caller-name" id="callerName">Звонящий</div>
+            <div class="caller-phone" id="callerPhone">+7 XXX XXX-XX-XX</div>
+            <div style="margin-top: 10px; color: var(--text-secondary);">Вам звонят...</div>
+        </div>
+        <div class="call-actions">
+            <button id="acceptCallBtn" class="accept-call pulse">📞</button>
+            <button id="rejectCallBtn" class="reject-call">✖</button>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div id="notification" class="notification">
+        <div id="notificationText">Сообщение</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
+    <!-- Agora SDK -->
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.18.2.js"></script>
+    
     <script>
         // Firebase конфигурация
         const firebaseConfig = {
@@ -911,446 +1095,474 @@
             appId: "1:942887528624:web:537f9f76d79d81be89b375",
             measurementId: "G-N2WKSHRB4L"
         };
-
+        
         // Инициализация Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
+        
         // Agora конфигурация
-        const agoraConfig = {
-            appId: "fc97c0f924ce4bec9389fa2cf4899e48",
-            token: null
-        };
-
+        const AGORA_APP_ID = "fc97c0f924ce4bec9389fa2cf4899e48";
+        
         // Переменные
         let client;
-        let localTracks = { videoTrack: null, audioTrack: null };
-        let currentGroup = null;
+        let localTracks = [];
+        let remoteUsers = {};
         let currentUser = null;
-        let durationInterval;
-        let selectedGroupId = null;
-        let groupsCleanupInterval;
+        let currentPhone = null;
+        let incomingCallListener = null;
+        let currentCallListener = null;
 
-        // Элементы DOM
-        const groupsScreen = document.getElementById('groupsScreen');
-        const callContainer = document.getElementById('callContainer');
+        // Элементы
+        const registerScreen = document.getElementById('registerScreen');
+        const mainScreen = document.getElementById('mainScreen');
+        const callScreen = document.getElementById('callScreen');
+        const loader = document.getElementById('loader');
+        const loaderText = document.getElementById('loaderText');
         const usernameInput = document.getElementById('usernameInput');
-        const creatorNameInput = document.getElementById('creatorNameInput');
-        const groupNameInput = document.getElementById('groupNameInput');
-        const groupsList = document.getElementById('groupsList');
-        const joinGroupBtn = document.getElementById('joinGroupBtn');
-        const createGroupBtn = document.getElementById('createGroupBtn');
-        const refreshGroupsBtn = document.getElementById('refreshGroupsBtn');
-        const leaveGroupBtn = document.getElementById('leaveGroupBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
-        const toggleVideoBtn = document.getElementById('toggleVideoBtn');
-        const toggleAudioBtn = document.getElementById('toggleAudioBtn');
+        const phoneInput = document.getElementById('phoneInput');
+        const registerBtn = document.getElementById('registerBtn');
+        const userName = document.getElementById('userName');
+        const phoneNumberDisplay = document.getElementById('phoneNumberDisplay');
+        const makeCallBtn = document.getElementById('makeCallBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
-        const callDuration = document.getElementById('callDuration');
-        const userAvatar = document.getElementById('userAvatar');
-        const userName = document.getElementById('userName');
-        const groupBadge = document.getElementById('groupBadge');
-        const groupInfo = document.getElementById('groupInfo');
+        const micBtn = document.getElementById('micBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
+        const roomInfo = document.getElementById('roomInfo');
+        const waitingText = document.getElementById('waitingText');
         const notification = document.getElementById('notification');
-        const notificationTitle = document.getElementById('notificationTitle');
-        const notificationMessage = document.getElementById('notificationMessage');
+        const notificationText = document.getElementById('notificationText');
+        const incomingCall = document.getElementById('incomingCall');
+        const callerAvatar = document.getElementById('callerAvatar');
+        const callerName = document.getElementById('callerName');
+        const callerPhone = document.getElementById('callerPhone');
+        const acceptCallBtn = document.getElementById('acceptCallBtn');
+        const rejectCallBtn = document.getElementById('rejectCallBtn');
 
         // Показать уведомление
-        function showNotification(title, message, type = 'success') {
-            notification.className = `notification ${type}`;
-            notificationTitle.textContent = title;
-            notificationMessage.textContent = message;
+        function showNotification(message, duration = 3000) {
+            notificationText.textContent = message;
             notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+            setTimeout(() => notification.classList.remove('show'), duration);
         }
 
         // Инициализация Agora
-        function initializeAgora() {
+        function initAgora() {
             try {
+                if (typeof AgoraRTC === 'undefined') {
+                    throw new Error('Agora SDK не загружен');
+                }
+
+                // Создаем клиент
                 client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-                setupAgoraListeners();
-                loadGroups();
-                startGroupsCleanup();
-            } catch (error) {
-                showNotification('Ошибка', 'Не удалось инициализировать видеозвонок', 'error');
-            }
-        }
-
-        // Загрузка групп
-        function loadGroups() {
-            try {
-                const groupsRef = database.ref('groups');
                 
-                groupsRef.on('value', (snapshot) => {
-                    const groups = snapshot.val();
-                    displayGroups(groups);
+                // Настройка обработчиков событий
+                client.on("user-published", async (user, mediaType) => {
+                    await client.subscribe(user, mediaType);
+                    showNotification('Участник присоединился!');
+
+                    if (mediaType === "video") {
+                        const remoteTrack = user.videoTrack;
+                        remoteVideo.srcObject = new MediaStream([remoteTrack.getMediaStreamTrack()]);
+                        remoteTrack.play(remoteVideo);
+                        waitingText.style.display = 'none';
+                    }
+                    
+                    if (mediaType === "audio") {
+                        user.audioTrack.play();
+                    }
+
+                    remoteUsers[user.uid] = user;
                 });
+
+                client.on("user-unpublished", (user) => {
+                    showNotification('Участник вышел');
+                    if (remoteUsers[user.uid]) {
+                        delete remoteUsers[user.uid];
+                    }
+                    if (Object.keys(remoteUsers).length === 0) {
+                        waitingText.style.display = 'block';
+                        remoteVideo.srcObject = null;
+                    }
+                });
+
+                showNotification('Agora инициализирован!');
+                
             } catch (error) {
-                showNotification('Ошибка', 'Не удалось загрузить группы', 'error');
+                const errorMsg = `Ошибка инициализации Agora: ${error.message}`;
+                showNotification(errorMsg);
+                console.error('Agora error:', error);
             }
         }
 
-        // Автоочистка групп (каждые 2 минуты проверяем пустые группы)
-        function startGroupsCleanup() {
-            groupsCleanupInterval = setInterval(async () => {
-                try {
-                    const groupsRef = database.ref('groups');
-                    const snapshot = await groupsRef.once('value');
-                    const groups = snapshot.val();
+        // Регистрация пользователя
+        function registerUser() {
+            const username = usernameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            
+            if (!username || !phone) {
+                showNotification('Введите имя и номер телефона');
+                return;
+            }
+
+            loader.classList.add('active');
+            loaderText.textContent = 'Регистрация...';
+            
+            // Сохраняем пользователя в Firebase
+            const userRef = database.ref('users/' + phone);
+            
+            userRef.set({
+                name: username,
+                phone: phone,
+                online: true,
+                lastSeen: Date.now()
+            }).then(() => {
+                currentUser = username;
+                currentPhone = phone;
+                userName.textContent = username;
+                
+                // Переходим на главный экран
+                registerScreen.classList.remove('active');
+                mainScreen.classList.add('active');
+                
+                // Инициализируем Agora
+                initAgora();
+                
+                // Начинаем слушать входящие звонки
+                setupIncomingCallListener();
+                
+                loader.classList.remove('active');
+                showNotification(`Добро пожаловать, ${username}!`);
+                
+            }).catch(error => {
+                loader.classList.remove('active');
+                showNotification('Ошибка регистрации: ' + error.message);
+                console.error('Registration error:', error);
+            });
+        }
+
+        // Настройка слушателя входящих звонков
+        function setupIncomingCallListener() {
+            incomingCallListener = database.ref('calls/' + currentPhone);
+            
+            incomingCallListener.on('value', (snapshot) => {
+                const callData = snapshot.val();
+                
+                if (callData && callData.status === 'ringing') {
+                    // Показываем экран входящего звонка
+                    callerName.textContent = callData.callerName;
+                    callerPhone.textContent = callData.callerPhone;
+                    callerAvatar.textContent = callData.callerName.charAt(0);
+                    incomingCall.classList.add('active');
                     
-                    if (!groups) return;
+                    // Сохраняем ID звонка для принятия
+                    currentCallListener = callData.callId;
                     
-                    const now = Date.now();
-                    const twoMinutesAgo = now - 2 * 60 * 1000;
+                    // Автоматически отклоняем звонок через 30 секунд
+                    setTimeout(() => {
+                        if (incomingCall.classList.contains('active')) {
+                            rejectIncomingCall();
+                        }
+                    }, 30000);
+                }
+            });
+        }
+
+        // Принять входящий звонок
+        function acceptIncomingCall() {
+            const callRef = database.ref('calls/' + currentPhone);
+            
+            callRef.update({
+                status: 'accepted'
+            }).then(() => {
+                incomingCall.classList.remove('active');
+                
+                // Присоединяемся к комнате (номер звонящего = ID комнаты)
+                joinRoom(callerPhone.textContent);
+            });
+        }
+
+        // Отклонить входящий звонок
+        function rejectIncomingCall() {
+            const callRef = database.ref('calls/' + currentPhone);
+            
+            callRef.update({
+                status: 'rejected'
+            }).then(() => {
+                incomingCall.classList.remove('active');
+                showNotification('Звонок отклонен');
+            });
+        }
+
+        // Совершить исходящий звонок
+        function makeCall() {
+            const targetPhone = phoneNumberDisplay.textContent.replace(/\D/g, '');
+            
+            if (!targetPhone || targetPhone === '+71234567894') {
+                showNotification('Введите номер телефона');
+                return;
+            }
+            
+            if (targetPhone === currentPhone.replace(/\D/g, '')) {
+                showNotification('Нельзя позвонить самому себе');
+                return;
+            }
+            
+            loader.classList.add('active');
+            loaderText.textContent = 'Установка соединения...';
+            
+            // Проверяем, существует ли пользователь
+            const targetUserRef = database.ref('users/' + targetPhone);
+            
+            targetUserRef.once('value').then((snapshot) => {
+                const targetUser = snapshot.val();
+                
+                if (!targetUser) {
+                    loader.classList.remove('active');
+                    showNotification('Пользователь не найден');
+                    return;
+                }
+                
+                // Создаем запись о звонке
+                const callRef = database.ref('calls/' + targetPhone);
+                const callId = 'call_' + Date.now();
+                
+                callRef.set({
+                    callerName: currentUser,
+                    callerPhone: currentPhone,
+                    status: 'ringing',
+                    callId: callId,
+                    createdAt: Date.now()
+                }).then(() => {
+                    loader.classList.remove('active');
+                    showNotification(`Звонок пользователю ${targetUser.name}...`);
                     
-                    Object.entries(groups).forEach(async ([groupId, group]) => {
-                        if (!group.users || Object.keys(group.users).length === 0) {
-                            // Если группа создана более 2 минут назад и пустая - удаляем
-                            if (group.created && group.created < twoMinutesAgo) {
-                                await database.ref('groups/' + groupId).remove();
-                                console.log('Удалена пустая группа:', groupId);
+                    // Слушаем ответ на звонок
+                    const answerListener = callRef.on('value', (snapshot) => {
+                        const callData = snapshot.val();
+                        
+                        if (callData && callData.status !== 'ringing') {
+                            // Убираем слушатель
+                            callRef.off('value', answerListener);
+                            
+                            if (callData.status === 'accepted') {
+                                // Присоединяемся к комнате (номер целевого пользователя = ID комнаты)
+                                joinRoom(targetPhone);
+                            } else {
+                                showNotification('Звонок отклонен');
+                                callRef.remove();
                             }
                         }
                     });
-                } catch (error) {
-                    console.error('Ошибка очистки групп:', error);
-                }
-            }, 30000); // Проверяем каждые 30 секунд
-        }
-
-        // Отображение групп
-        function displayGroups(groups) {
-            if (!groups || Object.keys(groups).length === 0) {
-                groupsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <p>Пока нет активных групп</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Создайте первую или подождите...</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let groupsHTML = '';
-            Object.entries(groups).forEach(([groupId, group]) => {
-                if (!group || !group.name) return;
-                
-                const userCount = group.users ? Object.keys(group.users).length : 0;
-                const createdTime = new Date(group.created).toLocaleTimeString();
-                
-                groupsHTML += `
-                    <div class="group-card" data-group-id="${groupId}">
-                        <div class="group-header">
-                            <div class="group-name">${group.name}</div>
-                            <div class="group-users">
-                                <i class="fas fa-users"></i> ${userCount}
-                            </div>
-                        </div>
-                        <div class="group-meta">
-                            <div class="group-creator">
-                                <i class="fas fa-crown"></i> ${group.creator || 'Неизвестно'}
-                            </div>
-                            <div class="group-time">
-                                <i class="fas fa-clock"></i> ${createdTime}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            groupsList.innerHTML = groupsHTML;
-            
-            // Обработчики для карточек групп
-            document.querySelectorAll('.group-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    selectedGroupId = this.dataset.groupId;
-                    updateJoinButtonState();
-                });
-            });
-        }
-
-        // Обновление состояния кнопок
-        function updateJoinButtonState() {
-            const hasUsername = usernameInput.value.trim().length > 0;
-            const hasSelectedGroup = selectedGroupId !== null;
-            joinGroupBtn.disabled = !(hasUsername && hasSelectedGroup);
-        }
-
-        function updateCreateButtonState() {
-            const hasCreatorName = creatorNameInput.value.trim().length > 0;
-            const hasGroupName = groupNameInput.value.trim().length > 0;
-            createGroupBtn.disabled = !(hasCreatorName && hasGroupName);
-        }
-
-        // Создание группы
-        async function createGroup() {
-            const creatorName = creatorNameInput.value.trim();
-            const groupName = groupNameInput.value.trim();
-            
-            if (!creatorName || !groupName) {
-                showNotification('Внимание', 'Заполните все поля', 'warning');
-                return;
-            }
-
-            try {
-                const groupId = 'group_' + Date.now();
-                const groupData = {
-                    name: groupName,
-                    creator: creatorName,
-                    created: Date.now(),
-                    users: {
-                        [creatorName]: {
-                            joined: Date.now(),
-                            active: true
-                        }
-                    }
-                };
-
-                await database.ref('groups/' + groupId).set(groupData);
-                
-                currentUser = creatorName;
-                currentGroup = groupId;
-                await joinAgoraChannel(groupId);
-                
-                switchToCallInterface(groupName);
-                showNotification('Успех', `Группа "${groupName}" создана!`, 'success');
-                
-            } catch (error) {
-                showNotification('Ошибка', 'Не удалось создать группу', 'error');
-            }
-        }
-
-        // Присоединение к группе
-        async function joinGroup() {
-            if (!selectedGroupId) {
-                showNotification('Внимание', 'Выберите группу', 'warning');
-                return;
-            }
-
-            const username = usernameInput.value.trim();
-            if (!username) {
-                showNotification('Внимание', 'Введите ваше имя', 'warning');
-                return;
-            }
-
-            try {
-                const groupSnapshot = await database.ref('groups/' + selectedGroupId).once('value');
-                const group = groupSnapshot.val();
-                
-                if (!group) {
-                    showNotification('Ошибка', 'Группа не найдена', 'error');
-                    return;
-                }
-
-                const groupName = group.name;
-                
-                await database.ref('groups/' + selectedGroupId + '/users/' + username).set({
-                    joined: Date.now(),
-                    active: true
-                });
-                
-                currentUser = username;
-                currentGroup = selectedGroupId;
-                await joinAgoraChannel(selectedGroupId);
-                
-                switchToCallInterface(groupName);
-                showNotification('Успех', `Вы присоединились к "${groupName}"`, 'success');
-                
-            } catch (error) {
-                showNotification('Ошибка', 'Не удалось присоединиться', 'error');
-            }
-        }
-
-        // Подключение к Agora
-        async function joinAgoraChannel(channelId) {
-            await client.join(agoraConfig.appId, channelId, agoraConfig.token, null);
-            
-            localTracks.videoTrack = await AgoraRTC.createCameraVideoTrack();
-            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-            await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
-            
-            localVideo.innerHTML = '';
-            const localVideoElement = document.createElement('video');
-            localVideoElement.className = 'video-element';
-            localVideoElement.autoplay = true;
-            localVideoElement.muted = true;
-            localVideo.appendChild(localVideoElement);
-            localTracks.videoTrack.play(localVideoElement);
-            
-            startCallTimer();
-        }
-
-        // Выход из группы
-        async function leaveGroup() {
-            try {
-                if (currentGroup && currentUser) {
-                    await database.ref('groups/' + currentGroup + '/users/' + currentUser).remove();
-                }
-                
-                await endCall();
-                switchToGroupsInterface();
-                showNotification('Информация', 'Вы вышли из группы', 'success');
-                
-            } catch (error) {
-                showNotification('Ошибка', 'Ошибка при выходе', 'error');
-            }
-        }
-
-        // Завершение звонка
-        async function endCall() {
-            try {
-                if (localTracks.audioTrack) {
-                    localTracks.audioTrack.stop();
-                    localTracks.audioTrack.close();
-                }
-                if (localTracks.videoTrack) {
-                    localTracks.videoTrack.stop();
-                    localTracks.videoTrack.close();
-                }
-                
-                await client.leave();
-                localTracks = { videoTrack: null, audioTrack: null };
-                stopCallTimer();
-                
-            } catch (error) {
-                console.error('Ошибка завершения:', error);
-            }
-        }
-
-        // Переключение интерфейсов
-        function switchToCallInterface(groupName) {
-            userName.textContent = currentUser;
-            userAvatar.textContent = currentUser.charAt(0).toUpperCase();
-            groupBadge.textContent = groupName;
-            groupInfo.textContent = groupName;
-            
-            groupsScreen.classList.add('hidden');
-            callContainer.classList.add('active');
-        }
-
-        function switchToGroupsInterface() {
-            currentGroup = null;
-            currentUser = null;
-            selectedGroupId = null;
-            usernameInput.value = '';
-            creatorNameInput.value = '';
-            groupNameInput.value = '';
-            document.querySelectorAll('.group-card').forEach(c => c.classList.remove('active'));
-            updateJoinButtonState();
-            updateCreateButtonState();
-            
-            callContainer.classList.remove('active');
-            groupsScreen.classList.remove('hidden');
-        }
-
-        // Таймер звонка
-        function startCallTimer() {
-            const startTime = new Date();
-            durationInterval = setInterval(() => {
-                const diff = Math.floor((new Date() - startTime) / 1000);
-                const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
-                const seconds = (diff % 60).toString().padStart(2, '0');
-                callDuration.textContent = `${minutes}:${seconds}`;
-            }, 1000);
-        }
-
-        function stopCallTimer() {
-            if (durationInterval) {
-                clearInterval(durationInterval);
-                callDuration.textContent = '00:00';
-            }
-        }
-
-        // Слушатели Agora
-        function setupAgoraListeners() {
-            client.on("user-published", async (user, mediaType) => {
-                await client.subscribe(user, mediaType);
-                if (mediaType === "video") {
-                    remoteVideo.innerHTML = '';
-                    const videoElement = document.createElement('video');
-                    videoElement.className = 'video-element';
-                    videoElement.autoplay = true;
-                    remoteVideo.appendChild(videoElement);
-                    user.videoTrack.play(videoElement);
-                }
-                if (mediaType === "audio") {
-                    user.audioTrack.play();
-                }
-            });
-
-            client.on("user-joined", (user) => {
-                showNotification('Участник', 'Кто-то присоединился к звонку', 'success');
-            });
-        }
-
-        // Обработчики событий UI
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabName = this.dataset.tab;
-                
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                
-                this.classList.add('active');
-                document.getElementById(tabName + 'Tab').classList.add('active');
-                
-                const slider = document.querySelector('.tab-slider');
-                slider.className = `tab-slider ${tabName}`;
-            });
-        });
-
-        usernameInput.addEventListener('input', updateJoinButtonState);
-        creatorNameInput.addEventListener('input', updateCreateButtonState);
-        groupNameInput.addEventListener('input', updateCreateButtonState);
-
-        joinGroupBtn.addEventListener('click', joinGroup);
-        createGroupBtn.addEventListener('click', createGroup);
-        refreshGroupsBtn.addEventListener('click', () => {
-            loadGroups();
-            showNotification('Обновлено', 'Список групп обновлен', 'success');
-        });
-        leaveGroupBtn.addEventListener('click', leaveGroup);
-        endCallBtn.addEventListener('click', leaveGroup);
-
-        toggleVideoBtn.addEventListener('click', async () => {
-            if (localTracks.videoTrack) {
-                const enabled = !localTracks.videoTrack.enabled;
-                await localTracks.videoTrack.setEnabled(enabled);
-                toggleVideoBtn.classList.toggle('active', enabled);
-                toggleVideoBtn.querySelector('i').className = enabled ? 'fas fa-video' : 'fas fa-video-slash';
-            }
-        });
-
-        toggleAudioBtn.addEventListener('click', async () => {
-            if (localTracks.audioTrack) {
-                const enabled = !localTracks.audioTrack.enabled;
-                await localTracks.audioTrack.setEnabled(enabled);
-                toggleAudioBtn.classList.toggle('active', enabled);
-                toggleAudioBtn.querySelector('i').className = enabled ? 'fas fa-microphone' : 'fas fa-microphone-slash';
-            }
-        });
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeAgora();
-            
-            // Анимация появления
-            setTimeout(() => {
-                document.querySelectorAll('.slide-in').forEach(el => {
-                    el.style.animation = 'none';
+                    
+                    // Автоматически отменяем звонок через 30 секунд
                     setTimeout(() => {
-                        el.style.animation = 'slideIn 0.5s ease-out';
-                    }, 10);
+                        callRef.off('value', answerListener);
+                        callRef.remove();
+                        showNotification('Звонок не отвечает');
+                    }, 30000);
+                    
+                }).catch(error => {
+                    loader.classList.remove('active');
+                    showNotification('Ошибка звонка: ' + error.message);
+                    console.error('Call error:', error);
                 });
-            }, 100);
+                
+            }).catch(error => {
+                loader.classList.remove('active');
+                showNotification('Ошибка поиска пользователя: ' + error.message);
+                console.error('User search error:', error);
+            });
+        }
+
+        // Присоединиться к комнате
+        async function joinRoom(roomId) {
+            if (!client) {
+                showNotification('Agora не инициализирован');
+                return;
+            }
+
+            try {
+                loader.classList.add('active');
+                loaderText.textContent = 'Подключение к комнате...';
+                
+                // Присоединяемся к каналу (номер телефона = ID комнаты)
+                await client.join(AGORA_APP_ID, roomId, null, currentUser);
+                
+                // Создаем и публикуем локальные треки
+                const audioTrack = await AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+                    console.warn('Microphone error:', e);
+                    showNotification('Микрофон недоступен');
+                    return null;
+                });
+                
+                const videoTrack = await AgoraRTC.createCameraVideoTrack().catch(e => {
+                    console.warn('Camera error:', e);
+                    showNotification('Камера недоступна');
+                    return null;
+                });
+
+                localTracks = [audioTrack, videoTrack].filter(track => track !== null);
+                
+                if (localTracks.length > 0) {
+                    await client.publish(localTracks);
+                }
+                
+                // Показываем локальное видео
+                if (videoTrack) {
+                    localVideo.srcObject = new MediaStream([videoTrack.getMediaStreamTrack()]);
+                    videoTrack.play(localVideo);
+                }
+                
+                // Обновляем интерфейс
+                roomInfo.textContent = `Звонок: ${roomId}`;
+                
+                mainScreen.classList.remove('active');
+                callScreen.classList.add('active');
+                
+                loader.classList.remove('active');
+                showNotification(`Вы в комнате ${roomId}`);
+                
+            } catch (error) {
+                loader.classList.remove('active');
+                showNotification('Ошибка подключения: ' + error.message);
+                console.error('Join error:', error);
+            }
+        }
+
+        // Выйти из комнаты
+        async function leaveRoom() {
+            try {
+                // Отключаем локальные треки
+                localTracks.forEach(track => {
+                    if (track && track.close) {
+                        track.close();
+                    }
+                });
+                localTracks = [];
+                
+                // Выходим из канала
+                if (client) {
+                    await client.leave();
+                }
+                
+                // Очищаем видео
+                localVideo.srcObject = null;
+                remoteVideo.srcObject = null;
+                
+                // Возвращаем на главный экран
+                callScreen.classList.remove('active');
+                mainScreen.classList.add('active');
+                waitingText.style.display = 'block';
+                
+                showNotification('Вы вышли из звонка');
+                
+            } catch (error) {
+                console.error('Leave error:', error);
+            }
+        }
+
+        // Управление медиа
+        micBtn.addEventListener('click', () => {
+            const audioTrack = localTracks.find(track => track && track.trackMediaType === 'audio');
+            if (audioTrack) {
+                audioTrack.setEnabled(!audioTrack.enabled);
+                micBtn.style.background = audioTrack.enabled ? 'var(--gradient)' : 'var(--accent)';
+                showNotification(audioTrack.enabled ? 'Микрофон включен' : 'Микрофон выключен');
+            }
+        });
+
+        cameraBtn.addEventListener('click', () => {
+            const videoTrack = localTracks.find(track => track && track.trackMediaType === 'video');
+            if (videoTrack) {
+                videoTrack.setEnabled(!videoTrack.enabled);
+                cameraBtn.style.background = videoTrack.enabled ? 'var(--gradient)' : 'var(--accent)';
+                localVideo.style.display = videoTrack.enabled ? 'block' : 'none';
+                showNotification(videoTrack.enabled ? 'Камера включена' : 'Камера выключена');
+            }
+        });
+
+        // Переключение между вкладками
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const indicator = document.querySelector('.tab-indicator');
+
+        function switchTab(tab) {
+            const tabId = tab.getAttribute('data-tab');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            tab.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            const tabIndex = Array.from(tabs).indexOf(tab);
+            indicator.style.transform = `translateX(${tabIndex * 100}%)`;
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab));
+        });
+
+        // Функциональность клавиатуры
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('click', function() {
+                const number = this.getAttribute('data-number');
+                if (number) {
+                    if (phoneNumberDisplay.textContent === '+7 (123) 456-78-94') {
+                        phoneNumberDisplay.textContent = number;
+                    } else {
+                        phoneNumberDisplay.textContent += number;
+                    }
+                    
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+        });
+
+        // Обработка кнопки удаления
+        deleteBtn.addEventListener('click', function() {
+            let currentNumber = phoneNumberDisplay.textContent;
+            if (currentNumber.length > 1 && currentNumber !== '+7 (123) 456-78-94') {
+                phoneNumberDisplay.textContent = currentNumber.slice(0, -1);
+            } else {
+                phoneNumberDisplay.textContent = '+7 (123) 456-78-94';
+            }
+            
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // Обработка кнопки вызова
+        makeCallBtn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            
+            makeCall();
+        });
+
+        // Слушатели событий
+        registerBtn.addEventListener('click', registerUser);
+        endCallBtn.addEventListener('click', leaveRoom);
+        acceptCallBtn.addEventListener('click', acceptIncomingCall);
+        rejectCallBtn.addEventListener('click', rejectIncomingCall);
+
+        // Автозаполнение для теста
+        usernameInput.value = 'User' + Math.floor(Math.random() * 1000);
+        phoneInput.value = '+7' + Math.floor(9000000000 + Math.random() * 1000000000);
+
+        // Инициализация при загрузке
+        window.addEventListener('load', () => {
+            showNotification('Система загружена');
         });
     </script>
 </body>
