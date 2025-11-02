@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Diamond Share</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+</head>
+<body>
+<style>
+.loading-overlay { 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(5px);
+}
+
+.loading-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Inter', sans-serif;
+}
+
+.loading-subtext {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  margin-top: 5px;
+  font-weight: 400;
+}
+
+.loading-subtext {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  margin-top: 5px;
+  font-weight: 400;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.7; /* Слегка прозрачный */
+}
+</style>
+  <!-- ЗАМЕНА НАЧАЛА -->
+<!-- ЭКРАН ПРИВЕТСТВИЯ -->
+<div class="welcome-screen" id="welcome-screen">
+  <div class="welcome-animation">
+    <lottie-player 
+      src="https://diamond-share.github.io/Welcome.json" 
+      background="transparent" 
+      speed="1" 
+      autoplay
+      loop
+      style="width: 100%; height: 100%;">
+    </lottie-player>
+  </div>
+  
+  <h1 class="welcome-title">Добро пожаловать в Diamond Share</h1>
+  <p class="welcome-subtitle">Безопасный обмен файлами и удобное хранение ваших данных</p>
+  
+  <button class="start-btn" id="startButton">Начать</button>
+  
+  <p class="policy-text">
+    Нажимая на кнопку начать, вы соглашаетесь с 
+    <a href="policy.html" class="policy-link">условиями пользования</a> и 
+    <a href="policy.html" class="policy-link">политикой конфиденциальности</a>
+  </p>
+</div>
+<!-- ЗАМЕНА КОНЦА -->
+
+  <!-- ЗАМЕНА НАЧАЛА -->
+<!-- ЭКРАН ВВОДА USERNAME (ЗАМЕНА НА ДИЗАЙН ИЗ LOGI.HTML) -->
+<div class="auth-screen" id="username-screen">
+  <div class="login-container animate__animated animate__fadeIn">
+    <div class="login-header">
+      <h1>Введите логин</h1>
+      <p>Для входа в вашу учетную запись</p>
+    </div>
+    
+    <div class="login-animation">
+      <lottie-player 
+        src="https://diamond-share.github.io/login_success.json" 
+        background="transparent" 
+        speed="1" 
+        autoplay
+        loop
+        style="width: 100%; height: 100%;">
+      </lottie-player>
+    </div>
+    
+    <div class="login-form">
+      <div class="input-group">
+        <input type="text" class="login-input" id="login-username" placeholder="@username" autocomplete="off" required>
+        <div class="error-message" id="username-error" style="display: none;"></div>
+      </div>
+      
+            <button class="login-submit-btn" id="login-continue-btn" disabled>
+        Далее
+      </button>
+      
+      <div class="divider">
+        <span>или</span>
+      </div>
+      
+      <div id="vkid-container"></div>
+      <div class="login-links">
+        <a href="#" class="forgot-link">Забыли логин?</a>
+        <a href="#" class="register-link" id="switch-to-register">Нет аккаунта? Зарегистрироваться</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ЗАМЕНА КОНЦА -->
+
+  <div class="auth-screen" id="password-screen">
+  <div class="password-container">
+    <div class="header">
+      <h1></h1>
+      <p id="password-user-login"></p>
+    </div>
+    
+    <div class="animation-container">
+      <lottie-player 
+        src="https://diamond-share.github.io/Password_Authentication.json" 
+        background="transparent" 
+        speed="1" 
+        autoplay
+        loop
+        style="width: 100%; height: 100%;">
+      </lottie-player>
+    </div>
+    
+    <div class="auth-form">
+      <div class="input-group">
+        <input type="password" class="input-field" id="login-password" placeholder="Введите ваш пароль" required>
+        <button type="button" class="toggle-password" id="togglePassword"></button>
+        <div class="error-message" id="password-error"></div>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="login-btn">Войти</button>
+      <button type="button" class="back-btn" id="back-to-username">Назад</button>
+      
+      <a href="#" class="forgot-password">Забыли пароль?</a>
+    </div>
+  </div>
+</div>
+
+  <div class="auth-screen" id="register-screen">
+    <div class="auth-container animate__animated animate__fadeIn">
+      <div class="auth-header">
+        <button class="back-btn" id="back-to-login">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Регистрация</h2>
+      </div>
+      
+      <div class="auth-form">
+        <div class="input-field animate__animated animate__fadeInUp">
+          <i class="fas fa-user"></i>
+          <input type="text" id="register-name" placeholder="Ваше имя" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-1s">
+          <i class="fas fa-at"></i>
+          <input type="text" id="register-username" placeholder="@username" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-1-5s">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="register-password" placeholder="Пароль" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="input-field animate__animated animate__fadeInUp animate__delay-2s">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="register-confirm" placeholder="Подтвердите пароль" autocomplete="off">
+          <div class="input-border"></div>
+        </div>
+        
+        <div class="error-message" id="register-error" style="display: none; color: #ff4757; font-size: 14px; margin: 10px 0;"></div>
+        
+        <button class="auth-btn animate__animated animate__fadeInUp animate__delay-2-5s" id="register-btn">
+          Зарегистрироваться
+        </button>
+        
+        <div class="auth-footer animate__animated animate__fadeIn animate__delay-3s">
+          <p>Уже есть аккаунт? <a href="#" id="switch-to-login">Войти</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="app" style="display: none;">
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <span>Diamond Share</span>
+      </div>
+      <div class="header-actions">
+        <div class="user-avatar" id="user-avatar">
+          <span id="user-avatar-text">U</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="search-container" id="search-container" style="display: none;">
+  <div class="search-header">
+    <button class="back-btn" id="search-back-btn">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="search-input-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="search-input" placeholder="Поиск пользователей..." autocomplete="off">
+      <button class="clear-search" id="clear-search" style="display: none;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+  <div class="search-results" id="search-results">
+    <!-- Кнопка создания группы будет добавляться сюда автоматически -->
+    <div class="search-empty-state">
+      <i class="fas fa-search"></i>
+      <p>Введите имя пользователя для поиска</p>
+    </div>
+  </div>
+</div>
+
+    <div class="main-content">
+      <div class="chats-list" id="chats-list">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="empty-title">Нет чатов</div>
+          <p>Добавьте контакты, чтобы начать общение</p>
+        </div>
+      </div>
+
+      <div class="chat-view" id="chat-view">
+        <div class="chat-header">
+  <div class="chat-header-content">
+    <button class="back-btn" id="back-btn">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="chat-header-avatar" id="chat-header-avatar">
+      <span id="chat-header-avatar-text">C</span>
+    </div>
+    <div class="chat-header-info">
+      <div class="chat-title-wrapper">
+        <div class="chat-title" id="chat-title">Чат</div>
+      </div>
+      <div class="chat-status" id="chat-status"></div>
+    </div>
+  </div>
+  <div class="chat-header-actions">
+    <button class="chat-action-btn" id="chat-info-btn">
+      <i class="fas fa-info-circle"></i>
+    </button>
+  </div>
+</div>
+        <div class="messages-container">
+          <div class="messages" id="messages"></div>
+          <div class="typing-indicator" id="typing-indicator" style="display: none;">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+        <div class="input-area" id="input-area">
+
+        <button class="attachment-btn-uu" id="attachment-btn">
+            <i class="fas fa-paperclip"></i>
+        </button>
+
+        <div class="message-input-container-uu">
+            <textarea class="message-input-uu" id="message-input" placeholder="Сообщение..." rows="1"></textarea>
+            <button class="emoji-btn-uu" id="emoji-btn">
+                <i class="far fa-smile"></i>
+            </button>
+        </div>
+
+        <button class="send-btn-uu" id="send-btn" disabled>
+            <i class="fas fa-paper-plane"></i>
+        </button>
+
+        <div class="attachment-menu" id="attachment-menu" style="display: none;">
+          <div class="attachment-option" id="attach-sticker">
+            <i class="fas fa-sticky-note"></i>
+            <span>Стикер</span>
+          </div>
+          </div>
+        <div class="upload-preview" id="upload-preview" style="display: none;">
+          </div>
+
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" data-screen="chats">
+        <div class="nav-icon"><i class="fas fa-comment-dots"></i></div>
+        <div class="nav-text">Чаты</div>
+      </div>
+      <div class="nav-item" data-screen="contacts">
+        <div class="nav-icon"><i class="fas fa-user-friends"></i></div>
+        <div class="nav-text">Контакты</div>
+      </div>
+      <div class="nav-item" data-screen="settings">
+        <div class="nav-icon"><i class="fas fa-cog"></i></div>
+        <div class="nav-text">Настройки</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-screen" id="settings-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="settings-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Профиль</div>
+      <button class="settings-qr-btn" id="settings-qr-btn">
+        <i class="fas fa-qrcode"></i>
+      </button>
+    </div>
+    
+    <div class="settings-profile">
+      <div class="settings-avatar" id="settings-avatar">
+        <img id="settings-avatar-img" src="" alt="Avatar">
+        <span id="settings-avatar-text">U</span>
+      </div>
+      <div class="settings-name" id="settings-profile-name">
+        Имя пользователя
+        <span class="verified-badge">
+          <lottie-player 
+            src="https://diamond-share.github.io/verification.json" 
+            background="transparent" 
+            speed="1" 
+            autoplay
+            loop
+            style="width: 26px; height: 26px;">
+          </lottie-player>
+        </span>
+      </div>
+      <div class="settings-username" id="settings-profile-username">@username</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Учётная запись</div>
+      <div class="tiles-container">
+        <div class="settings-tile" id="notifications-settings-btn">
+          <div class="tile-icon"><i class="fas fa-bell"></i></div>
+          <div class="tile-text">Уведомления</div>
+        </div>
+        <div class="settings-tile" id="privacy-settings-btn">
+          <div class="tile-icon"><i class="fas fa-lock"></i></div>
+          <div class="tile-text">Приватность</div>
+        </div>
+        <div class="settings-tile" id="appearance-settings-btn">
+          <div class="tile-icon"><i class="fas fa-palette"></i></div>
+          <div class="tile-text">Оформление</div>
+        </div>
+        <div class="settings-tile" id="help-settings-btn">
+          <div class="tile-icon"><i class="fas fa-question-circle"></i></div>
+          <div class="tile-text">Помощь</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">О приложении</div>
+      <div class="settings-item">
+        <div class="settings-item-text">Версия приложения</div>
+        <div class="settings-item-text">2.7</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Разработчик</div>
+        <div class="settings-item-text">StarPriks Company</div>
+      </div>
+    </div>
+    
+    <div class="settings-tile" onclick="showPreferences()">
+      <div class="tile-icon"><i class="fas fa-heart"></i></div>
+      <div class="tile-text">Предпочтения</div>
+    </div>
+
+    
+    <div class="settings-actions">
+      <button class="settings-logout-btn" id="settings-logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+      <button class="settings-delete-btn" id="settings-delete-btn">
+        Удалить профиль
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-screen" id="notifications-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="notifications-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Уведомления</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Общие настройки</div>
+      <div class="notification-item">
+        <div class="notification-label">Включить уведомления</div>
+        <label class="switch">
+          <input type="checkbox" id="notifications-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Типы уведомлений</div>
+      <div class="notification-item">
+        <div class="notification-label">Личные чаты</div>
+        <label class="switch">
+          <input type="checkbox" id="private-chats-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Группы</div>
+        <label class="switch">
+          <input type="checkbox" id="groups-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Каналы</div>
+        <label class="switch">
+          <input type="checkbox" id="channels-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Прочие</div>
+        <label class="switch">
+          <input type="checkbox" id="other-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Настройки уведомлений</div>
+      <div class="notification-item">
+        <div class="notification-label">Звук</div>
+        <label class="switch">
+          <input type="checkbox" id="sounds-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Вибрация</div>
+        <label class="switch">
+          <input type="checkbox" id="vibration-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="notification-item">
+        <div class="notification-label">Подсветка экрана</div>
+        <label class="switch">
+          <input type="checkbox" id="lights-toggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-screen" id="privacy-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="privacy-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Приватность</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Кто может...</div>
+      <div class="settings-item">
+        <div class="settings-item-text">Видеть мой номер телефона</div>
+        <select class="settings-select" id="phone-privacy">
+          <option value="all">Все</option>
+          <option value="contacts">Только контакты</option>
+          <option value="none">Никто</option>
+        </select>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Видеть мой статус</div>
+        <select class="settings-select" id="status-privacy">
+          <option value="all">Все</option>
+          <option value="contacts">Только контакты</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-screen" id="appearance-screen">
+  <div class="settings-header">
+    <button class="settings-back-btn" id="appearance-back-btn">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="settings-title">Оформление</div>
+  </div>
+  
+  <div class="appearance-content">
+    <!-- Секция фонов -->
+    <div class="appearance-section">
+      <div class="appearance-section-title">Фоны чатов</div>
+      <div class="backgrounds-carousel" id="backgrounds-carousel">
+        <div class="background-item" data-bg="1.png">
+          <img src="background/1.png" alt="Фон 1">
+          <div class="background-check">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <div class="background-item" data-bg="2.png">
+          <img src="background/2.png" alt="Фон 2">
+          <div class="background-check">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <div class="background-item" data-bg="3.png">
+          <img src="background/3.png" alt="Фон 3">
+          <div class="background-check">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <div class="background-item" data-bg="4.png">
+          <img src="background/4.png" alt="Фон 4">
+          <div class="background-check">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <div class="background-item" data-bg="5.png">
+          <img src="background/5.png" alt="Фон 5">
+          <div class="background-check">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Секция тем -->
+    <div class="appearance-section">
+      <div class="appearance-section-title">Темы</div>
+      <div class="theme-options">
+        <div class="theme-option" data-theme="light">
+          <div class="theme-preview light">
+            <div class="theme-demo">
+              <div class="demo-header"></div>
+              <div class="demo-messages">
+                <div class="demo-message incoming"></div>
+                <div class="demo-message outgoing"></div>
+              </div>
+            </div>
+          </div>
+          <div class="theme-name">Светлая</div>
+        </div>
+        <div class="theme-option" data-theme="dark">
+          <div class="theme-preview dark">
+            <div class="theme-demo">
+              <div class="demo-header"></div>
+              <div class="demo-messages">
+                <div class="demo-message incoming"></div>
+                <div class="demo-message outgoing"></div>
+              </div>
+            </div>
+          </div>
+          <div class="theme-name">Темная</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Секция размера сообщений -->
+    <div class="appearance-section">
+      <div class="appearance-section-title">Размер сообщений</div>
+      <div class="font-size-controls">
+        <button class="font-size-btn" id="font-size-decrease">
+          <i class="fas fa-minus"></i>
+        </button>
+        <div class="font-size-preview">
+          <div class="message-preview">
+            <div class="preview-bubble">Пример сообщения</div>
+          </div>
+        </div>
+        <button class="font-size-btn" id="font-size-increase">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <div class="font-size-value" id="font-size-value">
+        Средний (100%)
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="settings-screen" id="help-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" id="help-back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Помощь</div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-text">Частые вопросы</div>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-text">Связаться с поддержкой</div>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="qr-modal" id="qr-modal">
+    <div class="qr-content">
+      <button class="qr-close" id="qr-close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="qr-title">Мой QR-код</div>
+      <div class="qr-code" id="qr-code">
+        QR-код будет здесь
+      </div>
+      <div class="qr-username" id="qr-username">@username</div>
+    </div>
+  </div>
+
+  <div class="modal" id="add-chat-modal">
+    <div class="modal-content">
+      <div class="tabs">
+        <div class="tab active" data-tab="contact">Личный чат</div>
+        <div class="tab" data-tab="group"></div>
+      </div>
+      
+      <div id="contact-tab-content">
+        <h3 class="modal-title">Добавить контакт</h3>
+        <input type="text" class="modal-input" id="contact-username" placeholder="@username">
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancel-add-contact">Отмена</button>
+          <button class="btn btn-primary" id="confirm-add-contact">Добавить</button>
+        </div>
+      </div>
+      
+      <div id="group-tab-content" style="display: none;">
+        <h3 class="modal-title">Создать группу BETA</h3>
+        <input type="text" class="modal-input" id="group-name" placeholder="Название группы" required>
+        <input type="text" class="modal-input" id="group-members" placeholder="@user1, @user2" required>
+        <p class="hint-text">Введите никнеймы участников через запятую</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancel-create-group">Отмена</button>
+          <button class="btn btn-primary" id="confirm-create-group">Создать</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="share-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Поделиться профилем</h3>
+      <p>Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: <strong id="share-username"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="copy-share-link">
+          <i class="fas fa-copy"></i> Копировать
+        </button>
+        <button class="btn btn-primary" id="share-telegram">
+          <i class="fab fa-telegram"></i> Telegram
+        </button>
+        <button class="btn btn-primary" id="share-whatsapp">
+          <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-preview-modal" id="image-preview-modal">
+    <div class="image-preview-content">
+      <button class="close-preview" id="close-preview">
+        <i class="fas fa-times"></i>
+      </button>
+      <img id="preview-image" src="" alt="Preview">
+    </div>
+  </div>
+
+  <div class="modal" id="stickers-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Стикеры</h3>
+      <div class="stickers-tabs">
+        <div class="sticker-tab active" data-pack="panda">Панда</div>
+        <div class="sticker-tab" data-pack="cat">Акулёнок</div>
+        <div class="sticker-tab" data-pack="dog">Котик</div>
+        <div class="sticker-tab" data-pack="bigi">Биги</div>
+        <div class="sticker-tab" data-pack="akio">Акио</div>
+        <div class="sticker-tab" data-pack="rebi">Реби</div>
+        <div class="sticker-tab" data-pack="work">Работяга</div>
+        <div class="sticker-tab" data-pack="belka">Белка</div>
+      </div>
+      <div class="stickers-container" id="stickers-container">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="close-stickers">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="message-context-menu" id="message-context-menu">
+    <div class="context-menu-item" id="copy-message">
+      <i class="fas fa-copy"></i> Копировать
+    </div>
+    <div class="context-menu-item" id="reply-message">
+      <i class="fas fa-reply"></i> Ответить
+    </div>
+    <div class="context-menu-item" id="forward-message">
+      <i class="fas fa-share"></i> Переслать
+    </div>
+    <div class="context-menu-item" id="delete-message">
+      <i class="fas fa-trash"></i> Удалить
+    </div>
+  </div>
+
+  <div class="forward-modal" id="forward-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Переслать сообщение</h3>
+      <div class="chats-list" id="forward-chats-list"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-forward">Отмена</button>
+        <button class="btn btn-primary" id="confirm-forward">Отправить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="custom-modal" id="custom-modal">
+    <div class="custom-modal-content">
+      <div class="custom-modal-header">
+        <h3 class="custom-modal-title" id="custom-modal-title">Title</h3>
+        <button class="custom-modal-close" id="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body" id="custom-modal-body">
+        Message content
+      </div>
+      <div class="custom-modal-footer" id="custom-modal-footer">
+        <button class="btn btn-secondary" id="custom-modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="custom-modal-confirm">OK</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="avatar-modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Выберите аватар</h3>
+      <div class="avatar-carousel" id="avatar-carousel">
+      </div>
+      <div class="avatar-carousel-nav" id="avatar-carousel-nav">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancel-avatar-select">Отмена</button>
+        <button class="btn btn-primary" id="confirm-avatar-select">Выбрать</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="loading-overlay" class="loading-overlay">
+  <div class="loading-container">
+    <div class="loading-animation">
+      <lottie-player 
+        src="https://diamond-share.github.io/loading_1.json" 
+        background="transparent" 
+        speed="1" 
+        autoplay
+        loop
+        style="width: 390px; height: 390px;">
+      </lottie-player>
+    </div>
+    <div class="loading-text">
+      Diamond Share
+      <div class="loading-subtext">StarPriks 2025</div>
+    </div>
+  </div>
+</div>
+  
+  <div class="settings-screen" id="preferences-screen">
+    <div class="settings-header">
+      <button class="settings-back-btn" onclick="showScreen('settings')">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="settings-title">Мои предпочтения</div>
+    </div>
+    
+    <div class="settings-tile" onclick="showFriendSearch()">
+  <div class="tile-icon"><i class="fas fa-users"></i></div>
+  <div class="tile-text">Найти друга по интересам</div>
+</div>
+
+    <div class="preferences-container">
+    <div class="preference-group">
+      <label>Любимый цвет</label>
+      <select id="pref-color">
+        <option value="">Выберите...</option>
+        <option>Красный</option><option>Синий</option><option>Зеленый</option>
+        <option>Желтый</option><option>Фиолетовый</option><option>Розовый</option>
+        <option>Черный</option><option>Белый</option><option>Оранжевый</option>
+        <option>Серый</option><option>Бирюзовый</option><option>Бордовый</option>
+        <option>Голубой</option><option>Салатовый</option><option>Сиреневый</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимый вкус</label>
+      <select id="pref-flavor">
+        <option value="">Выберите…</option>
+        <option>Сладкий</option><option>Солёный</option><option>Кислый</option>
+        <option>Горький</option><option>Шоколадный</option><option>Мятный</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимый стиль музыки</label>
+      <select id="pref-music">
+        <option value="">Выберите…</option>
+        <option>Поп</option><option>Рок</option><option>Хип-хоп</option>
+        <option>Джаз</option><option>Классика</option><option>Электронная</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимое время года</label>
+      <select id="pref-season">
+        <option value="">Выберите…</option>
+        <option>Весна</option><option>Лето</option><option>Осень</option><option>Зима</option>
+      </select>
+    </div>
+
+    <div class="preference-group">
+      <label>Любимое хобби</label>
+      <select id="pref-hobby">
+        <option value="">Выберите…</option>
+        <option>Чтение книг</option><option>Спорт</option><option>Рисование</option>
+        <option>Путешествия</option><option>Кулинария</option><option>Музыка</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="savePreferences()">Сохранить</button>
+  </div>
+  
+  <div class="qr-modal" id="qr-modal">
+    <div class="qr-content">
+      <button class="qr-close" id="qr-close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="qr-title">Мой QR-код</div>
+      <div class="qr-code" id="qr-code"></div>
+      <div class="qr-username" id="qr-username"></div>
+      <div class="qr-actions">
+        <button class="qr-btn share" onclick="shareQR()">
+          <i class="fas fa-share-alt"></i> Поделиться
+        </button>
+        <button class="qr-btn save" onclick="saveQR()">
+          <i class="fas fa-download"></i> Сохранить
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="friend-search-modal" id="friend-search-modal" style="display: none;">
+  <div class="friend-search-container">
+    <div class="friend-search-header">
+      <button class="friend-search-back" onclick="hideFriendSearch()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2>Найти друга по предпочтениям</h2>
+    </div>
+    
+    <div class="friend-search-animation" id="friend-search-animation">
+      <div class="searching-icon">
+        <div class="searching-person">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="searching-waves">
+          <div class="wave wave-1"></div>
+          <div class="wave wave-2"></div>
+          <div class="wave wave-3"></div>
+        </div>
+        <div class="searching-hearts">
+          <div class="heart heart-1">❤️</div>
+          <div class="heart heart-2">❤️</div>
+          <div class="heart heart-3">❤️</div>
+        </div>
+      </div>
+      <div class="searching-text">
+        <p>Ищем вам друзей по предпочтениям...</p>
+      </div>
+    </div>
+    
+    <div class="fullscreen-animation-modal" id="fullscreen-animation-modal" style="display: none;">
+      <div class="fullscreen-animation-content">
+        <button class="close-fullscreen-animation" id="close-fullscreen-animation">
+          <i class="fas fa-times"></i>
+        </button>
+        <lottie-player 
+          id="fullscreen-animation-player"
+          src="https://diamond-share.github.io/verification_good.json" 
+          background="transparent" 
+          speed="1" 
+          autoplay
+          loop
+          style="width: 100%; height: 100%;">
+        </lottie-player>
+      </div>
+    </div>
+    
+    <div class="friend-results" id="friend-results" style="display: none;">
+      <div class="results-header">
+        <h3>Найденные друзья</h3>
+        <p>Люди, которые разделяют ваши интересы</p>
+      </div>
+      
+      <div class="results-list" id="results-list">
+      </div>
+      
+      <div class="results-actions">
+        <button class="btn btn-secondary" onclick="restartFriendSearch()">
+          <i class="fas fa-redo"></i> Искать снова
+        </button>
+        <button class="btn btn-primary" onclick="hideFriendSearch()">
+          <i class="fas fa-check"></i> Готово
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="app.js"></script>
+  <script src="showscreeen.js"></script>
+  <script src="http://f1138033.xsph.ru/api.js"></script>
+<style>
+
+/* КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 2: Стили для .messages-container */
+/* НОВОЕ КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 2: Контейнер для скролла сообщений */
+.messages-container {
+  position: relative !important;
+  flex-grow: 1 !important; /* Занять оставшееся место */
+  padding: 0 0 0px 0 !important; /* <-- ИЗМЕНЕНО: Увеличенный нижний отступ */
+  overflow-y: auto !important;
+  overflow-x: hidden !important; /* <-- ДОБАВЛЕНО: Запрет горизонтального скроллинга */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important; /* Прижимает сообщения к низу */
+  gap: 2px;
+  padding-left: 9px !important;
+  padding-right: 9px !important;
+  background-color: var(--chat-bg, #e6ebee);
+  background-image: url('pattern.png');
+  background-attachment: fixed;
+}
+
+
+/* НОВОЕ КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 3: Удаляем любые возможные отступы у контейнера сообщений внутри */
+.messages {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ 4: Удаляем возможный лишний нижний отступ у последнего сообщения */
+.messages-container .message:last-child {
+  margin-bottom: 0 !important; 
+}
+
+/* ---------- Отключаем конфликтные стили ---------- */
+const badRules = [
+  'html, body { overflow: hidden; }',            /* скролл */
+  '.message-bubble { border-radius: 18px; }',    /* скругление */
+  '.message.incoming .message-bubble { background: var(--incoming-bubble); }',
+  '.message.outgoing .message-bubble { background: var(--outgoing-bubble); }',
+  'body { -webkit-user-select: none; }'          /* выделение текста */
+];
+
+const style = document.createElement('style');
+style.id = 'fix-styles';
+badRules.forEach(r => style.sheet.insertRule(r.replace(/;/g,' !important;')));
+document.head.appendChild(style);
+</style>
+</body>
+</html>
