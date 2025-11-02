@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diamond Share - Вход в систему</title>
+    <title>Diamond Share - Вход через VK ID</title>
     <style>
         * {
             margin: 0;
@@ -125,75 +125,6 @@
             margin-bottom: 30px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #4b6cb7;
-            outline: none;
-        }
-
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-        }
-
-        .remember input {
-            margin-right: 8px;
-        }
-
-        .forgot {
-            color: #4b6cb7;
-            text-decoration: none;
-        }
-
-        .forgot:hover {
-            text-decoration: underline;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(75, 108, 183, 0.4);
-        }
-
         .divider {
             text-align: center;
             margin: 25px 0;
@@ -219,37 +150,92 @@
             z-index: 2;
         }
 
-        .social-login {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .vkid-container {
+            margin-top: 20px;
+            text-align: center;
         }
 
-        .social-btn {
+        .permissions-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .permissions-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .permissions-list {
+            list-style-type: none;
+        }
+
+        .permissions-list li {
+            padding: 5px 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
-        .social-btn:hover {
-            background-color: #f5f5f5;
-        }
-
-        .social-icon {
-            width: 20px;
-            height: 20px;
+        .permissions-list li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
             margin-right: 10px;
         }
 
-        .vkid-container {
+        .user-profile {
+            display: none;
             margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid #4b6cb7;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .user-details {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
         }
 
         .signup-link {
@@ -310,12 +296,12 @@
             </div>
             <div class="welcome-text">
                 <h1>Добро пожаловать!</h1>
-                <p>Войдите в свою учетную запись, чтобы получить доступ ко всем функциям платформы Diamond Share.</p>
+                <p>Войдите через VK ID, чтобы получить доступ ко всем функциям платформы Diamond Share.</p>
             </div>
             <div class="features">
                 <div class="feature">
                     <div class="feature-icon">✓</div>
-                    <div>Безопасное хранение данных</div>
+                    <div>Безопасная авторизация через VK ID</div>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">✓</div>
@@ -330,35 +316,29 @@
         <div class="right-panel">
             <div class="login-form">
                 <h2>Вход в систему</h2>
-                <p>Введите свои данные для входа или используйте социальные сети</p>
+                <p>Используйте VK ID для быстрой и безопасной авторизации</p>
                 
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Введите ваш email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Пароль</label>
-                        <input type="password" id="password" placeholder="Введите ваш пароль" required>
-                    </div>
-                    <div class="remember-forgot">
-                        <div class="remember">
-                            <input type="checkbox" id="remember">
-                            <label for="remember">Запомнить меня</label>
-                        </div>
-                        <a href="#" class="forgot">Забыли пароль?</a>
-                    </div>
-                    <button type="submit" class="btn">Войти</button>
-                </form>
-                
-                <div class="divider">
-                    <span>Или войдите с помощью</span>
+                <div class="vkid-container" id="vkid-container">
+                    <!-- VK ID виджет будет здесь -->
                 </div>
                 
-                <div class="social-login">
-                    <div class="vkid-container" id="vkid-container">
-                        <!-- VK ID виджет будет здесь -->
+                <div class="permissions-info">
+                    <h3>Мы запросим доступ к:</h3>
+                    <ul class="permissions-list">
+                        <li>Имя и фамилия</li>
+                        <li>Дата рождения</li>
+                        <li>Фотография профиля</li>
+                        <li>Пол</li>
+                    </ul>
+                </div>
+                
+                <div class="user-profile" id="user-profile">
+                    <div class="user-avatar">
+                        <img id="user-avatar" src="" alt="Аватар">
                     </div>
+                    <div class="user-name" id="user-name"></div>
+                    <div class="user-details" id="user-details"></div>
+                    <button class="logout-btn" id="logout-btn">Выйти</button>
                 </div>
                 
                 <div class="signup-link">
@@ -372,18 +352,7 @@
 
     <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
     <script>
-        // Обработка формы входа
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Здесь должна быть логика проверки учетных данных
-            // Для демонстрации просто показываем уведомление
-            showNotification('Вход выполнен успешно!', 'success');
-        });
-
-        // Инициализация VK ID
+        // Инициализация VK ID с запросом необходимых разрешений
         if ('VKIDSDK' in window) {
             const VKID = window.VKIDSDK;
 
@@ -392,7 +361,8 @@
                 redirectUrl: 'https://diamond-share.github.io',
                 responseMode: VKID.ConfigResponseMode.Callback,
                 source: VKID.ConfigSource.LOWCODE,
-                scope: '',
+                // Запрашиваем доступ к данным профиля
+                scope: 'first_name,last_name,bdate,photo_200,sex',
             });
 
             const oAuth = new VKID.OAuthList();
@@ -400,8 +370,7 @@
             oAuth.render({
                 container: document.getElementById('vkid-container'),
                 oauthList: [
-                    'vkid',
-                    'ok_ru'
+                    'vkid'
                 ]
             })
             .on(VKID.WidgetEvents.ERROR, vkidOnError)
@@ -419,7 +388,8 @@
                 showNotification('Авторизация через VK ID прошла успешно!', 'success');
                 console.log('VK ID auth success:', data);
                 
-                // Здесь можно добавить логику перенаправления или сохранения токена
+                // Получаем данные пользователя
+                getUserProfile(data.access_token);
             }
         
             function vkidOnError(error) {
@@ -427,6 +397,61 @@
                 showNotification('Ошибка авторизации через VK ID', 'error');
                 console.error('VK ID auth error:', error);
             }
+        }
+
+        // Функция для получения данных профиля пользователя
+        function getUserProfile(accessToken) {
+            // Используем VK API для получения данных пользователя
+            // В реальном приложении этот запрос должен выполняться на сервере
+            // Для демонстрации используем прямой вызов API
+            
+            // В реальном приложении здесь должен быть запрос к вашему бэкенду,
+            // который с помощью accessToken получит данные пользователя из VK API
+            
+            // Для демонстрации создаем фиктивные данные
+            setTimeout(() => {
+                const userData = {
+                    first_name: "Иван",
+                    last_name: "Иванов",
+                    bdate: "15.06.1990",
+                    photo_200: "https://via.placeholder.com/200",
+                    sex: 2
+                };
+                
+                displayUserProfile(userData);
+            }, 1000);
+        }
+
+        // Функция для отображения профиля пользователя
+        function displayUserProfile(userData) {
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const userAvatar = document.getElementById('user-avatar');
+            const userDetails = document.getElementById('user-details');
+            
+            // Форматируем данные для отображения
+            const fullName = `${userData.first_name} ${userData.last_name}`;
+            const gender = userData.sex === 1 ? 'Женский' : userData.sex === 2 ? 'Мужской' : 'Не указан';
+            
+            // Заполняем элементы данными
+            userName.textContent = fullName;
+            userAvatar.src = userData.photo_200;
+            userAvatar.alt = fullName;
+            userDetails.innerHTML = `
+                Дата рождения: ${userData.bdate || 'Не указана'}<br>
+                Пол: ${gender}
+            `;
+            
+            // Показываем профиль и скрываем кнопку входа
+            userProfile.style.display = 'block';
+            document.getElementById('vkid-container').style.display = 'none';
+            
+            // Добавляем обработчик для кнопки выхода
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                userProfile.style.display = 'none';
+                document.getElementById('vkid-container').style.display = 'block';
+                showNotification('Вы вышли из системы');
+            });
         }
 
         // Функция для показа уведомлений
