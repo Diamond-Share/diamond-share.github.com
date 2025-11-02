@@ -3,112 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест Уведомлений</title>
+    <title>Diamond Share - Авторизация</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            background: linear-gradient(135deg, #4a76a8 0%, #2a5885 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            text-align: center;
-            background: #f5f5f5;
         }
+
         .container {
-            background: white;
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
         }
-        .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #007bff;
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .auth-section {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .auth-widget {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .user-info {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid #fff;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .user-email {
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
             color: white;
             border: none;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            margin: 10px;
-            transition: background 0.3s;
+            font-size: 1rem;
+            transition: background-color 0.3s;
         }
-        .btn:hover {
-            background: #0056b3;
+
+        .logout-btn:hover {
+            background-color: #c0392b;
         }
-        .btn-success {
-            background: #28a745;
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.7;
+            font-size: 0.9rem;
         }
-        .btn-success:hover {
-            background: #1e7e34;
-        }
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-            background: #e9ecef;
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
         }
     </style>
-    
-    <!-- OneSignal -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "1084b316-a1e2-4f8e-8382-251981a087c3",
-            });
-        });
-    </script>
 </head>
 <body>
     <div class="container">
-        <h1>🔔 Тест Push-уведомлений</h1>
-        <p>Нажмите кнопку ниже чтобы включить уведомления на телефоне</p>
+        <header>
+            <h1>Diamond Share</h1>
+            <p class="subtitle">Платформа для обмена контентом</p>
+        </header>
         
-        <div class="status" id="status">
-            Статус: Ожидание действий...
+        <div class="auth-section">
+            <h2 class="section-title">Вход через VK ID</h2>
+            <p style="text-align: center; margin-bottom: 20px;">Выберите удобный способ авторизации:</p>
+            
+            <div class="auth-container">
+                <div class="auth-widget">
+                    <div id="one-tap-container"></div>
+                </div>
+                
+                <div class="auth-widget">
+                    <div id="oauth-container"></div>
+                </div>
+            </div>
         </div>
         
-        <button class="btn" onclick="enableNotifications()">
-            📱 Включить уведомления
-        </button>
-        
-        <button class="btn btn-success" onclick="sendTestNotification()">
-            🚀 Отправить тест
-        </button>
-        
-        <div style="margin-top: 30px; font-size: 14px; color: #666;">
-            <p>Уведомления будут приходить даже когда браузер закрыт!</p>
+        <div class="user-info" id="user-info">
+            <div class="user-avatar">
+                <img id="user-avatar" src="" alt="Аватар пользователя">
+            </div>
+            <h3 class="user-name" id="user-name"></h3>
+            <p class="user-email" id="user-email"></p>
+            <button class="logout-btn" id="logout-btn">Выйти</button>
         </div>
     </div>
+    
+    <footer>
+        <p>© 2023 Diamond Share. Все права защищены.</p>
+    </footer>
 
+    <!-- VK ID SDK -->
+    <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+    
     <script>
-        async function enableNotifications() {
-            try {
-                document.getElementById('status').innerHTML = 'Статус: Запрос разрешения...';
-                await OneSignal.showSlidedownPrompt();
-                document.getElementById('status').innerHTML = 'Статус: ✅ Уведомления включены!';
-            } catch (error) {
-                console.error("Ошибка:", error);
-                document.getElementById('status').innerHTML = 'Статус: ❌ Ошибка при включении';
-            }
-        }
-
-        function sendTestNotification() {
-            document.getElementById('status').innerHTML = 'Статус: 📤 Отправка тестового уведомления...';
+        // Проверяем, загружен ли VK ID SDK
+        if ('VKIDSDK' in window) {
+            const VKID = window.VKIDSDK;
             
-            // Имитация отправки уведомления через OneSignal панель
-            setTimeout(() => {
-                document.getElementById('status').innerHTML = 
-                    'Статус: ✅ Тест отправлен!<br><small>Проверьте панель OneSignal для реальной отправки</small>';
-            }, 1000);
+            // Инициализация конфигурации VK ID
+            VKID.Config.init({
+                app: 54291649,
+                redirectUrl: 'https://diamond-share.github.io',
+                responseMode: VKID.ConfigResponseMode.Callback,
+                source: VKID.ConfigSource.LOWCODE,
+                scope: '',
+            });
+            
+            // Обработчики успешной авторизации и ошибок
+            function vkidOnSuccess(data) {
+                console.log('Авторизация успешна:', data);
+                
+                // Получаем информацию о пользователе
+                getUserInfo(data.access_token);
+            }
+            
+            function vkidOnError(error) {
+                console.error('Ошибка авторизации:', error);
+                alert('Произошла ошибка при авторизации. Пожалуйста, попробуйте снова.');
+            }
+            
+            // Получение информации о пользователе
+            function getUserInfo(accessToken) {
+                // В реальном приложении здесь должен быть запрос к VK API
+                // Для демонстрации используем фиктивные данные
+                const userData = {
+                    first_name: "Иван",
+                    last_name: "Петров",
+                    email: "ivan.petrov@example.com",
+                    photo_200: "https://via.placeholder.com/200"
+                };
+                
+                // Отображаем информацию о пользователе
+                document.getElementById('user-name').textContent = `${userData.first_name} ${userData.last_name}`;
+                document.getElementById('user-email').textContent = userData.email;
+                document.getElementById('user-avatar').src = userData.photo_200;
+                document.getElementById('user-info').style.display = 'block';
+                
+                // Сохраняем данные в localStorage
+                localStorage.setItem('userData', JSON.stringify(userData));
+                localStorage.setItem('isLoggedIn', 'true');
+            }
+            
+            // Инициализация виджетов авторизации
+            function initAuthWidgets() {
+                // OneTap авторизация
+                const oneTap = new VKID.OneTap();
+                oneTap.render({
+                    container: document.getElementById('one-tap-container'),
+                    showAlternativeLogin: true,
+                    oauthList: ['ok_ru']
+                })
+                .on(VKID.WidgetEvents.ERROR, vkidOnError)
+                .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+                    const code = payload.code;
+                    const deviceId = payload.device_id;
+                    
+                    VKID.Auth.exchangeCode(code, deviceId)
+                        .then(vkidOnSuccess)
+                        .catch(vkidOnError);
+                });
+                
+                // OAuth List авторизация
+                const oAuth = new VKID.OAuthList();
+                oAuth.render({
+                    container: document.getElementById('oauth-container'),
+                    oauthList: ['vkid', 'ok_ru']
+                })
+                .on(VKID.WidgetEvents.ERROR, vkidOnError)
+                .on(VKID.OAuthListInternalEvents.LOGIN_SUCCESS, function (payload) {
+                    const code = payload.code;
+                    const deviceId = payload.device_id;
+                    
+                    VKID.Auth.exchangeCode(code, deviceId)
+                        .then(vkidOnSuccess)
+                        .catch(vkidOnError);
+                });
+            }
+            
+            // Инициализация Floating OneTap
+            function initFloatingOneTap() {
+                const floatingOneTap = new VKID.FloatingOneTap();
+                floatingOneTap.render({
+                    appName: 'Diamond Share',
+                    oauthList: ['ok_ru'],
+                    showAlternativeLogin: true
+                })
+                .on(VKID.WidgetEvents.ERROR, vkidOnError)
+                .on(VKID.FloatingOneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+                    const code = payload.code;
+                    const deviceId = payload.device_id;
+                    
+                    VKID.Auth.exchangeCode(code, deviceId)
+                        .then(vkidOnSuccess)
+                        .catch(vkidOnError);
+                });
+            }
+            
+            // Обработчик кнопки выхода
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('userData');
+                localStorage.removeItem('isLoggedIn');
+                document.getElementById('user-info').style.display = 'none';
+                location.reload();
+            });
+            
+            // Проверяем, авторизован ли пользователь
+            window.addEventListener('DOMContentLoaded', function() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                const userData = localStorage.getItem('userData');
+                
+                if (isLoggedIn === 'true' && userData) {
+                    const user = JSON.parse(userData);
+                    document.getElementById('user-name').textContent = `${user.first_name} ${user.last_name}`;
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-avatar').src = user.photo_200;
+                    document.getElementById('user-info').style.display = 'block';
+                } else {
+                    // Инициализируем виджеты авторизации, если пользователь не авторизован
+                    initAuthWidgets();
+                    initFloatingOneTap();
+                }
+            });
+        } else {
+            console.error('VK ID SDK не загружен');
         }
-
-        // Автоматический запрос через 2 секунды
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                OneSignal.showSlidedownPrompt();
-            }, 2000);
-        });
     </script>
 </body>
 </html>
