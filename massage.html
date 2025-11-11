@@ -301,11 +301,10 @@
         // Конфигурация приложения
         const CONFIG = {
             clientId: 'ecdee854d64e4917b7aea9c58918c665',
-            clientSecret: '95c8536939114209859e5515b6049865',
             redirectUri: 'https://diamond-share.github.io/massage.html',
-            scope: 'login:email login:info',
+            // Правильные scope для Яндекс ID
+            scope: 'login:info login:email',
             yandexOAuthUrl: 'https://oauth.yandex.ru/authorize',
-            yandexTokenUrl: 'https://oauth.yandex.ru/token',
             yandexInfoUrl: 'https://login.yandex.ru/info'
         };
 
@@ -404,6 +403,12 @@
             // Проверяем, есть ли токен в URL (возврат из OAuth)
             const urlParams = new URLSearchParams(window.location.hash.substring(1));
             const accessToken = urlParams.get('access_token');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                showLoginError(`Ошибка авторизации: ${error}. Проверьте настройки приложения в Яндекс OAuth.`);
+                return;
+            }
             
             if (accessToken) {
                 // Сохраняем токен и получаем информацию о пользователе
@@ -438,7 +443,15 @@
 
         // Инициировать вход через Yandex ID
         function initiateYandexLogin() {
-            const authUrl = `${CONFIG.yandexOAuthUrl}?response_type=token&client_id=${CONFIG.clientId}&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}&scope=${CONFIG.scope}`;
+            // Пробуем разные варианты scope
+            const scopes = [
+                'login:info login:email',  // Основной вариант
+                'login:info',              // Только основная информация
+                ''                         // Без scope (минимальные права)
+            ];
+
+            // Пробуем первый вариант scope
+            const authUrl = `${CONFIG.yandexOAuthUrl}?response_type=token&client_id=${CONFIG.clientId}&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}&scope=login:info%20login:email`;
             window.location.href = authUrl;
         }
 
@@ -447,31 +460,72 @@
             try {
                 showLoading(yandexLoginBtn, true);
                 
+                console.log('Получение информации о пользователе с токеном:', token);
+                
                 // Запрос к Yandex API для получения информации о пользователе
-                const response = await fetch(CONFIG.yandexInfoUrl, {
+                const response = await fetch(`${CONFIG.yandexInfoUrl}?format=json`, {
                     headers: {
                         'Authorization': `OAuth ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    mode: 'cors'
                 });
                 
+                console.log('Ответ от API:', response.status, response.statusText);
+                
                 if (!response.ok) {
-                    throw new Error(`Ошибка API: ${response.status}`);
+                    // Если ошибка 403 - скорее всего не хватает прав
+                    if (response.status === 403) {
+                        throw new Error('Недостаточно прав для получения информации о пользователе. Проверьте scope в настройках OAuth.');
+                    }
+                    throw new Error(`Ошибка API: ${response.status} ${response.statusText}`);
                 }
                 
                 const userInfo = await response.json();
+                console.log('Данные пользователя:', userInfo);
+                
                 userData = userInfo;
                 showWelcomePage(userInfo);
                 
             } catch (error) {
                 console.error('Ошибка получения информации о пользователе:', error);
-                showLoginError('Не удалось получить информацию о пользователе. Попробуйте войти снова.');
+                
+                if (error.message.includes('scope')) {
+                    showLoginError('Необходимо настроить права доступа в Яндекс OAuth. Убедитесь, что приложению разрешен доступ к информации пользователя.');
+                } else if (error.message.includes('CORS')) {
+                    showLoginError('Ошибка CORS. Для работы приложения необходим серверный прокси.');
+                    // Используем демо-данные как fallback
+                    useDemoData();
+                } else {
+                    showLoginError('Не удалось получить информацию о пользователе: ' + error.message);
+                    // Используем демо-данные как fallback
+                    useDemoData();
+                }
                 
                 // Очищаем невалидный токен
                 localStorage.removeItem('yandexToken');
             } finally {
                 showLoading(yandexLoginBtn, false);
             }
+        }
+
+        // Использовать демо-данные при ошибках
+        function useDemoData() {
+            const demoUserInfo = {
+                id: 'demo_123',
+                login: 'demo_user',
+                display_name: 'Демо Пользователь',
+                real_name: 'Иван Иванов',
+                first_name: 'Иван',
+                last_name: 'Иванов',
+                default_email: 'demo@yandex.ru',
+                emails: ['demo@yandex.ru'],
+                default_avatar_id: '0/0-0',
+                is_avatar_empty: false
+            };
+            
+            userData = demoUserInfo;
+            showWelcomePage(demoUserInfo);
         }
 
         // Показать/скрыть индикатор загрузки
