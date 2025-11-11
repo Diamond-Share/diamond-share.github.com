@@ -1,669 +1,704 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Diamond Share</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест с регистрацией через Yandex ID</title>
+    <style>
+        :root {
+            --primary-color: #ffcc00;
+            --secondary-color: #333;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .page {
+            display: none;
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #e6b800;
+            transform: translateY(-2px);
+        }
+        
+        .btn-yandex {
+            background-color: #ffcc00;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .btn-yandex img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .options label:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+        }
+        
+        .correct {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .incorrect {
+            border-left: 4px solid #F44336;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            color: #F44336;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: var(--border-radius);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+        }
+        
+        .profile-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .demo-notice {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+        }
+    </style>
 </head>
 <body>
-  <!-- Welcome screen -->
-  <div class="welcome-screen" id="welcome-screen">
-    <div class="welcome-background"></div>
-    <div class="welcome-content">
-      <div class="welcome-logo animate__animated animate__bounceIn">
-        <div class="logo-shape diamond"></div>
-        <div class="logo-shape circle"></div>
-        <div class="logo-shape triangle"></div>
-      </div>
-      <h1 class="welcome-title animate__animated animate__fadeInUp">Diamond Share</h1>
-      <p class="welcome-subtitle animate__animated animate__fadeInUp animate__delay-1s">Общайся с удовольствием</p>
-      <div class="welcome-footer animate__animated animate__fadeInUp animate__delay-2s">
-        <button class="welcome-btn" id="welcome-continue-btn">
-          <span>Продолжить</span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <p class="welcome-terms">Нажимая кнопку, вы соглашаетесь с нашими условиями</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Auth screens -->
-  <div class="auth-screen" id="username-screen">
-    <div class="auth-box animate__animated animate__fadeIn">
-      <div class="auth-logo">
-        <div class="logo-shape diamond"></div>
-        <div class="logo-shape circle"></div>
-        <div class="logo-shape triangle"></div>
-      </div>
-      <h2 class="auth-title">Вход в Diamond Share</h2>
-      <div class="error-message" id="username-error"></div>
-      <div class="input-container">
-        <i class="fas fa-user"></i>
-        <input type="text" class="auth-input" id="login-username" placeholder="@username" autocomplete="off">
-      </div>
-      <button class="auth-btn" id="login-continue-btn" disabled>
-        <span>Продолжить</span>
-        <i class="fas fa-arrow-right"></i>
-      </button>
-      <div class="auth-footer">
-        <p>Нет аккаунта? <a href="#" id="switch-to-register">Зарегистрироваться</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="auth-screen" id="password-screen">
-    <div class="auth-box animate__animated animate__fadeIn">
-      <div class="auth-header">
-        <button class="back-btn" id="back-to-username">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 class="auth-title">Введите пароль</h2>
-      </div>
-      <div class="error-message" id="password-error"></div>
-      <div class="input-container">
-        <i class="fas fa-lock"></i>
-        <input type="password" class="auth-input" id="login-password" placeholder="Пароль" autocomplete="off">
-      </div>
-      <button class="auth-btn" id="login-btn">
-        <span>Войти</span>
-      </button>
-      <div class="auth-footer">
-        <p>Забыли пароль? <a href="#">Восстановить</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="auth-screen" id="register-screen">
-    <div class="auth-box animate__animated animate__fadeIn">
-      <div class="auth-header">
-        <button class="back-btn" id="back-to-login">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 class="auth-title">Регистрация</h2>
-      </div>
-      <div class="error-message" id="register-error"></div>
-      <div class="input-container">
-        <i class="fas fa-user"></i>
-        <input type="text" class="auth-input" id="register-name" placeholder="Ваше имя" autocomplete="off">
-      </div>
-      <div class="input-container">
-        <i class="fas fa-at"></i>
-        <input type="text" class="auth-input" id="register-username" placeholder="@username" autocomplete="off">
-      </div>
-      <div class="input-container">
-        <i class="fas fa-lock"></i>
-        <input type="password" class="auth-input" id="register-password" placeholder="Пароль" autocomplete="off">
-      </div>
-      <div class="input-container">
-        <i class="fas fa-lock"></i>
-        <input type="password" class="auth-input" id="register-confirm" placeholder="Подтвердите пароль" autocomplete="off">
-      </div>
-      <button class="auth-btn" id="register-btn">
-        <span>Зарегистрироваться</span>
-      </button>
-      <div class="auth-footer">
-        <p>Уже есть аккаунт? <a href="#" id="switch-to-login">Войти</a></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main app -->
-  <div id="app" style="display: none;">
-    <div class="header">
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fas fa-share-alt"></i>
-        </div>
-        <span>Diamond Share</span>
-      </div>
-      <div class="header-actions">
-        <button class="add-chat-btn" id="add-chat-btn">
-          <i class="fas fa-plus"></i> Чат
-        </button>
-        <div class="user-avatar" id="user-avatar">
-          <span id="user-avatar-text">U</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="main-content">
-      <!-- Chats list -->
-      <div class="chats-list" id="chats-list">
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="fas fa-comments"></i>
-          </div>
-          <div class="empty-title">Нет чатов</div>
-          <p>Добавьте контакты, чтобы начать общение</p>
-        </div>
-      </div>
-
-      <!-- Chat view -->
-      <div class="chat-view" id="chat-view">
-        <div class="chat-header">
-          <button class="back-btn" id="back-btn">
-            <i class="fas fa-arrow-left"></i>
-          </button>
-          <div class="chat-header-info">
-            <div class="chat-header-avatar" id="chat-header-avatar">
-              <span id="chat-header-avatar-text">C</span>
+    <div class="container">
+        <header>
+            <h1>Тест на знание веб-технологий</h1>
+            <p>Пройдите тест и проверьте свои знания современных веб-технологий</p>
+        </header>
+        
+        <!-- Страница входа -->
+        <div id="login-page" class="page active">
+            <h2>Вход в систему</h2>
+            <p>Для прохождения теста необходимо авторизоваться через Yandex ID</p>
+            
+            <div class="demo-notice">
+                <strong>Демо-режим:</strong> Используются тестовые данные. В реальном приложении будет работать авторизация через Yandex ID.
             </div>
-            <div class="chat-header-text">
-              <div class="chat-title" id="chat-title">Чат</div>
-              <div class="chat-status" id="chat-status">Онлайн</div>
-            </div>
-          </div>
-          <div class="chat-header-actions">
-            <button class="chat-action-btn" id="chat-info-btn">
-              <i class="fas fa-info-circle"></i>
+            
+            <button id="yandex-login" class="btn btn-yandex">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjUzMzMgMEM1LjYxMzMzIDAgMCA1LjYxMzMzIDAgMTIuNTMzM0MwIDE5LjQ1MzMgNS42MTMzMyAyNS4wNjY3IDEyLjUzMzMgMjUuMDY2N0MxOS40NTMzIDI1LjA2NjcgMjUuMDY2NyAxOS40NTMzIDI1LjA2NjcgMTIuNTMzM0MyNS4wNjY3IDUuNjEzMzMgMTkuNDUzMyAwIDEyLjUzMzMgMFpNMTMuMzMzMyAxOC42NjY3VjYuNDAwMDFIMTAuNzMzM1YxOC42NjY3SDEzLjMzMzNaIiBmaWxsPSIjMDAwMDAwIi8+Cjwvc3ZnPgo=" alt="Yandex">
+                Войти с Яндекс ID
             </button>
-          </div>
+            
+            <div id="login-error" class="error-message hidden"></div>
         </div>
-        <div class="messages-container">
-          <div class="messages" id="messages"></div>
-          <div class="typing-indicator" id="typing-indicator" style="display: none;">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
-        </div>
-        <div class="input-area">
-          <button class="attachment-btn" id="attachment-btn">
-            <i class="fas fa-paperclip"></i>
-          </button>
-          <div class="attachment-menu" id="attachment-menu">
-            <div class="attachment-option" id="attach-image">
-              <i class="fas fa-image"></i>
-              <span>Фото</span>
+        
+        <!-- Страница приветствия -->
+        <div id="welcome-page" class="page">
+            <div class="user-profile">
+                <img id="user-avatar" src="" alt="Аватар" class="profile-avatar">
+                <div class="profile-info">
+                    <h3 id="user-name">Пользователь</h3>
+                    <p id="user-email"></p>
+                    <p id="user-login"></p>
+                </div>
             </div>
-            <div class="attachment-option" id="attach-video">
-              <i class="fas fa-video"></i>
-              <span>Видео</span>
+            
+            <h2>Добро пожаловать на тест!</h2>
+            <p>Тест состоит из 5 вопросов по веб-технологиям. У вас будет только одна попытка ответить на каждый вопрос.</p>
+            <p>После завершения теста вы увидите свои результаты.</p>
+            
+            <button id="start-test" class="btn">Начать тест</button>
+        </div>
+        
+        <!-- Страница теста -->
+        <div id="test-page" class="page">
+            <div class="user-profile">
+                <img id="test-avatar" src="" alt="Аватар" class="profile-avatar">
+                <div class="profile-info">
+                    <h3 id="test-name">Пользователь</h3>
+                    <p id="test-email"></p>
+                </div>
             </div>
-            <div class="attachment-option" id="attach-file">
-              <i class="fas fa-file"></i>
-              <span>Файл</span>
+            
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
             </div>
-            <div class="attachment-option" id="attach-voice">
-              <i class="fas fa-microphone"></i>
-              <span>Голосовое</span>
+            
+            <h2 id="question-number">Вопрос 1 из 5</h2>
+            <div id="question-text" class="question"></div>
+            
+            <div id="options" class="options"></div>
+            
+            <button id="next-question" class="btn">Следующий вопрос</button>
+            <div id="test-error" class="error-message hidden"></div>
+        </div>
+        
+        <!-- Страница результатов -->
+        <div id="results-page" class="page">
+            <div class="user-profile">
+                <img id="results-avatar" src="" alt="Аватар" class="profile-avatar">
+                <div class="profile-info">
+                    <h3 id="results-name">Пользователь</h3>
+                    <p id="results-email"></p>
+                    <p id="results-login"></p>
+                </div>
             </div>
-            <div class="attachment-option" id="attach-sticker">
-              <i class="fas fa-sticky-note"></i>
-              <span>Стикер</span>
+            
+            <h2>Результаты теста</h2>
+            
+            <div id="score-container">
+                <h3>Ваш результат: <span id="score">0</span> из 5</h3>
+                <p id="score-message"></p>
             </div>
-          </div>
-          <div class="upload-preview" id="upload-preview">
-            <div class="upload-preview-header">
-              <div class="upload-preview-title">Отправить файл</div>
-              <button class="upload-preview-close" id="upload-preview-close">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="upload-preview-content" id="upload-preview-content"></div>
-            <div class="upload-preview-actions">
-              <button class="btn btn-secondary" id="cancel-upload">Отмена</button>
-              <button class="btn btn-primary" id="send-upload">Отправить</button>
-            </div>
-          </div>
-          <button class="emoji-btn" id="emoji-btn">
-            <i class="far fa-smile"></i>
-          </button>
-          <div class="message-input-container">
-            <textarea class="message-input" id="message-input" placeholder="Сообщение..." rows="1"></textarea>
-          </div>
-          <button class="send-btn" id="send-btn" disabled>
-            <i class="fas fa-paper-plane"></i>
-          </button>
+            
+            <div id="results-details"></div>
+            
+            <button id="restart-test" class="btn">Пройти тест еще раз</button>
+            <button id="logout" class="btn" style="background-color: #f0f0f0; margin-left: 10px;">Выйти</button>
         </div>
-      </div>
+        
+        <footer>
+            <p>© 2023 Тест на знание веб-технологий. Все права защищены.</p>
+        </footer>
     </div>
 
-    <!-- Bottom navigation -->
-    <div class="bottom-nav">
-      <div class="nav-item active" data-screen="chats">
-        <div class="nav-icon"><i class="fas fa-comment-dots"></i></div>
-        <div class="nav-text">Чаты</div>
-      </div>
-      <div class="nav-item" data-screen="contacts">
-        <div class="nav-icon"><i class="fas fa-user-friends"></i></div>
-        <div class="nav-text">Контакты</div>
-      </div>
-      <div class="nav-item" data-screen="calls">
-        <div class="nav-icon"><i class="fas fa-phone-alt"></i></div>
-        <div class="nav-text">Звонки</div>
-      </div>
-      <div class="nav-item" data-screen="settings">
-        <div class="nav-icon"><i class="fas fa-cog"></i></div>
-        <div class="nav-text">Настройки</div>
-      </div>
-    </div>
-  </div>
+    <script>
+        // Конфигурация приложения
+        const CONFIG = {
+            clientId: 'ecdee854d64e4917b7aea9c58918c665',
+            redirectUri: 'https://diamond-share.github.io/massage.html',
+            scope: 'login:email login:info',
+            yandexOAuthUrl: 'https://oauth.yandex.ru/authorize',
+            yandexInfoUrl: 'https://login.yandex.ru/info'
+        };
 
-  <!-- Settings screen -->
-  <div class="settings-screen" id="settings-screen">
-    <div class="settings-header">
-      <button class="settings-back-btn" id="settings-back-btn">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="settings-title">Настройки</div>
-      <button class="settings-edit-btn" id="settings-edit-btn">
-        <i class="fas fa-pencil-alt"></i>
-      </button>
-    </div>
-    
-    <div class="settings-profile">
-      <div class="settings-avatar" id="settings-avatar">
-        <span id="settings-avatar-text">U</span>
-      </div>
-      <div class="settings-name" id="settings-profile-name">Имя пользователя</div>
-      <div class="settings-username" id="settings-profile-username">@username</div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Учетная запись</div>
-      <div class="settings-item" id="notifications-settings-btn">
-        <div class="settings-item-label">
-          <div class="settings-item-icon"><i class="fas fa-bell"></i></div>
-          <div class="settings-item-text">Уведомления</div>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-      <div class="settings-item" id="privacy-settings-btn">
-        <div class="settings-item-label">
-          <div class="settings-item-icon"><i class="fas fa-lock"></i></div>
-          <div class="settings-item-text">Приватность</div>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-      <div class="settings-item" id="appearance-settings-btn">
-        <div class="settings-item-label">
-          <div class="settings-item-icon"><i class="fas fa-palette"></i></div>
-          <div class="settings-item-text">Оформление</div>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-      <div class="settings-item" id="help-settings-btn">
-        <div class="settings-item-label">
-          <div class="settings-item-icon"><i class="fas fa-question-circle"></i></div>
-          <div class="settings-item-text">Помощь</div>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">О приложении</div>
-      <div class="settings-item">
-        <div class="settings-item-text">Версия приложения</div>
-        <div class="settings-item-text">1.7</div>
-      </div>
-      <div class="settings-item">
-        <div class="settings-item-text">Разработчик</div>
-        <div class="settings-item-text">Diamond Team</div>
-      </div>
-    </div>
-    
-    <button class="settings-logout-btn" id="settings-logout-btn">
-      <i class="fas fa-sign-out-alt"></i> Выйти
-    </button>
-  </div>
+        // Вопросы для теста
+        const questions = [
+            {
+                question: "Что такое HTML?",
+                options: [
+                    "Язык программирования",
+                    "Язык разметки гипертекста",
+                    "Система управления базами данных",
+                    "Фреймворк для JavaScript"
+                ],
+                correct: 1
+            },
+            {
+                question: "Какая функция в JavaScript используется для вывода данных в консоль?",
+                options: [
+                    "print()",
+                    "console.log()",
+                    "display()",
+                    "output()"
+                ],
+                correct: 1
+            },
+            {
+                question: "Что такое CSS?",
+                options: [
+                    "Язык программирования",
+                    "Система управления контентом",
+                    "Язык таблиц стилей",
+                    "База данных"
+                ],
+                correct: 2
+            },
+            {
+                question: "Какой метод HTTP используется для получения данных с сервера?",
+                options: [
+                    "POST",
+                    "PUT",
+                    "GET",
+                    "DELETE"
+                ],
+                correct: 2
+            },
+            {
+                question: "Что такое API?",
+                options: [
+                    "Автоматизированный процесс интеграции",
+                    "Интерфейс программирования приложений",
+                    "Автоматическая передача информации",
+                    "Асинхронный программный интерфейс"
+                ],
+                correct: 1
+            }
+        ];
 
-  <!-- Notifications settings screen -->
-  <div class="settings-screen" id="notifications-screen">
-    <div class="settings-header">
-      <button class="settings-back-btn" id="notifications-back-btn">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="settings-title">Уведомления</div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Общие настройки</div>
-      <div class="notification-item">
-        <div class="notification-label">Включить уведомления</div>
-        <label class="switch">
-          <input type="checkbox" id="notifications-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Типы уведомлений</div>
-      <div class="notification-item">
-        <div class="notification-label">Личные чаты</div>
-        <label class="switch">
-          <input type="checkbox" id="private-chats-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="notification-item">
-        <div class="notification-label">Группы</div>
-        <label class="switch">
-          <input type="checkbox" id="groups-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="notification-item">
-        <div class="notification-label">Каналы</div>
-        <label class="switch">
-          <input type="checkbox" id="channels-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="notification-item">
-        <div class="notification-label">Прочие</div>
-        <label class="switch">
-          <input type="checkbox" id="other-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Настройки уведомлений</div>
-      <div class="notification-item">
-        <div class="notification-label">Звук</div>
-        <label class="switch">
-          <input type="checkbox" id="sounds-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="notification-item">
-        <div class="notification-label">Вибрация</div>
-        <label class="switch">
-          <input type="checkbox" id="vibration-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <div class="notification-item">
-        <div class="notification-label">Подсветка экрана</div>
-        <label class="switch">
-          <input type="checkbox" id="lights-toggle" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-  </div>
+        // Переменные состояния
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let userData = null;
 
-  <!-- Privacy settings screen -->
-  <div class="settings-screen" id="privacy-screen">
-    <div class="settings-header">
-      <button class="settings-back-btn" id="privacy-back-btn">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="settings-title">Приватность</div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Кто может...</div>
-      <div class="settings-item">
-        <div class="settings-item-text">Видеть мой номер телефона</div>
-        <select class="settings-select" id="phone-privacy">
-          <option value="all">Все</option>
-          <option value="contacts">Только контакты</option>
-          <option value="none">Никто</option>
-        </select>
-      </div>
-      <div class="settings-item">
-        <div class="settings-item-text">Видеть мой статус</div>
-        <select class="settings-select" id="status-privacy">
-          <option value="all">Все</option>
-          <option value="contacts">Только контакты</option>
-        </select>
-      </div>
-    </div>
-  </div>
+        // Элементы DOM
+        const loginPage = document.getElementById('login-page');
+        const welcomePage = document.getElementById('welcome-page');
+        const testPage = document.getElementById('test-page');
+        const resultsPage = document.getElementById('results-page');
+        const yandexLoginBtn = document.getElementById('yandex-login');
+        const startTestBtn = document.getElementById('start-test');
+        const nextQuestionBtn = document.getElementById('next-question');
+        const restartTestBtn = document.getElementById('restart-test');
+        const logoutBtn = document.getElementById('logout');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options');
+        const progressBar = document.getElementById('progress');
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const userLogin = document.getElementById('user-login');
+        const userAvatar = document.getElementById('user-avatar');
+        const testName = document.getElementById('test-name');
+        const testEmail = document.getElementById('test-email');
+        const testAvatar = document.getElementById('test-avatar');
+        const resultsName = document.getElementById('results-name');
+        const resultsEmail = document.getElementById('results-email');
+        const resultsLogin = document.getElementById('results-login');
+        const resultsAvatar = document.getElementById('results-avatar');
+        const scoreElement = document.getElementById('score');
+        const scoreMessage = document.getElementById('score-message');
+        const resultsDetails = document.getElementById('results-details');
+        const loginError = document.getElementById('login-error');
+        const testError = document.getElementById('test-error');
 
-  <!-- Appearance settings screen -->
-  <div class="settings-screen" id="appearance-screen">
-    <div class="settings-header">
-      <button class="settings-back-btn" id="appearance-back-btn">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="settings-title">Оформление</div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-section-title">Тема</div>
-      <div class="theme-options">
-        <div class="theme-option active" data-theme="light">
-          <div class="theme-preview light"></div>
-          <div class="theme-name">Светлая</div>
-        </div>
-        <div class="theme-option" data-theme="dark">
-          <div class="theme-preview dark"></div>
-          <div class="theme-name">Темная</div>
-        </div>
-        <div class="theme-option" data-theme="blue">
-          <div class="theme-preview blue"></div>
-          <div class="theme-name">Синяя</div>
-        </div>
-      </div>
-    </div>
-  </div>
+        // Инициализация приложения
+        function init() {
+            // Проверяем, есть ли токен в URL (возврат из OAuth)
+            const urlParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = urlParams.get('access_token');
+            
+            if (accessToken) {
+                // Сохраняем токен и получаем информацию о пользователе
+                localStorage.setItem('yandexToken', accessToken);
+                getUserInfo(accessToken);
+                
+                // Убираем параметры из URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                // Проверяем, есть ли сохраненный токен
+                const savedToken = localStorage.getItem('yandexToken');
+                if (savedToken) {
+                    getUserInfo(savedToken);
+                }
+            }
+            
+            // Назначаем обработчики событий
+            yandexLoginBtn.addEventListener('click', initiateYandexLogin);
+            startTestBtn.addEventListener('click', startTest);
+            nextQuestionBtn.addEventListener('click', nextQuestion);
+            restartTestBtn.addEventListener('click', restartTest);
+            logoutBtn.addEventListener('click', logout);
+            
+            // Обработчик выбора ответа
+            document.addEventListener('change', function(e) {
+                if (e.target.name === 'answer') {
+                    nextQuestionBtn.style.display = 'inline-block';
+                    testError.classList.add('hidden');
+                }
+            });
+        }
 
-  <!-- Help settings screen -->
-  <div class="settings-screen" id="help-screen">
-    <div class="settings-header">
-      <button class="settings-back-btn" id="help-back-btn">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="settings-title">Помощь</div>
-    </div>
-    
-    <div class="settings-section">
-      <div class="settings-item">
-        <div class="settings-item-text">Частые вопросы</div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-      <div class="settings-item">
-        <div class="settings-item-text">Связаться с поддержкой</div>
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </div>
-  </div>
+        // Инициировать вход через Yandex ID
+        function initiateYandexLogin() {
+            // В демо-режиме используем тестовые данные
+            useDemoData();
+            
+            // Для реального использования раскомментируйте следующую строку:
+            /*
+            const authUrl = `${CONFIG.yandexOAuthUrl}?response_type=token&client_id=${CONFIG.clientId}&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}`;
+            window.location.href = authUrl;
+            */
+        }
 
-  <!-- QR modal -->
-  <div class="qr-modal" id="qr-modal">
-    <div class="qr-content">
-      <button class="qr-close" id="qr-close">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="qr-title">Мой QR-код</div>
-      <div class="qr-code" id="qr-code">
-        QR-код будет здесь
-      </div>
-      <div class="qr-username" id="qr-username">@username</div>
-    </div>
-  </div>
+        // Получить информацию о пользователе
+        async function getUserInfo(token) {
+            try {
+                showLoading(yandexLoginBtn, true);
+                
+                // В реальном приложении здесь должен быть запрос к Yandex API
+                // Для демонстрации используем фиктивные данные
+                const userInfo = {
+                    id: '12345',
+                    login: 'diamond_user',
+                    display_name: 'Александр Иванов',
+                    real_name: 'Александр Иванов',
+                    first_name: 'Александр',
+                    last_name: 'Иванов',
+                    default_email: 'alexander@yandex.ru',
+                    emails: ['alexander@yandex.ru'],
+                    default_avatar_id: '0/0-0',
+                    is_avatar_empty: false
+                };
+                
+                userData = userInfo;
+                showWelcomePage(userInfo);
+                
+            } catch (error) {
+                console.error('Ошибка получения информации о пользователе:', error);
+                showLoginError('Не удалось получить информацию о пользователе');
+                // В случае ошибки используем демо-данные для тестирования
+                useDemoData();
+            } finally {
+                showLoading(yandexLoginBtn, false);
+            }
+        }
 
-  <!-- Delete confirmation modal -->
-  <div class="delete-modal" id="delete-modal">
-    <div class="delete-content">
-      <div class="delete-title">Удалить профиль?</div>
-      <div class="delete-text">Вы уверены, что хотите удалить свой профиль? Это действие нельзя отменить.</div>
-      <div class="delete-actions">
-        <button class="delete-cancel" id="delete-cancel">Отмена</button>
-        <button class="delete-confirm" id="delete-confirm">Удалить</button>
-      </div>
-    </div>
-  </div>
+        // Использовать демо-данные для тестирования
+        function useDemoData() {
+            const demoUserInfo = {
+                id: '67890',
+                login: 'demo_diamond',
+                display_name: 'Мария Петрова',
+                real_name: 'Мария Петрова',
+                first_name: 'Мария',
+                last_name: 'Петрова',
+                default_email: 'maria.petrov@yandex.ru',
+                emails: ['maria.petrov@yandex.ru'],
+                default_avatar_id: '0/0-0',
+                is_avatar_empty: false
+            };
+            
+            userData = demoUserInfo;
+            showWelcomePage(demoUserInfo);
+        }
 
-  <!-- Modals -->
-  <div class="modal" id="add-chat-modal">
-    <div class="modal-content">
-      <div class="tabs">
-        <div class="tab active" data-tab="contact">Личный чат</div>
-        <div class="tab" data-tab="group"></div>
-      </div>
-      
-      <div id="contact-tab-content">
-        <h3 class="modal-title">Добавить контакт</h3>
-        <input type="text" class="modal-input" id="contact-username" placeholder="@username">
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="cancel-add-contact">Отмена</button>
-          <button class="btn btn-primary" id="confirm-add-contact">Добавить</button>
-        </div>
-      </div>
-      
-      <div id="group-tab-content" style="display: none;">
-        <h3 class="modal-title">Создать группу [BETA]</h3>
-        <input type="text" class="modal-input" id="group-name" placeholder="Название группы">
-        <input type="text" class="modal-input" id="group-members" placeholder="@user1, @user2">
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="cancel-create-group">Отмена</button>
-          <button class="btn btn-primary" id="confirm-create-group">Создать</button>
-        </div>
-      </div>
-    </div>
-  </div>
+        // Показать/скрыть индикатор загрузки
+        function showLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading"></div> Загрузка...';
+            } else {
+                button.disabled = false;
+                button.innerHTML = '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjUzMzMgMEM1LjYxMzMzIDAgMCA1LjYxMzMzIDAgMTIuNTMzM0MwIDE5LjQ1MzMgNS42MTMzMyAyNS4wNjY3IDEyLjUzMzMgMjUuMDY2N0MxOS40NTMzIDI1LjA2NjcgMjUuMDY2NyAxOS40NTMzIDI1LjA2NjcgMTIuNTMzM0MyNS4wNjY3IDUuNjEzMzMgMTkuNDUzMyAwIDEyLjUzMzMgMFpNMTMuMzMzMyAxOC42NjY3VjYuNDAwMDFIMTAuNzMzM1YxOC42NjY3SDEzLjMzMzNaIiBmaWxsPSIjMDAwMDAwIi8+Cjwvc3ZnPgo=" alt="Yandex"> Войти с Яндекс ID';
+            }
+        }
 
-  <!-- Create chat modal -->
-  <div class="modal" id="create-chat-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button class="back-btn" id="back-from-create-chat">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h3 class="modal-title">Новый чат</h3>
-      </div>
-      
-      <p class="hint-text">Придумай яркий образ, который точно выделится на фоне остальных</p>
-      
-      <div class="avatar-upload">
-        <div class="avatar-preview" id="chat-avatar-preview">
-          <i class="fas fa-camera"></i>
-        </div>
-        <div class="avatar-label">Выберите аватарку чата</div>
-      </div>
-      
-      <input type="text" class="modal-input" id="chat-name-input" placeholder="Название чата">
-      
-      <div class="modal-actions">
-        <button class="btn btn-primary" id="confirm-create-chat">Создать чат</button>
-      </div>
-    </div>
-  </div>
+        // Показать страницу приветствия
+        function showWelcomePage(userInfo) {
+            loginPage.classList.remove('active');
+            welcomePage.classList.add('active');
+            
+            updateUserProfile(userInfo, userName, userEmail, userLogin, userAvatar);
+        }
 
-  <div class="modal" id="share-modal">
-    <div class="modal-content">
-      <h3 class="modal-title">Поделиться профилем</h3>
-      <p>Привет! Присоединяйся ко мне в Diamond Share. Мой профиль: <strong id="share-username"></strong></p>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" id="copy-share-link">
-          <i class="fas fa-copy"></i> Копировать
-        </button>
-        <button class="btn btn-primary" id="share-telegram">
-          <i class="fab fa-telegram"></i> Telegram
-        </button>
-        <button class="btn btn-primary" id="share-whatsapp">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </button>
-      </div>
-    </div>
-  </div>
+        // Обновить профиль пользователя
+        function updateUserProfile(userInfo, nameElement, emailElement, loginElement, avatarElement) {
+            // Отображаем ФИО пользователя
+            const displayName = userInfo.real_name || userInfo.display_name || `${userInfo.first_name} ${userInfo.last_name}` || userInfo.login;
+            nameElement.textContent = displayName;
+            
+            // Отображаем email
+            emailElement.textContent = userInfo.default_email;
+            
+            // Отображаем логин
+            if (loginElement) {
+                loginElement.textContent = `Логин: ${userInfo.login}`;
+            }
+            
+            // Устанавливаем аватар
+            if (userInfo.default_avatar_id && !userInfo.is_avatar_empty) {
+                avatarElement.src = `https://avatars.yandex.net/get-yapic/${userInfo.default_avatar_id}/islands-200`;
+            } else {
+                // Заглушка для аватара
+                avatarElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjBGMEYwIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSI0MCIgZmlsbD0iI0NDQyIvPgo8cGF0aCBkPSJNNDAgMTYwQzQwIDEzOC41MTEgNTYuNTEyMiAxMjAgODAgMTIwSDEyMEMxNDMuNDg4IDEyMCAxNjAgMTM4LjUxMSAxNjAgMTYwVjE2MEg0MFYxNjBaIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=';
+            }
+        }
 
-  <!-- Image preview modal -->
-  <div class="image-preview-modal" id="image-preview-modal">
-    <div class="image-preview-content">
-      <button class="close-preview" id="close-preview">
-        <i class="fas fa-times"></i>
-      </button>
-      <img id="preview-image" src="" alt="Preview">
-    </div>
-  </div>
+        // Показать ошибку входа
+        function showLoginError(message) {
+            loginError.textContent = message;
+            loginError.classList.remove('hidden');
+        }
 
-  <!-- Voice recording modal -->
-  <div class="voice-modal" id="voice-modal">
-    <div class="voice-modal-content">
-      <h3 class="modal-title">Голосовое сообщение</h3>
-      <div class="voice-timer" id="voice-timer">00:00</div>
-      <div class="voice-wave">
-        <div class="voice-wave-active" id="voice-wave-active"></div>
-      </div>
-      <div class="voice-control-buttons">
-        <button class="voice-cancel-btn" id="voice-cancel-btn">Отмена</button>
-        <button class="voice-record-btn" id="voice-record-btn">
-          <i class="fas fa-microphone"></i>
-        </button>
-        <button class="voice-stop-btn" id="voice-stop-btn" style="display: none;">
-          <i class="fas fa-stop"></i>
-        </button>
-      </div>
-    </div>
-  </div>
+        // Начать тест
+        function startTest() {
+            welcomePage.classList.remove('active');
+            testPage.classList.add('active');
+            
+            // Обновляем профиль на странице теста
+            updateUserProfile(userData, testName, testEmail, null, testAvatar);
+            
+            currentQuestion = 0;
+            userAnswers = [];
+            
+            displayQuestion();
+        }
 
-  <!-- Stickers modal -->
-  <div class="modal" id="stickers-modal">
-    <div class="modal-content">
-      <h3 class="modal-title">Стикеры</h3>
-      <div class="stickers-tabs">
-        <div class="sticker-tab active" data-pack="panda">Панда</div>
-        <div class="sticker-tab" data-pack="cat">Акулёнок</div>
-        <div class="sticker-tab" data-pack="dog">Котик</div>
-        <div class="sticker-tab" data-pack="bigi">Биги</div>
-        <div class="sticker-tab" data-pack="akio">Акио</div>
-        <div class="sticker-tab" data-pack="rebi">Реби</div>
-        <div class="sticker-tab" data-pack="tatti">Татти</div>
-        <div class="sticker-tab" data-pack="duck">Утя</div>
-      </div>
-      <div class="stickers-container" id="stickers-container">
-        <!-- Stickers will be loaded here -->
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" id="close-stickers">Закрыть</button>
-      </div>
-    </div>
-  </div>
+        // Отобразить вопрос
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            
+            questionNumber.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+            questionText.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="radio" name="answer" value="${index}">
+                    ${option}
+                `;
+                optionsContainer.appendChild(label);
+            });
+            
+            // Обновить прогресс-бар
+            const progress = ((currentQuestion) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Скрыть кнопку "Следующий вопрос" до выбора ответа
+            nextQuestionBtn.style.display = 'none';
+            
+            // Показать ошибку, если она есть
+            testError.classList.add('hidden');
+        }
 
-  <!-- Message context menu -->
-  <div class="message-context-menu" id="message-context-menu">
-    <div class="context-menu-item" id="copy-message">
-      <i class="fas fa-copy"></i> Копировать
-    </div>
-    <div class="context-menu-item" id="reply-message">
-      <i class="fas fa-reply"></i> Ответить
-    </div>
-    <div class="context-menu-item" id="forward-message">
-      <i class="fas fa-share"></i> Переслать
-    </div>
-    <div class="context-menu-item" id="delete-message">
-      <i class="fas fa-trash"></i> Удалить
-    </div>
-  </div>
+        // Следующий вопрос
+        function nextQuestion() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            
+            if (!selectedOption) {
+                testError.textContent = 'Пожалуйста, выберите ответ';
+                testError.classList.remove('hidden');
+                return;
+            }
+            
+            userAnswers[currentQuestion] = parseInt(selectedOption.value);
+            
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
 
-  <!-- Forward modal -->
-  <div class="forward-modal" id="forward-modal">
-    <div class="modal-content">
-      <h3 class="modal-title">Переслать сообщение</h3>
-      <div class="chats-list" id="forward-chats-list"></div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" id="cancel-forward">Отмена</button>
-        <button class="btn btn-primary" id="confirm-forward">Отправить</button>
-      </div>
-    </div>
-  </div>
+        // Показать результаты
+        function showResults() {
+            testPage.classList.remove('active');
+            resultsPage.classList.add('active');
+            
+            // Обновляем профиль на странице результатов
+            updateUserProfile(userData, resultsName, resultsEmail, resultsLogin, resultsAvatar);
+            
+            // Рассчитать результат
+            let score = 0;
+            questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    score++;
+                }
+            });
+            
+            scoreElement.textContent = score;
+            
+            // Показать сообщение в зависимости от результата
+            if (score === questions.length) {
+                scoreMessage.textContent = 'Отличный результат! Вы отлично разбираетесь в веб-технологиях.';
+            } else if (score >= questions.length * 0.7) {
+                scoreMessage.textContent = 'Хороший результат! Вы хорошо разбираетесь в веб-технологиях.';
+            } else if (score >= questions.length * 0.5) {
+                scoreMessage.textContent = 'Неплохой результат! Есть что повторить.';
+            } else {
+                scoreMessage.textContent = 'Вам стоит уделить больше времени изучению веб-технологий.';
+            }
+            
+            // Показать детали результатов
+            resultsDetails.innerHTML = '';
+            questions.forEach((question, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${userAnswers[index] === question.correct ? 'correct' : 'incorrect'}`;
+                
+                const userAnswer = question.options[userAnswers[index]];
+                const correctAnswer = question.options[question.correct];
+                
+                resultItem.innerHTML = `
+                    <h4>Вопрос ${index + 1}: ${question.question}</h4>
+                    <p><strong>Ваш ответ:</strong> ${userAnswer}</p>
+                    <p><strong>Правильный ответ:</strong> ${correctAnswer}</p>
+                `;
+                
+                resultsDetails.appendChild(resultItem);
+            });
+        }
 
-  <!-- Hidden file inputs -->
-  <input type="file" id="image-input" accept="image/*" style="display: none;">
-  <input type="file" id="video-input" accept="video/*" style="display: none;">
-  <input type="file" id="file-input" accept="*" style="display: none;">
-  <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
-  <input type="file" id="chat-avatar-input" accept="image/*" style="display: none;">
+        // Начать тест заново
+        function restartTest() {
+            resultsPage.classList.remove('active');
+            welcomePage.classList.add('active');
+        }
 
-  <!-- Firebase and app script -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="app.js"></script>
+        // Выйти из системы
+        function logout() {
+            localStorage.removeItem('yandexToken');
+            userData = null;
+            resultsPage.classList.remove('active');
+            loginPage.classList.add('active');
+        }
+
+        // Запуск приложения
+        init();
+    </script>
 </body>
-</html>
+  </html>
