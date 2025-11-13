@@ -19,7 +19,7 @@ function showNotificationSettingsModal() {
         <div class="modal-content" style="background: var(--card); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h3 style="margin: 0; color: var(--text); font-size: 20px; font-weight: 600;">
-                    <i class="fas fa-bell" style="color: var(--primary); margin-right: 8px;"></i>
+                    <i class="fas fa-gift" style="color: var(--primary); margin-right: 8px;"></i>
                     Настройки уведомлений
                 </h3>
                 <button class="close-btn" style="background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; padding: 8px;">
@@ -167,22 +167,22 @@ function showNotificationSettingsModal() {
     
     // Обработчики закрытия
     modal.querySelector('.close-btn').addEventListener('click', () => {
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#cancel-notification-settings').addEventListener('click', () => {
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#save-notification-settings').addEventListener('click', () => {
         showToast('Настройки уведомлений сохранены');
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     // Закрытие по клику вне модального окна
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.remove();
+            closeModalWithIceEffect(modal);
         }
     });
 }
@@ -382,23 +382,23 @@ function showPrivacySettingsModal() {
     
     // Обработчики закрытия
     modal.querySelector('.close-btn').addEventListener('click', () => {
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#cancel-privacy-settings').addEventListener('click', () => {
         showToast('Настройки приватности сброшены');
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#save-privacy-settings').addEventListener('click', () => {
         showToast('Настройки приватности применены');
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     // Закрытие по клику вне модального окна
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.remove();
+            closeModalWithIceEffect(modal);
         }
     });
 }
@@ -567,11 +567,11 @@ function showThemeSettingsModal() {
     
     // ОБРАБОТЧИКИ ЗАКРЫТИЯ
     modal.querySelector('.close-btn').addEventListener('click', () => {
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#cancel-theme-settings').addEventListener('click', () => {
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     modal.querySelector('#save-theme-settings').addEventListener('click', () => {
@@ -587,13 +587,29 @@ function showThemeSettingsModal() {
         applyFontSizeToMessages(currentFontSize);
         
         showToast('Настройки оформления сохранены');
-        modal.remove();
+        closeModalWithIceEffect(modal);
     });
     
     // Закрытие по клику вне модального окна
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.remove();
+            closeModalWithIceEffect(modal);
         }
     });
+}
+
+// =======================================================
+// НОВАЯ ФУНКЦИЯ: Ледяное Закрытие Модальных Окон
+// =======================================================
+function closeModalWithIceEffect(modalElement) {
+    // 1. Добавляем класс, который запускает CSS-анимацию "таяния"
+    modalElement.classList.add('ice-close-animation');
+
+    // 2. Ждем, пока анимация завершится (0.3s из CSS + небольшой запас)
+    const animationDuration = 100; // 350 миллисекунд
+
+    setTimeout(() => {
+        // 3. Удаляем элемент после завершения анимации
+        modalElement.remove();
+    }, animationDuration);
 }

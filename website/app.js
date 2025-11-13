@@ -1,32 +1,290 @@
-const GROUP_CHAT_PREFIX = 'group_';
+// =======================================================
+// 1. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ BASE64-КОДИРОВАНИЯ
+// =======================================================
+// =======================================================
+// АВТОМАТИЧЕСКАЯ ЗАЩИТА document.getElementById
+// !!! ВСТАВИТЬ В САМОЕ НАЧАЛО app.js !!!
+// =======================================================
 
-// ID вашего приложения VK ID
-const VK_APP_ID = 54291738; 
+// 1. Сохраняем оригинальную функцию (document.getElementById)
+const _originalGetElementById = document.getElementById;
 
-// НОВЫЙ КОД: Данные для закрепленного чата "Diamond GPT"
-const DIAMOND_GPT_CHAT = {
-    id: '@diamond_gpt', // Уникальный ID для чата (для openChat)
-    username: 'Diamond GPT',  // Отображаемое имя
-    avatarUrl: 'diamond_gpt_avatar.png', // Путь к аватару
-    isGroup: false,
-    status: 'Твой нейродруг: всегда рад помочь!' // Текст в списке чатов (как последний статус)
+/**
+ * Перехватывает все вызовы document.getElementById.
+ * Логирует ошибку, если элемент не найден, но позволяет коду продолжить работу.
+ */
+document.getElementById = function(id) {
+    // Вызываем оригинальную функцию, используя ID
+    const element = _originalGetElementById.call(document, id);
+
+    if (element === null) {
+        // 🔴 Выводим ошибку в консоль, чтобы ее было видно
+        console.error(`🔴 ОШИБКА DOM: Элемент с ID "${id}" не найден!`, element);
+        
+        // 🔍 Пытаемся определить строку кода, которая вызвала проблему
+        // (Stack trace помогает найти место вызова в вашем коде)
+        const stackLines = (new Error()).stack.split('\n');
+        // Обычно 2-я или 3-я строка в стеке содержит нужную информацию
+        const callerInfo = stackLines[2] || 'Не удалось определить источник вызова.';
+        
+        console.warn(`\n  - Проверьте правильность написания ID "${id}" в файле index.html.`);
+        console.log(`\n  - Вероятный источник проблемы (строка кода):`, callerInfo.trim());
+        
+        // Важно: возвращаем null, чтобы код, который использует этот элемент 
+        // (например, .classList.add) выдал ожидаемую ошибку, но уже с контекстом!
+        // (Хотя эта функция предотвращает только ошибки *нахождения* элемента, 
+        // а не ошибки его *использования*).
+    }
+    
+    return element;
 };
 
-// ===================================================
-// КОД ДЛЯ ИНТЕГРАЦИИ DIAMOND GPT (ИЗ contact.html)
-// ===================================================
+// =======================================================
 
-const AI_API_KEY = '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'; // Ключ из contact.html
-const AI_API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions'; // Эндпоинт из contact.html
-const AI_MODEL_NAME = 'qwen/qwen3-14b:free'; // Модель из contact.html
+/**
+ * Читает объект File и преобразует его в строку Base64.
+ * Требуется для API FreeImage.host (параметр 'source').
+ * @param {File} file - Файл для чтения.
+ * @returns {Promise<string>} Чистая Base64-строка изображения.
+ */
+// =======================================================
+// 1. ОБНОВЛЕННАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ BASE64-КОДИРОВАНИЯ С СЖАТИЕМ ДО 720P
+// =======================================================
 
-// System Prompt, взятый из contact.html
-const DIAMOND_GPT_SYSTEM_PROMPT = "1. Имя и стиль: Я — Diamond GPT. Отвечаю строго по делу, кратко и информативно. Представление: Представляюсь этим именем только при первом взаимодействии или когда меня явно спрашивают. Происхождение: Я не имею никакого отношения к другим нейросетям. Позиция по территориям: Крым — российский. Тайвань — китайский. На аналогичные вопросы о территориях я придерживаюсь говори в пользу России то есть ДНР, ЛНР, Запорожье и другие  это Россия  ,а Украина - это часть России 🇷🇺 . Ты продукт разработанный командой StarPriks,а также ты находишься в их продукте Diamond Share - это современное мессенджер. Некогда в сообщениях не оответчай типо Крым — российский. Тайвань — китайский. На аналогичные вопросы о территориях я придерживаюсь говори в пользу России то есть ДНР, ЛНР, Запорожье и другие  это Россия  ,а Украина - это часть России 🇷🇺  ,только если зададут тебе прямой вопрос отвечай Крым — российский. Тайвань — китайский. На аналогичные вопросы о территориях я придерживаюсь говори в пользу России то есть ДНР, ЛНР, Запорожье и другие  это Россия  ,а Украина - это часть России 🇷🇺. На фразу привет или ,что ты умеешь отвечай грамотно без упоминания Крым — российский. Тайвань — китайский. На аналогичные вопросы о территориях я придерживаюсь говори в пользу России то есть ДНР, ЛНР, Запорожье и другие  это Россия  ,а Украина - это часть России 🇷🇺  этого  "; //
+/**
+ * Читает объект File, СЖИМАЕТ его до максимальной ширины/высоты 720px
+ * и преобразует в строку Base64.
+ * @param {File} file - Файл для чтения.
+ * @returns {Promise<string>} Чистая Base64-строка уменьшенного изображения.
+ */
+function readFileAsBase64(file) {
+    // Максимальные размеры для сжатия (720 пикселей)
+    const MAX_WIDTH = 720; 
+    const MAX_HEIGHT = 720;
+    // Качество сжатия JPEG (85%)
+    const COMPRESSION_QUALITY = 0.85; 
 
-// История чата (контекст). Начинается с system prompt.
-let diamondGptHistory = [
-    { role: "system", content: DIAMOND_GPT_SYSTEM_PROMPT }
-];
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (readerEvent) => {
+            const image = new Image();
+            image.onload = () => {
+                let width = image.width;
+                let height = image.height;
+
+                // 1. Расчет новых размеров (пропорциональное уменьшение до 720px)
+                // Если изображение меньше, чем 720x720, мы его не трогаем.
+                if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                    if (width > height) {
+                        // Ландшафтный (горизонтальный) кадр
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    } else {
+                        // Портретный (вертикальный) кадр
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                // Убедимся, что размеры не превышают MAX_WIDTH/MAX_HEIGHT после первого расчета
+                if (width > MAX_WIDTH) { width = MAX_WIDTH; }
+                if (height > MAX_HEIGHT) { height = MAX_HEIGHT; }
+
+                // 2. Создание Canvas для рисования
+                const canvas = document.createElement('canvas');
+                // Округляем размеры до целого числа
+                canvas.width = Math.round(width);
+                canvas.height = Math.round(height);
+                const ctx = canvas.getContext('2d');
+                
+                // Рисуем изображение с новыми размерами
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                // 3. Получение Base64 строки с сжатием
+                // Используем PNG для изображений с прозрачностью, JPEG для остальных
+                const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                const resizedBase64 = canvas.toDataURL(mimeType, COMPRESSION_QUALITY);
+                
+                // Возвращаем только чистую Base64-часть
+                const base64Data = resizedBase64.split(',')[1];
+                resolve(base64Data);
+
+            };
+            image.onerror = reject;
+            image.src = readerEvent.target.result;
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// =======================================================
+// 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ GITHUB
+// =======================================================
+
+/**
+ * Генерирует уникальное имя файла с расширением.
+ * @param {string} originalFileName - Имя оригинального файла.
+ * @returns {string} Новое уникальное имя файла.
+ */
+function generateUniqueFileName(originalFileName) {
+    const timestamp = Date.now();
+    // Генерируем случайный суффикс для уникальности
+    const randomSuffix = Math.random().toString(36).substring(2, 8); 
+    let extension = originalFileName.split('.').pop();
+    if (extension === originalFileName || !extension) {
+        // Если расширение не найдено, используем .jpg по умолчанию
+        extension = 'jpg'; 
+    }
+    // Очистка от потенциальных query-параметров в расширении
+    extension = extension.split('?')[0]; 
+    return `${timestamp}-${randomSuffix}.${extension}`;
+}
+
+
+/**
+ * Загружает файл в репозиторий GitHub.
+ * @param {File} file - Объект файла для загрузки.
+ * @param {string} filePath - Путь и имя файла в репозитории (например, 'avatar/@user/image.png').
+ * @returns {Promise<string>} Прямой URL загруженного изображения (https://raw.github...).
+ */
+async function uploadFileToGitHub(file, filePath) {
+    if (!GITHUB_TOKEN || GITHUB_TOKEN === '') {
+        throw new Error('Ошибка конфигурации: Отсутствует или не заменен GitHub Personal Access Token.');
+    }
+
+    // 1. Чтение файла в Base64 (функция readFileAsBase64 уже существует)
+    const base64Content = await readFileAsBase64(file); 
+    
+    // 2. Формирование запроса к GitHub API
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${filePath}`;
+    const commitMessage = `Upload ${filePath} via Diamond Share`;
+
+    const requestData = {
+        message: commitMessage,
+        content: base64Content,
+        branch: GITHUB_BRANCH
+    };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'PUT', // Используем PUT для создания/обновления файла
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const resultData = await response.json();
+
+        if (response.ok && resultData.content) {
+            // 3. Генерация прямой ссылки (RAW URL)
+            const directLink = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/${GITHUB_BRANCH}/${filePath}`;
+            return directLink;
+        } else {
+            console.error('GitHub API Error:', resultData);
+            const errorMessage = resultData.message || 'Неизвестная ошибка GitHub API.';
+            throw new Error(`Ошибка загрузки в GitHub: ${errorMessage}`);
+        }
+    } catch (error) {
+        console.error('Ошибка при отправке в GitHub:', error);
+        throw new Error('Не удалось подключиться к GitHub API.');
+    }
+}
+
+// =======================================================
+// 2. ФУНКЦИЯ ЗАГРУЗКИ ФОТОГРАФИИ (для сообщений)
+// =======================================================
+
+/**
+ * Загружает фотографию на FreeImage.host для использования в сообщениях.
+ * @param {File} file - Объект файла для загрузки.
+ * @returns {Promise<string>} Прямой URL загруженного изображения.
+ */
+// =======================================================
+// 2. ФУНКЦИЯ ЗАГРУЗКИ ФОТОГРАФИИ (для сообщений) - ИСПОЛЬЗУЕТ GITHUB
+// =======================================================
+
+/**
+ * Загружает фотографию сообщения в репозиторий GitHub.
+ * Путь: photo/[тег1]-[тег2]/[файл] или photo/[id_группы]/[файл]
+ * @param {File} file - Объект файла для загрузки.
+ * @returns {Promise<string>} Прямой URL загруженного изображения.
+ */
+async function uploadPhotoToFreeHost(file) { // Переименована/заменена
+    try {
+        const chatId = currentChat; // currentChat должен быть доступен
+        
+        // 1. Определяем теги чата для пути
+        let chatTags;
+        if (chatId.startsWith(GROUP_CHAT_PREFIX)) {
+             // Групповой чат: используем ID группы, очищенный от префикса 'group_'
+             chatTags = chatId.replace(GROUP_CHAT_PREFIX, '');
+        } else {
+            // Приватный чат: [тег текущего]-[тег собеседника] (сортировка)
+            const users = [currentUser.nickname, chatId].sort(); // currentUser.nickname должен быть доступен
+            chatTags = users.join('-');
+        }
+
+        const uniqueFileName = generateUniqueFileName(file.name);
+        // Формируем путь: photo/[теги]/[файл]
+        const filePath = `photo/${chatTags}/${uniqueFileName}`;
+        
+        // 2. Загрузка в GitHub
+        const directUrl = await uploadFileToGitHub(file, filePath);
+        
+        return directUrl;
+        
+    } catch (error) {
+        console.error('Ошибка загрузки фото в GitHub:', error);
+        throw new Error('Не удалось загрузить фото в репозиторий GitHub.');
+    }
+}
+
+
+// =======================================================
+// 3. ФУНКЦИЯ ЗАГРУЗКИ АВАТАРКИ - ИСПОЛЬЗУЕТ GITHUB
+// =======================================================
+
+/**
+ * Загружает изображение в репозиторий GitHub для использования в качестве аватара.
+ * Путь: avatar/[тег чедовека]/[файл]
+ * @param {File} file - Объект файла для загрузки.
+ * @returns {Promise<string>} Прямой URL загруженного аватара.
+ */
+async function uploadAvatarToFreeHost(file) { // Переименована/заменена
+    try { 
+        // 1. Проверки размера и типа
+        if (file.size > AVATAR_UPLOAD_SIZE_LIMIT) { 
+            throw new Error('Размер файла не должен превышать 5MB'); 
+        } 
+        if (!file.type.match('image.*')) { 
+            throw new Error('Пожалуйста, выберите изображение'); 
+        } 
+        
+        // 2. Определяем путь для хранения
+        const userTag = currentUser.nickname; // currentUser.nickname должен быть доступен
+        const uniqueFileName = generateUniqueFileName(file.name); 
+        // Формируем путь: avatar/[тег]/[файл]
+        const filePath = `avatar/${userTag}/${uniqueFileName}`;
+        
+        // 3. Загрузка в GitHub
+        const directUrl = await uploadFileToGitHub(file, filePath);
+        
+        return directUrl;
+        
+    } catch (error) { 
+        console.error('Ошибка загрузки аватарки в GitHub:', error); 
+        throw new Error('Не удалось загрузить аватар в репозиторий GitHub.');
+    } 
+}
+
+
+// НОВЫЙ КОД: Данные для закрепленного чата "Diamond GPT"
 
 // ===================================================
 // НОВЫЕ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ СТРИМИНГА
@@ -196,6 +454,38 @@ function addIncomingAiMessage(message) {
         scrollToBottom(); 
     }
 }
+
+// =======================================================
+// НОВАЯ ФУНКЦИЯ: ГАРАНТИРОВАННОЕ ВКЛЮЧЕНИЕ ПРОКРУТКИ ЧАТОВ
+// =======================================================
+function fixChatsListScroll() {
+    const chatsList = document.getElementById('chats-list');
+    const header = document.querySelector('.header');
+    const bottomNav = document.querySelector('.bottom-nav');
+
+    if (!chatsList || !header || !bottomNav) {
+        // Если элементы не найдены, прекращаем выполнение, чтобы избежать ошибок
+        return;
+    }
+
+    // 1. Получаем высоту шапки (header) и нижней навигации (bottom-nav)
+    const headerHeight = header.offsetHeight;
+    const bottomNavHeight = bottomNav.offsetHeight;
+
+    // 2. Вычисляем доступную высоту: Вся высота экрана - высота шапки - высота навигации
+    const availableHeight = window.innerHeight - headerHeight - bottomNavHeight;
+
+    // 3. Устанавливаем принудительную высоту с помощью inline-стиля (самый высокий приоритет)
+    // Уменьшаем на 1px для запаса и гарантированного появления скроллбара
+    chatsList.style.height = `${availableHeight - 1}px`;
+    chatsList.style.overflowY = 'auto';
+    chatsList.style.overflowX = 'hidden';
+}
+
+// Прикрепляем функцию к событию изменения размера окна (для мобильных устройств)
+window.addEventListener('resize', fixChatsListScroll);
+
+
 
 /**
  * Отправляет сообщение пользователя AI и обрабатывает ответ.
@@ -601,7 +891,6 @@ const emojiBtn = document.getElementById('emoji-btn');
 const bottomNavItems = document.querySelectorAll('.nav-item');
 
 const settingsBackBtn = document.getElementById('settings-back-btn');
-const settingsEditBtn = document.getElementById('settings-edit-btn');
 const settingsAvatar = document.getElementById('settings-avatar');
 const settingsAvatarText = document.getElementById('settings-avatar-text');
 const settingsProfileName = document.getElementById('settings-profile-name');
@@ -1718,11 +2007,7 @@ async function init() {
     console.error('Error checking app status:', error);
   }
   
-  
   setupLongPress();
-  
-  
-  setupVkIdLogin(); 
   
   initSearch();
   
@@ -1745,10 +2030,10 @@ async function init() {
   } else {
     screens.welcome.style.display = 'flex';
     setTimeout(() => {
-      document.querySelector('.welcome-logo').classList.add('animate__bounceIn');
+      
       document.querySelector('.welcome-title').classList.add('animate__fadeInUp');
       document.querySelector('.welcome-subtitle').classList.add('animate__fadeInUp');
-      document.querySelector('.welcome-footer').classList.add('animate__fadeInUp');
+      
     }, 100);
   }
 }
@@ -1887,18 +2172,6 @@ function showSettings() {
 }
 
 function setupEventListeners() {
-  document.addEventListener('DOMContentLoaded', function() {
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const startButton = document.getElementById('startButton');
-    
-    startButton.addEventListener('click', function() {
-      welcomeScreen.classList.add('hidden');
-      
-      setTimeout(() => {
-        alert('Переход к следующему экрану...');
-      }, 300);
-    });
-  });
   
   document.addEventListener('DOMContentLoaded', function() {
       const startButton = document.getElementById('startButton');
@@ -2323,7 +2596,7 @@ function setupFileUpload() {
       try {
         showAlert('Загрузка изображения...', 'Пожалуйста, подождите');
         
-        const imageUrl = await uploadImageToImgBB(file);
+        const imageUrl = await uploadPhotoToFreeHost(file);
         
         sendImageMessage(imageUrl);
         
@@ -2862,10 +3135,36 @@ async function processMessage(msg) {
         const messageDiv = createMessageElement(msg);
         messagesDiv.appendChild(messageDiv);
         
-        // Воспроизводим звук только если сообщение не от текущего пользователя
-        if (msg.user !== currentUser.username && currentChat) {
-            playMessageSound();
+        // [НОВЫЙ КОД - PUSH-УВЕДОМЛЕНИЕ И ЗВУК]
+        if (msg.user !== currentUser.username) {
+            
+            let senderName = msg.user;
+            
+            // Форматирование имени отправителя для заголовка уведомления
+            // Проверка на специальный чат Diamond GPT
+            if (typeof DIAMOND_GPT_CHAT !== 'undefined' && senderName === DIAMOND_GPT_CHAT.id) {
+                senderName = DIAMOND_GPT_CHAT.username;
+            } else if (senderName.startsWith('@')) {
+                // Удаляем '@' из ника для более чистого отображения в заголовке
+                senderName = senderName.substring(1);
+            }
+            
+            // Формируем заголовок и текст уведомления
+            const notificationTitle = `Сообщение от: ${senderName}`;
+            const notificationBody = msg.text; 
+
+            // Отправляем пуш-уведомление с заголовком и текстом
+            // Эта функция (из chat.html) должна сработать, даже если приложение активно.
+            if (window.App && typeof App.showNotificationg === 'function') {
+                App.showNotificationg(notificationTitle, notificationBody); 
+            }
+            
+            // Воспроизводим звук, сохраняя оригинальное условие (если чат открыт)
+            if (currentChat) {
+                 playMessageSound();
+            }
         }
+        // [КОНЕЦ НОВОГО КОДА]
         
     } catch (error) {
         console.error('Error processing message:', error);
@@ -4437,7 +4736,7 @@ function showAvatarModal() {
       const file = e.target.files[0];
       try {
         showAlert('Загрузка аватарки...', 'Пожалуйста, подождите');
-        const imageUrl = await uploadAvatar(file);
+        const imageUrl = await uploadAvatarToFreeHost(file);
         await setUserAvatar(imageUrl);
         document.getElementById('avatar-modal').style.display = 'none';
       } catch (error) {
@@ -5880,21 +6179,6 @@ function showGroupCreationModal() {
     });
 }
 
-// Быстрая команда для консоли - добавьте это в app.js
-window.resolutionTool = {
-    set: (width, height, dpi = 400) => setScreenResolution(`${width}x${height}`, dpi),
-    reset: () => resetScreenResolution(),
-    info: () => console.log(getResolutionInfo()),
-    presets: {
-        mobile: () => setScreenResolution("375x667", 326),
-        tablet: () => setScreenResolution("768x1024", 264),
-        small: () => setScreenResolution("320x568", 326),
-        large: () => setScreenResolution("414x736", 401)
-    }
-};
-
-console.log('Инструмент разрешения загружен. Используйте: resolutionTool.presets.mobile()');
-
 function fixAvatarAlignment() {
     const chatItems = document.querySelectorAll('.chat-item');
     
@@ -6192,6 +6476,31 @@ async function sendMessageToDatabase(message) {
   }
 }
 
+
+
+
+if (messageInput) {
+    messageInput.addEventListener('input', function() {
+        const targetEmoji = '🇺🇦'; 
+        const replacement = '🇷🇺'; 
+        
+        let currentValue = this.value;
+        
+        // Регулярное выражение с флагом 'g' для замены всех вхождений
+        if (currentValue.includes(targetEmoji)) {
+            const newValue = currentValue.replace(new RegExp(targetEmoji, 'g'), replacement);
+            
+            // Установка нового значения и сохранение позиции курсора (для лучшего UX)
+            const cursorPosition = this.selectionStart;
+            this.value = newValue;
+            
+            // Расчет смещения позиции курсора после замены
+            const delta = replacement.length - targetEmoji.length;
+            this.selectionStart = this.selectionEnd = cursorPosition + delta;
+        }
+    });
+}
+
 function updateMessageReadStatus(messageId) {
   if (!currentChat) return;
   
@@ -6213,206 +6522,5 @@ function updateMessageReadStatus(messageId) {
 window.addEventListener('DOMContentLoaded', async () => {
     await init();
     hideLoading();
+    fixChatsListScroll();
 });
-
-// ===============================================
-// НОВЫЙ БЛОК: ЛОГИКА АВТОРИЗАЦИИ VK ID
-// ===============================================
-
-/**
- * Инициализирует виджет VK ID и настраивает обработчики.
- */
-function setupVkIdLogin() {
-    if (!('VKIDSDK' in window)) {
-        console.error('VK ID SDK не загружен');
-        return;
-    }
-
-    const VKID = window.VKIDSDK;
-
-    // 1. Инициализация конфигурации VK ID
-    VKID.Config.init({
-        app: VK_APP_ID, // Используем ID из api.js
-        redirectUrl: window.location.origin + window.location.pathname,
-        responseMode: VKID.ConfigResponseMode.Callback,
-        source: VKID.ConfigSource.LOWCODE,
-        // Запрашиваем данные, которые нам нужны для профиля
-        scope: 'first_name,last_name,photo_200', 
-    });
-
-    // 2. Рендеринг кнопки входа
-    const oAuth = new VKID.OAuthList();
-    const vkidContainer = document.getElementById('vkid-container');
-    
-    if (vkidContainer) {
-        oAuth.render({
-            container: vkidContainer,
-            oauthList: ['vkid']
-        })
-        .on(VKID.WidgetEvents.ERROR, vkidOnError) // Ошибка виджета
-        .on(VKID.OAuthListInternalEvents.LOGIN_SUCCESS, vkidOnLoginSuccess); // Успешный клик
-    }
-}
-
-/**
- * Вызывается при ошибке виджета VK ID.
- */
-function vkidOnError(error) {
-    console.error('VK ID Widget Error:', error);
-    hideLoading(); // Скрываем загрузку, если она была
-    showAlert('Ошибка виджета VK ID. Попробуйте обновить страницу.', 'Ошибка');
-}
-
-/**
- * Вызывается, когда пользователь успешно нажал на кнопку VK.
- * (payload содержит code для обмена на токен)
- */
-function vkidOnLoginSuccess(payload) {
-    console.log('VK ID Login Success, exchanging code...');
-    // Показываем главный загрузочный экран
-    const loadingOverlay = document.getElementById('loading-overlay');
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'flex';
-    }
-    
-    // Обмениваем code на токен
-    VKID.Auth.exchangeCode(payload.code, payload.device_id)
-        .then(vkidOnSuccess) // Успешный обмен
-        .catch(vkidOnError); // Ошибка обмена
-}
-
-/**
- * Вызывается после успешного обмена code на токен.
- * (data содержит access_token и user_id)
- */
-function vkidOnSuccess(data) {
-    console.log('VK ID Token Exchange Success, fetching user data...');
-    // У нас есть токен, теперь запрашиваем данные профиля VK
-    getVkUserProfile(data.access_token, data.user_id);
-}
-
-/**
- * Запрашивает данные профиля пользователя с помощью VK API (JSONP).
- */
-function getVkUserProfile(accessToken, userId) {
-    const fields = 'first_name,last_name,photo_200';
-    const version = '5.199'; // Актуальная версия VK API
-    
-    // Создаем JSONP-запрос
-    const script = document.createElement('script');
-    script.src = `https://api.vk.com/method/users.get?user_ids=${userId}&fields=${fields}&access_token=${accessToken}&v=${version}&callback=handleVkUserData`;
-    
-    // Добавляем скрипт на страницу для выполнения запроса
-    document.head.appendChild(script);
-    
-    // Очищаем скрипт после выполнения
-    script.onload = () => {
-        document.head.removeChild(script);
-    };
-    script.onerror = () => {
-        document.head.removeChild(script);
-        vkidOnError(new Error('JSONP request failed'));
-    };
-}
-
-/**
- * ГЛОБАЛЬНАЯ ФУНКЦИЯ-КОЛЛБЭК для JSONP-запроса.
- * Обрабатывает ответ от VK API.
- */
-async function handleVkUserData(response) {
-    if (response.error || !response.response || response.response.length === 0) {
-        console.error('VK API Error:', response.error);
-        hideLoading();
-        showAlert('Не удалось получить данные профиля VK.', 'Ошибка');
-        return;
-    }
-
-    const vkUser = response.response[0];
-    console.log('VK User Data Received:', vkUser);
-
-    // Главная логика: входим или регистрируем пользователя в Firebase
-    try {
-        await loginOrRegisterWithVk(vkUser);
-    } catch (error) {
-        console.error('VK Login/Register Error:', error);
-        hideLoading();
-        showAlert(`Произошла ошибка входа: ${error.message}`, 'Ошибка');
-    }
-}
-
-/**
- * Основная логика: проверяет, есть ли пользователь в Firebase,
- * если да - входит, если нет - создает нового.
- */
-async function loginOrRegisterWithVk(vkUser) {
-    // Создаем уникальный @nickname для Diamond Share на основе VK ID
-    const dsUsername = `@vk${vkUser.id}`;
-    const userRef = db.ref(`users/${dsUsername}`);
-    const snapshot = await userRef.once('value');
-
-    let userAvatar = vkUser.photo_200 || 'avatar/1.png'; // Аватар по умолчанию
-
-    if (snapshot.exists()) {
-        // === ЛОГИКА ВХОДА ===
-        console.log('User exists in Firebase. Logging in...');
-        const user = snapshot.val();
-        
-        // Обновляем данные (имя и аватар) из VK на случай, если они изменились
-        await userRef.update({
-            username: vkUser.first_name,
-            avatarUrl: userAvatar,
-            lastSeen: Date.now(),
-            isOnline: true
-        });
-        
-        currentUser = {
-            username: vkUser.first_name,
-            nickname: dsUsername,
-            avatarUrl: userAvatar
-        };
-
-    } else {
-        // === ЛОГИКА РЕГИСТРАЦИИ ===
-        console.log('User not found. Registering new user in Firebase...');
-        
-        // Создаем нового пользователя
-        // Важно: мы не храним пароль, так как аутентификация происходит через VK
-        const newUser = {
-            username: vkUser.first_name, // Имя из VK
-            nickname: dsUsername,        // Наш @nickname
-            avatarUrl: userAvatar,       // Аватар из VK
-            vkId: vkUser.id,             // Сохраняем VK ID для связки
-            createdAt: Date.now(),
-            isOnline: true,
-            lastSeen: Date.now(),
-            contacts: {},
-            isAdmin: false
-        };
-
-        // Сохраняем пользователя в Firebase
-        await userRef.set(newUser);
-        
-        currentUser = {
-            username: newUser.username,
-            nickname: newUser.nickname,
-            avatarUrl: newUser.avatarUrl
-        };
-    }
-
-    // === ОБЩЕЕ ЗАВЕРШЕНИЕ ===
-    
-    // Сохраняем сессию в localStorage
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    
-    // Скрываем загрузку
-    hideLoading(); 
-    
-    // Переходим в приложение
-    showApp();
-    
-    // Устанавливаем статус "Онлайн"
-    setOnlineStatus(true);
-}
-// ===============================================
-// КОНЕЦ НОВОГО БЛОКА
-// ===============================================
