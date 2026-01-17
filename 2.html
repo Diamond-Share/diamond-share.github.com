@@ -3,378 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скачать Diamond Share</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#6e8efb">
     
-    <!-- Yandex.RTB -->
-    <script>window.yaContextCb=window.yaContextCb||[]</script>
-    <script src="https://yandex.ru/ads/system/context.js" async></script>
+    <title>Скачать Diamond Share - Защищённый мессенджер</title>
+    <meta name="description" content="Скачайте Diamond Share - революционный мессенджер с P2P шифрованием. Доступно для Android, iOS и на сайте.">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #6e8efb;
-            --primary-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
             --secondary: #a777e3;
-            --accent: #ff7d50;
-            --text-primary: #2c3e50;
-            --text-secondary: #707579;
-            --bg-light: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-tertiary: #f1f3f5;
-            --border: #e0e0e0;
-            --success: #4CAF50;
-            --error: #f44336;
-            --warning: #ff9800;
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --dark: #0a0e27;
+            --text: #1a1f3a;
+            --light: #64748b;
+            --bg: #ffffff;
+            --border: #e2e8f0;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
         }
-        
+
         html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        
-        body {
-            background: var(--bg-light);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+            color: var(--text);
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+        }
+
+        body {
             padding: 20px;
             position: relative;
-            overscroll-behavior: none;
         }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
+
+        /* HEADER */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .back-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        p {
-            color: var(--text-secondary);
-            margin-bottom: 40px;
+            color: var(--text);
             font-size: 18px;
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 40px;
-        }
-        
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 18px 30px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
             text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 5px 20px rgba(110, 142, 251, 0.4);
-        }
-        
-        .btn-primary:hover {
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.95);
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(110, 142, 251, 0.6);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0) 45%,
-                rgba(255, 255, 255, 0.3) 50%,
-                rgba(255, 255, 255, 0) 55%
-            );
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) rotate(30deg); }
-        }
-        
-        .diamond {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: rgba(110, 142, 251, 0.6);
-            transform: rotate(45deg);
-            animation: float 5s infinite ease-in-out;
-            z-index: -1;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: rotate(45deg) translateY(0); }
-            50% { transform: rotate(45deg) translateY(-20px); }
-        }
-        
+
+        /* BACKGROUND ELEMENTS */
         .bg-pattern {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(110, 142, 251, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(167, 119, 227, 0.1) 0%, transparent 50%);
-            z-index: -2;
+                radial-gradient(circle at 20% 30%, rgba(110, 142, 251, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(167, 119, 227, 0.08) 0%, transparent 50%);
+            z-index: 0;
             animation: pulse 8s infinite alternate;
         }
-        
+
         @keyframes pulse {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.1; }
+            0% { opacity: 0.5; }
+            100% { opacity: 0.2; }
         }
-        
-        .countdown {
-            margin-top: 20px;
-            font-size: 16px;
-            color: var(--text-secondary);
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            margin-top: 60px;
         }
-        
-        /* Кнопка "Назад" */
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(5px);
+
+        .content {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .content h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .content h1 .highlight {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content p {
+            font-size: 18px;
+            color: var(--light);
+            max-width: 600px;
+            margin: 0 auto 60px;
+            line-height: 1.8;
+        }
+
+        /* DOWNLOAD BUTTONS */
+        .download-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .download-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #6e8efb, #a777e3);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(110, 142, 251, 0.15);
+            border-color: var(--primary);
+        }
+
+        .download-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .download-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-size: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            z-index: 1000;
+            font-size: 28px;
+            color: white;
+            margin: 0 auto 20px;
         }
-        
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.9);
+
+        .download-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .download-card p {
+            font-size: 14px;
+            color: var(--light);
+            margin: 0 0 24px 0;
+            line-height: 1.6;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(110, 142, 251, 0.3);
         }
-        
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .download-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* FEATURES SECTION */
+        .features-section {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 80px;
+        }
+
+        .features-section h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 16px;
+        }
+
+        .feature h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .feature p {
+            font-size: 14px;
+            color: var(--light);
+            margin: 0;
+        }
+
+        /* STATS SECTION */
+        .stats-section {
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            padding: 60px 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            background: white;
+            padding: 80px 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .cta-section h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            color: var(--light);
+            margin-bottom: 40px;
+        }
+
+        .cta-btn {
+            padding: 26px 70px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(110, 142, 251, 0.5);
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 40px;
+            text-align: center;
+            color: var(--light);
+            border-top: 1px solid var(--border);
+        }
+
+        footer p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .container {
-                padding: 30px 20px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            p {
-                font-size: 16px;
-            }
-            
-            .btn {
+            header {
                 padding: 15px 20px;
-                font-size: 16px;
             }
-            
+
+            .logo {
+                font-size: 18px;
+            }
+
             .back-button {
                 width: 40px;
                 height: 40px;
                 font-size: 16px;
-                top: 15px;
-                left: 15px;
+            }
+
+            .container {
+                margin-top: 50px;
+            }
+
+            .content h1 {
+                font-size: 36px;
+            }
+
+            .content p {
+                font-size: 16px;
+            }
+
+            .download-section {
+                grid-template-columns: 1fr;
+            }
+
+            .features-section {
+                padding: 40px 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-section {
+                padding: 40px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta-section {
+                padding: 60px 20px;
+            }
+
+            .cta-section h2 {
+                font-size: 32px;
+            }
+
+            .cta-btn {
+                padding: 18px 40px;
+                font-size: 16px;
+            }
+
+            .download-btn {
+                padding: 12px 20px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Yandex.RTB R-A-16828864-2 -->
-    <script>
-        window.yaContextCb.push(() => {
-            Ya.Context.AdvManager.render({
-                "blockId": "R-A-16828864-2",
-                "type": "fullscreen",
-                "platform": "touch"
-            })
-        })
-    </script>
 
-    <!-- Кнопка "Назад" -->
-    <a href="index.html" class="back-button">
+<div class="bg-pattern"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <i class="fas fa-gem"></i>
+        DIAMOND SHARE
+    </div>
+    <a href="index.html" class="back-button" title="Вернуться">
         <i class="fas fa-arrow-left"></i>
     </a>
+</header>
 
-    <!-- Фоновые элементы -->
-    <div class="bg-pattern"></div>
-    <div class="diamond" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-    <div class="diamond" style="top: 70%; left: 80%; animation-delay: 1s;"></div>
-    <div class="diamond" style="top: 40%; left: 50%; animation-delay: 2s;"></div>
-    <div class="diamond" style="top: 80%; left: 20%; animation-delay: 3s;"></div>
-    
-    <!-- Основной контент -->
-    <div class="container">
-        <div class="logo">
-            <i class="fas fa-gem"></i>
-            DIAMOND SHARE
-        </div>
-        
-        <h1>Скачать приложение</h1>
-        <p>Выберите удобный способ установки Diamond Share на ваше устройство</p>
-        
-        <div class="buttons">
-            <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="btn btn-primary" target="_blank">
+<!-- MAIN CONTAINER -->
+<div class="container">
+    <!-- CONTENT -->
+    <div class="content">
+        <h1>Скачайте <span class="highlight">Diamond Share</span> прямо сейчас</h1>
+        <p>Установите приложение на своё устройство и присоединитесь к 500K+ пользователей, которым доверяют безопасность своей переписки</p>
+    </div>
+
+    <!-- DOWNLOAD SECTION -->
+    <div class="download-section">
+        <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="download-card" target="_blank">
+            <div class="download-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <h3>RuStore</h3>
+            <p>Официальное приложение из российского магазина приложений</p>
+            <button class="download-btn" onclick="event.stopPropagation()">
                 <i class="fas fa-download"></i>
-                Скачать с RuStore
-            </a>
-            <a href="https://github.com/Diamond-Share/diamond-share.github.com/releases/download/DS/diamond-share.apk" class="btn btn-secondary">
+                Скачать
+            </button>
+        </a>
+
+        <a href="https://github.com/Diamond-Share/diamond-share.github.com/releases/download/DS/diamond-share.apk" class="download-card" target="_blank">
+            <div class="download-icon">
                 <i class="fas fa-globe"></i>
-                Скачать с сайта
-            </a>
-        </div>
+            </div>
+            <h3>Прямой скачак</h3>
+            <p>Скачайте APK файл напрямую со своего сервера без посредников</p>
+            <button class="download-btn" onclick="event.stopPropagation()">
+                <i class="fas fa-link"></i>
+                Скачать APK
+            </button>
+        </a>
+
         
-        <div class="countdown" id="countdown">
-            Перенаправление через: 5 секунд
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <div class="features-section">
+        <h2>Почему выбирают Diamond Share</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Военное шифрование</h4>
+                <p>AES-256 P2P защита</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4>Молниеносная скорость</h4>
+                <p>Доставка &lt;50ms</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-eye-slash"></i>
+                </div>
+                <h4>Полная приватность</h4>
+                <p>Анонимная регистрация</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h4>Мультидевайсность</h4>
+                <p>На всех устройствах</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4>Самоуничтожение</h4>
+                <p>Контроль над сообщениями</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h4>Красивый дизайн</h4>
+                <p>Тёмная и светлая тема</p>
+            </div>
         </div>
     </div>
-    
-    <script>
-        // Создаем алмазные частицы
-        function createDiamonds() {
-            const body = document.body;
-            for (let i = 0; i < 10; i++) {
-                const diamond = document.createElement('div');
-                diamond.className = 'diamond';
-                diamond.style.width = `${Math.random() * 10 + 5}px`;
-                diamond.style.height = diamond.style.width;
-                diamond.style.top = `${Math.random() * 100}%`;
-                diamond.style.left = `${Math.random() * 100}%`;
-                diamond.style.animationDelay = `${Math.random() * 5}s`;
-                diamond.style.opacity = Math.random() * 0.5 + 0.3;
-                body.appendChild(diamond);
-            }
-        }
-        
-        createDiamonds();
-        
-        // Параллакс-эффект для фона
-        document.addEventListener('mousemove', (e) => {
-            const bg = document.querySelector('.bg-pattern');
-            const x = e.clientX / window.innerWidth * 20 - 10;
-            const y = e.clientY / window.innerHeight * 20 - 10;
-            bg.style.transform = `translate(${x}px, ${y}px)`;
-        });
-        
-        // Таймер перенаправления
-        let seconds = 5;
-        const countdownElement = document.getElementById('countdown');
-        const countdownInterval = setInterval(() => {
-            seconds--;
-            countdownElement.textContent = `Перенаправление через: ${seconds} секунд`;
-            
-            if (seconds <= 0) {
-                clearInterval(countdownInterval);
-                window.location.href = 'http://f1138033.xsph.ru/index.php';
-            }
-        }, 1000);
-        
-        // Блокировка скролла и перемещения страницы
-        document.addEventListener('touchmove', function(e) {
-            if (!e.target.closest('.container')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Дополнительные меры для блокировки скролла
-        document.addEventListener('wheel', function(e) {
-            if (!e.target.closest('.container')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Блокировка контекстного меню
-        document.addEventListener('contextmenu', function(e) {
+
+    <!-- STATS SECTION -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat">
+                <span class="stat-number">500K+</span>
+                <span class="stat-label">Пользователей</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">99.9%</span>
+                <span class="stat-label">Uptime</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">&lt;50ms</span>
+                <span class="stat-label">Скорость</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Поддержка</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA SECTION -->
+    <div class="cta-section">
+        <h2>Готовы к защищённому общению?</h2>
+        <p>Скачайте Diamond Share прямо сейчас и начните защищённую переписку</p>
+        <button class="cta-btn" onclick="document.querySelector('.download-section').scrollIntoView({behavior: 'smooth'})">
+            <i class="fas fa-download"></i>
+            Скачать приложение
+        </button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 Diamond Share. Защищённое общение для всех.</p>
+    </footer>
+</div>
+
+<script>
+    // Плавный скролл для якорей
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
         });
-    </script>
+    });
+
+    // Защита от скачивания через браузер
+    document.addEventListener('contextmenu', function(e) {
+        // Оставляю контекстное меню доступным для удобства
+    });
+</script>
+
 </body>
-
 </html>
-
