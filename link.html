@@ -3,153 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diamond Share - Мультиссылки</title>
+    <meta name="theme-color" content="#6e8efb">
+    
+    <title>Diamond Share - Все ссылки | Защищённый мессенджер</title>
+    <meta name="description" content="Diamond Share - все ссылки и ресурсы в одном месте. Официальный сайт, скачивание, GitHub, поддержка и многое другое.">
+    
+    <meta property="og:title" content="Diamond Share - Все ссылки">
+    <meta property="og:description" content="Найдите все ссылки на Diamond Share: сайт, скачивание, GitHub, соцсети и поддержку.">
+    <meta property="og:image" content="https://i.ibb.co/60thRxkc/1000911027.jpg">
+    <meta property="og:type" content="website">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #6e8efb;
-            --primary-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
             --secondary: #a777e3;
-            --accent: #ff7d50;
-            --text-primary: #2c3e50;
-            --text-secondary: #707579;
-            --bg-light: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-tertiary: #f1f3f5;
-            --border: #e0e0e0;
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --dark: #0a0e27;
+            --text: #1a1f3a;
+            --light: #64748b;
+            --bg: #ffffff;
+            --border: #e2e8f0;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
         }
-        
+
         html, body {
-            max-width: 100%;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+            color: var(--text);
             overflow-x: hidden;
-            height: 100%;
-        }
-        
-        body {
-            background: var(--bg-light);
-            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+        }
+
+        body {
             padding: 20px;
             position: relative;
-            overflow: hidden;
         }
-        
-        .container {
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            background: var(--bg-light);
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--card-shadow-hover);
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            font-size: 18px;
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(110, 142, 251, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
-        }
-        
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--bg-secondary);
-            transform: translateY(-3px);
-            box-shadow: var(--card-shadow);
-        }
-        
-        .diamond {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: rgba(110, 142, 251, 0.6);
-            transform: rotate(45deg);
-            animation: float 5s infinite ease-in-out;
-            z-index: 0;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: rotate(45deg) translateY(0); }
-            50% { transform: rotate(45deg) translateY(-20px); }
-        }
-        
+
+        /* BACKGROUND */
         .bg-pattern {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -157,142 +60,417 @@
             background: 
                 radial-gradient(circle at 20% 30%, rgba(110, 142, 251, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(167, 119, 227, 0.08) 0%, transparent 50%);
-            z-index: -2;
+            z-index: 0;
             animation: pulse 8s infinite alternate;
         }
-        
+
         @keyframes pulse {
             0% { opacity: 0.5; }
-            100% { opacity: 0.3; }
+            100% { opacity: 0.2; }
         }
-        
-        .made-with-love {
-            font-family: 'Dancing Script', cursive;
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* HEADER */
+        .header {
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo i {
+            font-size: 48px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 44px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--light);
+            margin-bottom: 40px;
+        }
+
+        /* LINKS GRID */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .link-card {
+            background: white;
+            padding: 32px 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6e8efb, #a777e3);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .link-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(110, 142, 251, 0.15);
+            border-color: var(--primary);
+        }
+
+        .link-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .link-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .link-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .link-card p {
+            font-size: 14px;
+            color: var(--light);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .link-arrow {
+            margin-top: 16px;
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+
+        .link-card:hover .link-arrow {
+            transform: translateX(4px);
+        }
+
+        /* CATEGORIES */
+        .category {
+            margin-bottom: 60px;
+        }
+
+        .category-title {
+            font-family: 'Outfit', sans-serif;
             font-size: 24px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-top: 20px;
-            opacity: 0;
-            animation: fadeInLove 4s ease-in-out 1s forwards;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 30px;
+            text-align: center;
         }
-        
-        @keyframes fadeInLove {
-            0% {
-                opacity: 0;
-                transform: translateY(20px) scale(0.8);
-            }
-            50% {
-                opacity: 0.5;
-                transform: translateY(-5px) scale(1.05);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+
+        /* FOOTER */
+        footer {
+            padding: 40px;
+            text-align: center;
+            color: var(--light);
+            border-top: 1px solid var(--border);
         }
-        
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--light);
+        }
+
         .heart {
-            color: #ff6b6b;
+            color: #ff4757;
             display: inline-block;
             animation: heartbeat 2s ease-in-out infinite;
         }
-        
+
         @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
             25% { transform: scale(1.1); }
             50% { transform: scale(1); }
-            75% { transform: scale(1.05); }
         }
-        
-        footer {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .container {
-                padding: 30px 20px;
-            }
-            
             .logo {
-                font-size: 28px;
+                font-size: 36px;
             }
-            
+
+            h1 {
+                font-size: 32px;
+            }
+
             .subtitle {
                 font-size: 16px;
             }
-            
-            .btn {
-                padding: 12px 20px;
-                font-size: 15px;
+
+            .links-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
-            
-            .made-with-love {
+
+            .link-card {
+                padding: 24px 16px;
+            }
+
+            .link-card h3 {
+                font-size: 18px;
+            }
+
+            .category-title {
                 font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
-    <div class="diamond" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-    <div class="diamond" style="top: 70%; left: 80%; animation-delay: 1s;"></div>
-    <div class="diamond" style="top: 40%; left: 50%; animation-delay: 2s;"></div>
-    <div class="diamond" style="top: 80%; left: 20%; animation-delay: 3s;"></div>
-    
-    <div class="container">
+
+<div class="bg-pattern"></div>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+    <!-- HEADER -->
+    <div class="header">
         <div class="logo">
             <i class="fas fa-gem"></i>
             DIAMOND SHARE
         </div>
-        
-        <p class="subtitle">Самый лучший мессенджер</p>
-        
-        <div class="buttons">
-            <a href="https://diamond-share.github.io/" class="btn btn-primary" target="_blank">
-                <i class="fas fa-globe"></i>
-                Официальный сайт
+        <h1>Все ссылки в одном месте</h1>
+        <p class="subtitle">Найдите всё что нужно: сайт, скачивание, поддержку и многое другое</p>
+    </div>
+
+    <!-- MAIN LINKS -->
+    <div class="category">
+        <div class="category-title">
+            <i class="fas fa-star"></i> Основное
+        </div>
+        <div class="links-grid">
+            <a href="https://diamond-share.github.io/" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>Официальный сайт</h3>
+                <p>Главная страница Diamond Share с полной информацией</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
-            <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="btn btn-secondary" target="_blank">
-                <i class="fas fa-download"></i>
-                Скачать с RuStore
+
+            <a href="https://diamond-share.github.io/" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Скачать приложение</h3>
+                <p>Скачайте Diamond Share для Android прямо сейчас</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>RuStore</h3>
+                <p>Официальное приложение в российском магазине</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
         </div>
     </div>
-    
-    <div class="made-with-love">
-        Сделано с <span class="heart">❤️</span>
+
+    <!-- SOCIAL LINKS -->
+    <div class="category">
+        <div class="category-title">
+            <i class="fas fa-share-alt"></i> Социальные сети
+        </div>
+        <div class="links-grid">
+            <a href="https://t.me/Diamond_Share" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <h3>Telegram</h3>
+                <p>Канал новостей и объявлений Diamond Share</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="https://vk.ru/diamond_share" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fab fa-vk"></i>
+                </div>
+                <h3>ВКонтакте</h3>
+                <p>Сообщество Diamond Share ВКонтакте</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="Diamond_Share.com" target="_blank" class="link-card">
+                <div class="link-icon">
+                    <i class="fa fa-heart"></i>
+                </div>
+                <h3>Diamond Share</h3>
+                <p>Следите за новостями Diamond Share</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
     </div>
-    
+
+    <!-- SUPPORT LINKS -->
+    <div class="category">
+        <div class="category-title">
+            <i class="fas fa-headset"></i> Поддержка
+        </div>
+        <div class="links-grid">
+            <a href="mailto:StarPriksCompany@gmail.com " class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Электронная почта</h3>
+                <p>Напишите нам на support@StarPriksCompany@gmail.com</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="https://diamond-share.github.io/download#faq" class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3>FAQ</h3>
+                <p>Ответы на часто задаваемые вопросы</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="https://diamond-share.github.io/index.html#comparison" class="link-card">
+                <div class="link-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>О приложении</h3>
+                <p>Узнайте больше о Diamond Share</p>
+                <div class="link-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
     <footer>
-        Diamond Team © 2025
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-gem"></i>
+                DIAMOND SHARE
+            </div>
+            <p class="footer-text">
+                © 2026 Diamond Share. Сделано с <span class="heart">❤️</span> для приватности.
+            </p>
+        </div>
     </footer>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Создаем дополнительные алмазные частицы
-            for (let i = 0; i < 10; i++) {
-                const diamond = document.createElement('div');
-                diamond.className = 'diamond';
-                diamond.style.width = `${Math.random() * 10 + 5}px`;
-                diamond.style.height = diamond.style.width;
-                diamond.style.top = `${Math.random() * 100}%`;
-                diamond.style.left = `${Math.random() * 100}%`;
-                diamond.style.animationDelay = `${Math.random() * 5}s`;
-                diamond.style.opacity = Math.random() * 0.5 + 0.3;
-                document.body.appendChild(diamond);
+</div>
+
+<script>
+    // Плавный скролл для всех ссылок
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
             }
-            
-            // Параллакс-эффект для фона
-            document.addEventListener('mousemove', (e) => {
-                const bg = document.querySelector('.bg-pattern');
-                const x = e.clientX / window.innerWidth * 20 - 10;
-                const y = e.clientY / window.innerHeight * 20 - 10;
-                bg.style.transform = `translate(${x}px, ${y}px)`;
-            });
         });
-    </script>
+    });
+
+    // Отслеживание открытых ссылок
+    document.querySelectorAll('.link-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const href = this.getAttribute('href');
+            if (href && !href.startsWith('#')) {
+                // Аналитика (можно добавить отслеживание)
+                console.log('Открыта ссылка:', href);
+            }
+        });
+    });
+</script>
+
 </body>
-</html>
+                                     </html>
