@@ -65,6 +65,17 @@
             overflow-x: hidden;
         }
 
+        /* ===== CONFETTI CANVAS ===== */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
         /* ===== HEADER ===== */
         header {
             position: fixed;
@@ -102,6 +113,171 @@
 
         .header-btn:hover {
             transform: translateY(-2px);
+        }
+
+        /* ===== CELEBRATION MINI BANNER ===== */
+        .celebration-mini-banner {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 50%, #dc143c 100%);
+            padding: 8px 20px;
+            z-index: 998;
+            box-shadow: 0 8px 32px rgba(220, 20, 60, 0.5);
+            animation: minibannerSlideDown 0.6s ease-out;
+            overflow: hidden;
+        }
+
+        .celebration-mini-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes minibannerSlideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .mini-banner-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mini-banner-icon {
+            font-size: 20px;
+            animation: miniCelebrate 1.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+        }
+
+        @keyframes miniCelebrate {
+            0%, 100% { transform: rotate(-15deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.15); }
+        }
+
+        .mini-banner-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .mini-banner-number {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 16px;
+            font-weight: 900;
+            animation: miniPulse 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+        }
+
+        @keyframes miniPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .mini-close-banner {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .mini-close-banner:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Decorative elements */
+        .mini-banner-sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px #ffd700;
+        }
+
+        .mini-banner-sparkle:nth-child(1) {
+            top: 20%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .mini-banner-sparkle:nth-child(2) {
+            top: 60%;
+            left: 25%;
+            animation-delay: 0.3s;
+        }
+
+        .mini-banner-sparkle:nth-child(3) {
+            top: 40%;
+            right: 20%;
+            animation-delay: 0.6s;
+        }
+
+        .mini-banner-sparkle:nth-child(4) {
+            top: 70%;
+            right: 30%;
+            animation-delay: 0.9s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
         }
 
         /* ===== HERO ===== */
@@ -749,6 +925,30 @@
         }
 
         @media (max-width: 768px) {
+            .celebration-mini-banner {
+                top: 60px;
+                padding: 6px 15px;
+            }
+
+            .mini-banner-text {
+                font-size: 12px;
+            }
+
+            .mini-banner-number {
+                font-size: 14px;
+            }
+
+            .mini-banner-icon {
+                font-size: 16px;
+            }
+
+            .mini-close-banner {
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+                right: 10px;
+            }
+
             header {
                 padding: 15px 20px;
             }
@@ -862,8 +1062,11 @@
 </head>
 <body>
 
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
+
 <!-- HEADER -->
-<header>
+<header id="mainHeader">
     <div class="logo">
         <i class="fas fa-gem"></i> DIAMOND SHARE
     </div>
@@ -872,8 +1075,25 @@
     </button>
 </header>
 
+<!-- CELEBRATION MINI BANNER -->
+<div class="celebration-mini-banner" id="celebrationBanner">
+    <span class="mini-banner-sparkle"></span>
+    <span class="mini-banner-sparkle"></span>
+    <span class="mini-banner-sparkle"></span>
+    <span class="mini-banner-sparkle"></span>
+    
+    <div class="mini-banner-content">
+        <span class="mini-banner-icon">🎉</span>
+        <div class="mini-banner-text">
+            Мы достигли <span class="mini-banner-number">1 000 000</span> пользователей!
+        </div>
+        <span class="mini-banner-icon">🎊</span>
+    </div>
+    <button class="mini-close-banner" onclick="closeBanner()">✕</button>
+</div>
+
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="heroSection">
     <div class="hero-container">
         <h1>Защищённое общение, которому доверяют миллионы</h1>
         <p>Революционный мессенджер с P2P шифрованием военного уровня. Молниеносная скорость, полная приватность, анонимная регистрация.</p>
@@ -1211,8 +1431,88 @@
     function downloadApp() {
         window.location.href = downloadURL;
     }
+
+    function closeBanner() {
+        const banner = document.getElementById('celebrationBanner');
+        banner.style.animation = 'minibannerSlideDown 0.3s ease-out reverse';
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 300);
+    }
+
+    // Confetti Animation
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confettiCount = 150;
+    const confetti = [];
+
+    const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#5f27cd', '#00d2d3', '#ff9ff3'];
+
+    class Confetto {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height - canvas.height;
+            this.size = Math.random() * 8 + 4;
+            this.speedY = Math.random() * 3 + 2;
+            this.speedX = Math.random() * 2 - 1;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = Math.random() * 10 - 5;
+        }
+
+        update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+            this.rotation += this.rotationSpeed;
+
+            if (this.y > canvas.height) {
+                this.y = -10;
+                this.x = Math.random() * canvas.width;
+            }
+        }
+
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate((this.rotation * Math.PI) / 180);
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            ctx.restore();
+        }
+    }
+
+    for (let i = 0; i < confettiCount; i++) {
+        confetti.push(new Confetto());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach(c => {
+            c.update();
+            c.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // Auto-hide confetti after 10 seconds
+    setTimeout(() => {
+        canvas.style.transition = 'opacity 2s';
+        canvas.style.opacity = '0';
+        setTimeout(() => {
+            canvas.style.display = 'none';
+        }, 2000);
+    }, 10000);
 </script>
 
 </body>
 	</html>
-
