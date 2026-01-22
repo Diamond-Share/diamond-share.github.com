@@ -1,1 +1,12 @@
-
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "Diamond Share",
+      "package_name": "com.diamondteam.diamondshare",
+      "sha256_cert_fingerprints": [
+        "FC:E4:AB:90:88:0D:73:42:59:FD:47:7D:87:C6:AC:55:E1:15:D8:93:FB:11:0E:E1:A0:57:92:BC:22:E2:57:B2"
+      ]
+    }
+  }
+]
