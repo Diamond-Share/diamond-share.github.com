@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarPriks Dev — Центр разработчиков</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2a5cf6;
+            --primary-gradient: linear-gradient(135deg, #2a5cf6 0%, #00c6ff 100%);
+            --dark: #0f1115;
+            --gray: #5e6c84;
+            --light: #f4f7fe;
+            --white: #ffffff;
+            --border: rgba(42, 92, 246, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: #fff; color: var(--dark); overflow-x: hidden; line-height: 1.6; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+        .text-gradient { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* --- HEADER --- */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); padding: 18px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 22px; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .back-link { text-decoration: none; color: var(--dark); font-weight: 700; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 14px; }
+
+        /* --- HERO --- */
+        .hero { padding: 160px 0 60px; text-align: center; }
+        .tag { display: inline-block; padding: 8px 20px; background: rgba(42, 92, 246, 0.08); color: var(--primary); border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+        h1 { font-size: clamp(30px, 6vw, 50px); font-weight: 900; margin-bottom: 20px; }
+
+        /* --- DEV GRID --- */
+        .dev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 40px 0; }
+        .dev-card { 
+            background: #fff; border-radius: 30px; padding: 40px; border: 1px solid var(--border);
+            text-decoration: none; color: inherit; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: flex-start;
+        }
+        .dev-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(42,92,246,0.1); border-color: var(--primary); }
+        
+        .icon-box { width: 60px; height: 60px; background: var(--light); border-radius: 20px; display: grid; place-items: center; font-size: 26px; color: var(--primary); margin-bottom: 25px; transition: 0.3s; }
+        .dev-card:hover .icon-box { background: var(--primary-gradient); color: #fff; }
+        
+        .dev-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+        .dev-card p { color: var(--gray); font-size: 14px; margin-bottom: 25px; }
+        .action-link { font-weight: 800; font-size: 14px; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+
+        /* --- MOBILE ADAPTATION --- */
+        @media (max-width: 992px) {
+            .dev-grid { grid-template-columns: 1fr; gap: 15px; }
+            .dev-card { 
+                flex-direction: row; align-items: center; padding: 20px; border-radius: 20px; 
+            }
+            .icon-box { margin-bottom: 0; margin-right: 20px; min-width: 55px; height: 55px; font-size: 22px; }
+            .dev-card p { margin-bottom: 5px; }
+            .action-link { display: none; } /* Скрываем на мобайле для чистоты */
+            .hero { padding-top: 120px; }
+        }
+
+        /* --- FOOTER --- */
+        footer { background: var(--dark); color: #fff; padding: 60px 0; text-align: center; border-radius: 40px 40px 0 0; margin-top: 80px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <a href="index.html" class="logo"><i class="fas fa-gem"></i> STARPTRIKS DEV</a>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="tag" data-aos="fade-down">Для разработчиков</span>
+            <h1 data-aos="fade-up">Создавай будущее <br><span class="text-gradient">вместе с нами</span></h1>
+            <p style="color: var(--gray); max-width: 600px; margin: 0 auto;" data-aos="fade-up" data-aos-delay="100">
+                Используйте мощные инструменты Diamond для интеграции безопасного обмена данными в ваши проекты.
+            </p>
+
+            <div class="dev-grid">
+    <a href="https://t.me/Russia_1News" class="dev-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="icon-box"><i class="fas fa-users"></i></div>
+        <div class="info">
+            <h3>Вступить в команду</h3>
+            <p>Стань частью StarPriks. Мы всегда ищем талантливых разработчиков и дизайнеров.</p>
+            <span class="action-link">Подать заявку <i class="fas fa-chevron-right"></i></span>
+        </div>
+    </a>
+
+    <a href="https://t.me/Russia_1News" class="dev-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="icon-box"><i class="fas fa-headset"></i></div>
+        <div class="info">
+            <h3>Связь с поддержкой</h3>
+            <p>Возникли вопросы или технические проблемы? Наша команда на связи 24/7.</p>
+            <span class="action-link">Написать в чат <i class="fas fa-chevron-right"></i></span>
+        </div>
+    </a>
+
+    <a href="https://t.me/Russia_1News" class="dev-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="icon-box"><i class="fas fa-shield-virus"></i></div>
+        <div class="info">
+            <h3>Bug Bounty</h3>
+            <p>Нашли уязвимость? Сообщите нам и получите вознаграждение за помощь проекту.</p>
+            <span class="action-link">Условия программы <i class="fas fa-chevron-right"></i></span>
+        </div>
+    </a>
+</div>
+        </section>
+
+        <section style="background: var(--light); border-radius: 40px; padding: 60px 40px; margin-bottom: 60px;" data-aos="zoom-in">
+            <h2 style="font-weight: 900; margin-bottom: 30px; text-align: center;">Технологический стек</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: center;">
+                <div>
+                    <i class="fab fa-node-js" style="font-size: 40px; color: #339933; margin-bottom: 15px;"></i>
+                    <h4 style="font-weight: 800;">Data Base</h4>
+                </div>
+                <div>
+                    <i class="fab fa-react" style="font-size: 40px; color: #61DAFB; margin-bottom: 15px;"></i>
+                    <h4 style="font-weight: 800;">React Native</h4>
+                </div>
+                <div>
+                    <i class="fas fa-database" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="font-weight: 800;">E2E Core</h4>
+                </div>
+                <div>
+                    <i class="fas fa-lock" style="font-size: 40px; color: #f1c40f; margin-bottom: 15px;"></i>
+                    <h4 style="font-weight: 800;">AES-256</h4>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p style="opacity: 0.6; font-size: 14px;">© 2026 StarPriks Developer Hub. Powered by StarPriks.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+    </script>
+</body>
+</html>
