@@ -5,28 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#6e8efb">
     
-    <title>Скачать Diamond Share с сайта - Прямой скачак APK</title>
-    <meta name="description" content="Скачайте Diamond Share прямо со своего сервера. Быстрый и безопасный способ установить защищённый мессенджер на Android.">
+    <title>Скачать Diamond Share — Прямая загрузка APK</title>
+    <meta name="description" content="Безопасная установка Diamond Share для Android. Скачайте APK файл напрямую без регистрации и посредников.">
     
-    <meta property="og:title" content="Скачать Diamond Share с сайта">
-    <meta property="og:description" content="Прямой скачак APK файла Diamond Share. Быстро, безопасно, без посредников.">
+    <meta property="og:title" content="Скачать Diamond Share с официального сайта">
+    <meta property="og:description" content="Прямая загрузка APK. Быстро, безопасно, конфиденциально.">
     <meta property="og:image" content="https://i.ibb.co/60thRxkc/1000911027.jpg">
     <meta property="og:type" content="website">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #6e8efb;
             --secondary: #a777e3;
-            --dark: #0a0e27;
-            --text: #1a1f3a;
+            --dark: #0f172a;
+            --text: #1e293b;
             --light: #64748b;
-            --bg: #ffffff;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --warning: #ff7d50;
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --accent-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
         }
 
         * {
@@ -35,573 +35,365 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+            background-color: var(--bg);
             color: var(--text);
+            line-height: 1.6;
             overflow-x: hidden;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
 
-        body {
-            padding: 20px;
-            position: relative;
+        /* BACKGROUND ELEMENTS */
+        .bg-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(110, 142, 251, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(60px);
         }
+
+        .bg-glow-1 { top: -100px; right: -100px; }
+        .bg-glow-2 { bottom: -100px; left: -100px; }
 
         /* HEADER */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 20px 40px;
+            padding: 30px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .logo {
             font-family: 'Outfit', sans-serif;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .back-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--text);
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s;
+            gap: 10px;
+            color: var(--dark);
             text-decoration: none;
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* BACKGROUND */
-        .bg-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(110, 142, 251, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(167, 119, 227, 0.08) 0%, transparent 50%);
-            z-index: 0;
-            animation: pulse 8s infinite alternate;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            100% { opacity: 0.2; }
-        }
-
-        /* MAIN CONTAINER */
-        .container {
-            max-width: 900px;
-            width: 100%;
-            position: relative;
-            z-index: 10;
-            margin-top: 80px;
-        }
-
-        .content {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .content h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 52px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            color: var(--dark);
-            line-height: 1.2;
-        }
-
-        .content h1 .highlight {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+        .logo i {
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .content p {
-            font-size: 18px;
+        .back-link {
+            padding: 12px 24px;
+            border-radius: 50px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        /* HERO SECTION */
+        .container {
+            max-width: 850px;
+            margin: 40px auto 100px;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
             color: var(--light);
+            font-size: 18px;
             max-width: 600px;
             margin: 0 auto 40px;
-            line-height: 1.8;
         }
 
-        /* ALERT BOX */
-        .alert {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 16px;
-            padding: 24px;
+        /* DOWNLOAD BOX */
+        .main-download-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 50px 30px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
             margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 22px 50px;
+            background: var(--accent-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 18px;
+            font-size: 20px;
+            font-weight: 700;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 15px 30px rgba(110, 142, 251, 0.4);
+            margin-bottom: 25px;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(110, 142, 251, 0.5);
+        }
+
+        .version-info {
             display: flex;
-            gap: 16px;
-            align-items: flex-start;
+            justify-content: center;
+            gap: 20px;
+            color: var(--light);
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .alert.warning {
-            background: linear-gradient(135deg, rgba(255, 125, 80, 0.1) 0%, rgba(255, 125, 80, 0.05) 100%);
-            border-color: rgba(255, 125, 80, 0.3);
-        }
-
-        .alert-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+        .version-info span {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            flex-shrink: 0;
+            gap: 5px;
         }
 
-        .alert.warning .alert-icon {
-            background: linear-gradient(135deg, #ff7d50, #ffb366);
-        }
-
-        .alert-content {
-            text-align: left;
-        }
-
-        .alert-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 4px;
-        }
-
-        .alert-description {
-            font-size: 14px;
-            color: var(--light);
-            margin: 0;
-        }
-
-        /* DOWNLOAD OPTIONS */
-        .download-options {
+        /* ALTERNATIVE OPTIONS */
+        .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 60px;
         }
 
-        .option-card {
+        .option-item {
             background: white;
-            padding: 32px 24px;
-            border-radius: 16px;
-            border: 2px solid var(--border);
-            transition: all 0.3s;
+            padding: 25px;
+            border-radius: 24px;
             text-decoration: none;
-            color: inherit;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid #eef2f6;
+            transition: 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
         }
 
-        .option-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #6e8efb, #a777e3);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s;
-        }
-
-        .option-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(110, 142, 251, 0.15);
+        .option-item:hover {
             border-color: var(--primary);
-        }
-
-        .option-card:hover::before {
-            transform: scaleX(1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.05);
         }
 
         .option-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background: #f1f5f9;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: white;
-            margin-bottom: 16px;
+            font-size: 20px;
+            color: var(--primary);
+            margin-bottom: 15px;
         }
 
-        .option-card h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .option-item h3 {
+            font-size: 16px;
             color: var(--dark);
+            margin-bottom: 5px;
         }
 
-        .option-card p {
+        .option-item p {
             font-size: 13px;
             color: var(--light);
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        .option-card.coming {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .option-card.coming .option-icon {
-            background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
-        }
-
-        .coming-badge {
-            display: inline-block;
-            background: rgba(255, 125, 80, 0.2);
-            color: var(--warning);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 12px;
-        }
-
-        /* DOWNLOAD BUTTON */
-        .download-btn-container {
-            margin-bottom: 60px;
-        }
-
-        .download-btn {
-            padding: 26px 70px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 35px rgba(110, 142, 251, 0.5);
-        }
-
-        .download-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .download-btn:active::before {
-            width: 300px;
-            height: 300px;
         }
 
         /* INFO SECTION */
-        .info-section {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 60px;
-        }
-
-        .info-section h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 24px;
-            color: var(--dark);
-        }
-
-        .info-grid {
+        .benefits {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 30px;
+            text-align: left;
+            margin-top: 80px;
         }
 
-        .info-item {
-            text-align: center;
-        }
-
-        .info-item-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            margin: 0 auto 16px;
-        }
-
-        .info-item h4 {
+        .benefit-card h4 {
             font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 18px;
+            margin: 15px 0 10px;
             color: var(--dark);
         }
 
-        .info-item p {
+        .benefit-card p {
             font-size: 14px;
             color: var(--light);
-            margin: 0;
+            line-height: 1.5;
+        }
+
+        .benefit-icon {
+            font-size: 24px;
+            color: var(--primary);
         }
 
         /* FOOTER */
         footer {
-            padding: 40px;
+            margin-top: auto;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
             text-align: center;
             color: var(--light);
-            border-top: 1px solid var(--border);
-        }
-
-        footer p {
             font-size: 14px;
-            margin: 0;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
             }
-
-            .logo {
-                font-size: 18px;
+            .hero h1 {
+                font-size: 34px;
             }
-
-            .back-button {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
+            .main-download-card {
+                padding: 40px 20px;
             }
-
-            .container {
-                margin-top: 60px;
-            }
-
-            .content h1 {
-                font-size: 36px;
-            }
-
-            .content p {
-                font-size: 16px;
-            }
-
-            .download-options {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
-            }
-
-            .option-card {
-                padding: 24px 16px;
-            }
-
-            .option-card h3 {
-                font-size: 16px;
-            }
-
             .download-btn {
-                padding: 18px 40px;
-                font-size: 16px;
                 width: 100%;
                 justify-content: center;
-            }
-
-            .info-section {
-                padding: 24px;
-            }
-
-            .info-section h2 {
-                font-size: 24px;
-            }
-
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr);
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="bg-pattern"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 
-<!-- HEADER -->
 <header>
-    <div class="logo">
+    <a href="index.html" class="logo">
         <i class="fas fa-gem"></i>
         DIAMOND SHARE
-    </div>
-    <a href="download.html" class="back-button" title="Вернуться">
-        <i class="fas fa-arrow-left"></i>
+    </a>
+    <a href="javascript:history.back()" class="back-link">
+        <i class="fas fa-arrow-left"></i> Назад
     </a>
 </header>
 
-<!-- MAIN CONTAINER -->
 <div class="container">
-    <!-- CONTENT -->
-    <div class="content">
-        <h1>Скачать <span class="highlight">с сайта</span></h1>
-        <p>Быстрый и безопасный прямой скачак APK файла Diamond Share без посредников</p>
+    <div class="hero">
+        <h1>Скачать <span>напрямую</span></h1>
+        <p>Получите последнюю версию защищенного мессенджера Diamond Share в один клик без посредников.</p>
     </div>
 
-    <!-- ALERT -->
-    <div class="alert warning">
-        <div class="alert-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="alert-content">
-            <div class="alert-title">Быстрый скачак</div>
-            <p class="alert-description">Скачайте приложение напрямую со своего сервера без ограничений</p>
-        </div>
-    </div>
-
-    <!-- DOWNLOAD OPTIONS -->
-    <div class="download-options">
-        <button class="option-card download-btn" onclick="startDownload()">
-            <div class="option-icon">
-                <i class="fas fa-download"></i>
-            </div>
-            <h3>Скачать APK</h3>
-            <p>Прямой скачак на устройство</p>
-        </button>
-
-        <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="option-card" target="_blank">
-            <div class="option-icon">
-                <i class="fas fa-store"></i>
-            </div>
-            <h3>RuStore</h3>
-            <p>Официальный магазин приложений</p>
-        </a>
-    </div>
-
-    <!-- MAIN DOWNLOAD BUTTON -->
-    <div class="download-btn-container">
+    <div class="main-download-card">
         <button class="download-btn" onclick="startDownload()">
-            <i class="fas fa-download"></i>
-            Скачать Diamond Share APK
+            <i class="fas fa-cloud-download-alt"></i>
+            Скачать APK файл
         </button>
-    </div>
-
-    <!-- INFO SECTION -->
-    <div class="info-section">
-        <h2>Почему скачивать с нашего сайта?</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-item-icon">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <h4>Быстрая скорость</h4>
-                <p>Максимальная скорость скачивания без лагов</p>
-            </div>
-            <div class="info-item">
-                <div class="info-item-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h4>Безопасность</h4>
-                <p>Проверенный APK от разработчиков</p>
-            </div>
-            <div class="info-item">
-                <div class="info-item-icon">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h4>Без посредников</h4>
-                <p>Прямой скачак без сторонних сервисов</p>
-            </div>
-            <div class="info-item">
-                <div class="info-item-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h4>Всегда актуально</h4>
-                <p>Последняя версия приложения</p>
-            </div>
+        
+        <div class="version-info">
+            <span><i class="fas fa-check-circle"></i> v3.2</span>
+            <span><i class="fas fa-file-archive"></i> 177.5 MB</span>
+            <span><i class="fas fa-shield-virus"></i> Проверено</span>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>© 2026 Diamond Share. Защищённое общение для всех.</p>
-    </footer>
+    <div class="options-grid">
+        <a href="https://www.rustore.ru/catalog/app/com.diamondteam.diamondshare" class="option-item" target="_blank">
+            <div class="option-icon"><i class="fas fa-store"></i></div>
+            <h3>RuStore</h3>
+            <p>Официальный магазин</p>
+        </a>
+        <div class="option-item" style="opacity: 0.6; cursor: default;">
+            <div class="option-icon"><i class="fab fa-google-play"></i></div>
+            <h3>Google Play</h3>
+            <p>Скоро появится</p>
+        </div>
+    </div>
+
+    <div class="benefits">
+        <div class="benefit-card">
+            <i class="fas fa-bolt benefit-icon"></i>
+            <h4>Мгновенно</h4>
+            <p>Никаких очередей и переходов по рекламным ссылкам.</p>
+        </div>
+        <div class="benefit-card">
+            <i class="fas fa-shield-alt benefit-icon"></i>
+            <h4>Безопасно</h4>
+            <p>Прямой файл от разработчиков StarPriks.</p>
+        </div>
+        <div class="benefit-card">
+            <i class="fas fa-sync benefit-icon"></i>
+            <h4>Актуально</h4>
+            <p>Автоматическое получение самой свежей версии.</p>
+        </div>
+    </div>
 </div>
+
+<footer>
+    <p>© 2026 Diamond Share. Свобода общения и приватность по умолчанию.</p>
+</footer>
 
 <script>
     function startDownload() {
-        // Создаем невидимый элемент для скачивания
-        const link = document.createElement('a');
-        link.href = 'https://github.com/Diamond-Share/diamond-share.github.com/releases/download/DS/diamond-share.apk';
-        link.download = 'diamond-share.apk';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+        // Эффект нажатия
+        const btn = document.querySelector('.download-btn');
+        const originalContent = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Подготовка...';
+        btn.style.pointerEvents = 'none';
 
-    // Плавный скролл
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
+        setTimeout(() => {
+            const link = document.createElement('a');
+            link.href = 'https://github.com/Diamond-Share/diamond-share.github.com/releases/download/DS/diamond-share.apk';
+            link.download = 'diamond-share.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            btn.innerHTML = '<i class="fas fa-check"></i> Загрузка началась';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.style.pointerEvents = 'all';
+            }, 3000);
+        }, 1000);
+    }
 </script>
 
 </body>
