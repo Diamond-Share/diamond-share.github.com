@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор секретных страниц</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #0056b3; }
+        .hidden { display: none; }
+        .expired { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="generator-ui" class="card">
+        <h2>Создать секретную ссылку</h2>
+        <p>Ссылка будет жить ровно 10 минут</p>
+        <button onclick="createLink()">Сгенерировать</button>
+        <div id="result" class="hidden">
+            <input type="text" id="linkOutput" readonly>
+            <p style="font-size: 0.8rem; color: #666;">Скопируй и открой в новой вкладке</p>
+        </div>
+    </div>
+
+    <div id="secret-content" class="card hidden">
+        <h2 style="color: #28a745;">🔓 Доступ разрешен</h2>
+        <p>Это твоя уникальная страница с рандомным кодом:</p>
+        <h1 id="random-code" style="letter-spacing: 5px; background: #eee; padding: 10px;"></h1>
+        <p id="timer" style="font-size: 0.9rem; color: #888;"></p>
+    </div>
+
+    <div id="error-404" class="card hidden">
+        <h1 style="font-size: 4rem; margin: 0;">404</h1>
+        <p class="expired">Время жизни ссылки истекло или она неверна.</p>
+        <a href="/">Вернуться назад</a>
+    </div>
+
+    <script>
+        const LIFETIME = 10 * 60 * 1000; // 10 минут в мс
+
+        // 1. Функция создания ссылки
+        function createLink() {
+            const timestamp = Date.now();
+            const randomPart = Math.random().toString(36).substring(2, 10);
+            // Кодируем время и рандом в строку Base64
+            const secretToken = btoa(`${timestamp}|${randomPart}`);
+            
+            const url = window.location.origin + window.location.pathname + '#' + secretToken;
+            
+            document.getElementById('linkOutput').value = url;
+            document.getElementById('result').classList.remove('hidden');
+        }
+
+        // 2. Логика проверки при загрузке
+        function checkAccess() {
+            const hash = window.location.hash.substring(1);
+            
+            if (!hash) return; // Если хэша нет, просто показываем генератор
+
+            try {
+                const decoded = atob(hash).split('|');
+                const createdAt = parseInt(decoded[0]);
+                const randomVal = decoded[1];
+                const now = Date.now();
+
+                // Скрываем генератор
+                document.getElementById('generator-ui').classList.add('hidden');
+
+                if (isNaN(createdAt) || (now - createdAt) > LIFETIME) {
+                    // ВРЕМЯ ВЫШЛО
+                    document.getElementById('error-404').classList.remove('hidden');
+                } else {
+                    // ВСЁ ОК - ПОКАЗЫВАЕМ КОНТЕНТ
+                    document.getElementById('secret-content').classList.remove('hidden');
+                    document.getElementById('random-code').innerText = randomVal.toUpperCase();
+                    
+                    // Запускаем тикающий таймер для красоты
+                    updateTimer(createdAt);
+                }
+            } catch (e) {
+                // Если в хэше мусор
+                document.getElementById('generator-ui').classList.add('hidden');
+                document.getElementById('error-404').classList.remove('hidden');
+            }
+        }
+
+        function updateTimer(start) {
+            const timerElem = document.getElementById('timer');
+            const interval = setInterval(() => {
+                const remains = LIFETIME - (Date.now() - start);
+                if (remains <= 0) {
+                    clearInterval(interval);
+                    location.reload(); // Перезагрузим, чтобы сработала 404
+                } else {
+                    const minutes = Math.floor(remains / 60000);
+                    const seconds = Math.floor((remains % 60000) / 1000);
+                    timerElem.innerText = `Эта страница самоничтожится через: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                }
+            }, 1000);
+        }
+
+        // Запуск проверки при открытии страницы
+        window.addEventListener('load', checkAccess);
+        // Если пользователь вручную меняет хэш в строке - тоже проверяем
+        window.addEventListener('hashchange', () => location.reload());
+    </script>
+</body>
+</html>
