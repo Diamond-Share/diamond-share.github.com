@@ -2,215 +2,800 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diamond Share | Secure Access</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Diamond Share — Защищённый мессенджер | Экосистема свободы</title>
+    <meta name="description" content="Diamond Share — революционный защищённый мессенджер с P2P шифрованием. Анонимная регистрация и полная приватность.">
+    <meta name="robots" content="index, follow">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <meta name="msapplication-TileColor" content="#2a5cf6">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#2a5cf6">
+
+    <meta property="og:title" content="Diamond Share — Защищённый мессенджер">
+    <meta property="og:description" content="P2P шифрование, молниеносная скорость, полная приватность.">
+    <meta property="og:image" content="/og-image.jpg"> <meta property="og:type" content="website">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Diamond Share",
+      "operatingSystem": "Android, Windows, Web",
+      "applicationCategory": "CommunicationApplication",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1250"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://i.icomoon.io/public/temp/32c5fa2297/1/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #3b82f6;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --error: #ef4444;
-            --radius: 20px;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --primary: #2a5cf6;
+            --primary-light: #00c6ff;
+            --primary-gradient: linear-gradient(135deg, #2a5cf6 0%, #00c6ff 100%);
+            --dark: #0f1115;
+            --gray: #5e6c84;
+            --light: #f4f7fe;
+            --white: #ffffff;
+            --border: rgba(42, 92, 246, 0.1);
+            --shadow-lg: 0 20px 50px rgba(42, 92, 246, 0.15);
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+        /* --- ГЛОБАЛЬНОЕ --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { background: var(--white); color: var(--dark); line-height: 1.6; }
+
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; position: relative; }
+        .text-gradient { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section { padding: 120px 0; border-bottom: 1px solid var(--border); }
+        .bg-light { background: var(--light); }
+        .section-tag { display: inline-block; padding: 8px 20px; background: rgba(42, 92, 246, 0.08); color: var(--primary); border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1.5px; }
+        .section-title { font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 25px; }
+
+        /* --- КНОПКИ --- */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 20px 40px; border-radius: 20px; font-weight: 800; text-decoration: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border: none; position: relative; overflow: hidden; }
+        .btn-primary { background: var(--primary-gradient); color: #fff; box-shadow: 0 10px 30px rgba(42, 92, 246, 0.3); }
+        .btn-primary:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 40px rgba(42, 92, 246, 0.5); }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-outline:hover { background: var(--primary); color: #fff; transform: translateY(-3px); }
+
+        /* --- 1. HEADER --- */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); padding: 20px 0; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 26px; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav { display: flex; gap: 25px; }
+        .nav a { text-decoration: none; color: var(--dark); font-weight: 700; font-size: 14px; transition: 0.3s; }
+        .nav a:hover { color: var(--primary); }
+
+        /* --- 2. HERO --- */
+        .hero { padding: 200px 0 120px; overflow: hidden; }
+        .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; }
+        .hero-title { font-size: clamp(40px, 7vw, 72px); font-weight: 900; line-height: 1; margin-bottom: 30px; }
+
+        .mockup-wrap { perspective: 1000px; }
+        .phone-mockup { 
+            width: 300px; height: 600px; 
+            background: url('https://a.imgfoto.host/2026/02/05/IMG_20260206_000120-32f48b0274b755e35.jpeg') center/cover; 
+            border: 14px solid #1a1a1a; border-radius: 45px; 
+            box-shadow: var(--shadow-lg); 
+            animation: modernFloat 8s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+        @keyframes modernFloat { 
+            0%, 100% { transform: translateY(0) rotateY(-5deg) rotateX(2deg); } 
+            50% { transform: translateY(-30px) rotateY(5deg) rotateX(-2deg); } 
         }
 
-        .container {
-            width: 90%;
-            max-width: 400px;
-            background: var(--card);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            position: relative;
+        /* --- 3. FEATURES GRID --- */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .f-card { padding: 45px; background: #fff; border-radius: 30px; border: 1px solid var(--border); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
+        .f-card:hover { transform: translateY(-15px) scale(1.02); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
+        .f-icon-box { width: 70px; height: 70px; background: var(--light); border-radius: 20px; display: grid; place-items: center; font-size: 28px; color: var(--primary); margin-bottom: 30px; transition: 0.3s; }
+        .f-card:hover .f-icon-box { background: var(--primary); color: #fff; transform: rotate(10deg); }
+
+        /* --- 4. SECURITY --- */
+        .security-box { background: var(--dark); border-radius: 40px; padding: 80px; color: #fff; display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center; overflow: hidden; }
+        .crypto-list { list-style: none; margin-top: 30px; }
+        .crypto-list li { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-size: 18px; color: rgba(255,255,255,0.8); }
+        .crypto-list i { color: #00ffcc; }
+        .shield-icon-anim { font-size: 200px; color: var(--primary); filter: drop-shadow(0 0 20px var(--primary)); animation: pulseShield 4s infinite; }
+        @keyframes pulseShield { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.1); opacity: 0.8; } }
+
+        /* --- 5. COMPARISON TABLE --- */
+        .table-wrap { overflow-x: auto; background: #fff; border-radius: 30px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 25px; text-align: center; border-bottom: 1px solid var(--border); }
+        th { background: var(--light); font-weight: 900; }
+        .check { color: #27ae60; font-size: 20px; }
+        .cross { color: #eb5757; font-size: 20px; }
+
+        /* --- 6. CLOUD BLOCK --- */
+        .cloud-section { background: radial-gradient(circle at center, #2a5cf6, #0f1115); color: #fff; text-align: center; border-radius: 50px; padding: 100px 40px; margin: 0 20px; position: relative; z-index: 1; overflow: hidden; }
+        .cloud-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.1; z-index: -1; }
+
+        /* --- 7. ECOSYSTEM --- */
+        .eco-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .eco-item { padding: 30px; text-align: center; background: var(--light); border-radius: 25px; transition: 0.3s; cursor: pointer; }
+        .eco-item:hover { background: var(--primary); color: #fff; transform: scale(1.05); }
+        .eco-item i { font-size: 40px; margin-bottom: 15px; }
+
+        /* --- 8. CREATORS BLOCK --- */
+        .main-svg-anim { animation: floating 4s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        .main-svg-anim:hover { transform: scale(1.05) rotateX(10deg) rotateY(-10deg); filter: drop-shadow(0 30px 50px rgba(42, 92, 246, 0.3)); }
+
+        /* --- 9. ROADMAP --- */
+        .roadmap-line { position: relative; padding-left: 50px; }
+        .roadmap-line::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary-gradient); border-radius: 10px; }
+        .road-step { position: relative; margin-bottom: 60px; }
+        .road-step::after { content: ''; position: absolute; left: -56px; top: 0; width: 16px; height: 16px; background: #fff; border: 4px solid var(--primary); border-radius: 50%; transition: 0.3s; }
+        .road-step:hover::after { background: var(--primary); transform: scale(1.5); }
+
+        /* --- 10. TESTIMONIALS --- */
+        .review-card { background: #fff; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); transition: 0.3s; }
+        .review-card:hover { transform: translateX(10px); background: var(--light); }
+
+        /* --- 11. FAQ --- */
+        .faq-item { background: #fff; border-radius: 20px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; }
+        .faq-q { padding: 25px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 800; }
+        .faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: 0.4s ease-in-out; color: var(--gray); }
+        .faq-item.open { border-color: var(--primary); }
+        .faq-item.open .faq-a { padding-bottom: 25px; max-height: 200px; }
+
+        /* --- 12. FOOTER --- */
+        footer { background: var(--dark); color: #fff; padding: 100px 0 50px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .social-links { display: flex; gap: 20px; margin-top: 20px; }
+        .social-links a { color: #fff; font-size: 24px; transition: 0.3s; }
+        .social-links a:hover { color: var(--primary-light); transform: translateY(-5px); }
+
+        /* МОБИЛЬНАЯ ПАНЕЛЬ (Hidden on PC) */
+        .mobile-nav-bar { display: none; }
+
+        /* =============== АДАПТИВНАЯ МАГИЯ (НИЧЕГО НЕ ЛОМАЕТ ПК) =============== */
+        @media (max-width: 992px) {
+            /* Убираем горизонтальную прокрутку */
+            html, body { overflow-x: hidden; width: 100%; }
+
+            /* Контейнер - меньше паддинги */
+            .container { padding: 0 15px; }
+
+            /* Секции - меньше отступы */
+            .section { padding: 60px 0; }
+
+            /* Переключаем гриды в одну колонку */
+            .hero-grid, .security-box, .features-grid, .footer-grid, .eco-grid { 
+                grid-template-columns: 1fr !important; 
+                gap: 30px !important;
+            }
+
+            /* Скрываем ПК навигацию */
+            .nav, header .btn-primary { display: none !important; }
+
+            /* HEADER - меньше высота */
+            header { padding: 15px 0; }
+            .logo { font-size: 20px; }
+            .logo i { font-size: 18px; }
+
+            /* HERO SECTION */
+            .hero { 
+                padding: 100px 0 60px; 
+                text-align: center; 
+            }
+            .hero-grid { gap: 20px !important; }
+            .hero-content { order: 2; }
+            .hero-title { 
+                font-size: 32px !important; 
+                line-height: 1.2; 
+                margin-bottom: 20px;
+            }
+            .hero-content p { 
+                font-size: 16px !important; 
+                margin-bottom: 25px !important;
+            }
+            .hero-content > div { 
+                flex-direction: column !important; 
+                gap: 15px !important; 
+                align-items: stretch;
+            }
+
+            /* Мокап телефона */
+            .mockup-wrap { 
+                order: 1; 
+                display: flex; 
+                justify-content: center; 
+                margin-bottom: 30px; 
+            }
+            .phone-mockup { 
+                width: 220px !important; 
+                height: 440px !important; 
+                border-width: 10px;
+                border-radius: 35px;
+            }
+
+            /* КНОПКИ - на всю ширину */
+            .btn { 
+                width: 100%; 
+                padding: 16px 30px; 
+                font-size: 14px;
+                gap: 8px;
+            }
+
+            /* SECTION HEADERS */
+            .section-tag { 
+                font-size: 10px; 
+                padding: 6px 15px; 
+                margin-bottom: 15px;
+            }
+            .section-title { 
+                font-size: 28px !important; 
+                margin-bottom: 20px;
+            }
+
+            /* FEATURES CARDS */
+            .f-card { 
+                padding: 30px 20px; 
+                border-radius: 20px;
+                text-align: center;
+            }
+            .f-card h3 { 
+                font-size: 18px; 
+                margin-bottom: 10px;
+            }
+            .f-card p { font-size: 14px; }
+            .f-icon-box { 
+                width: 60px; 
+                height: 60px; 
+                font-size: 24px; 
+                margin: 0 auto 20px;
+            }
+
+            /* SECURITY BOX */
+            .security-box { 
+                padding: 40px 25px !important; 
+                border-radius: 25px; 
+                gap: 30px !important;
+                text-align: center;
+            }
+            .security-box h2 { 
+                font-size: 28px !important; 
+                line-height: 1.3;
+            }
+            .security-box p { 
+                font-size: 15px !important; 
+                margin-bottom: 20px;
+            }
+            .crypto-list { margin-top: 20px; }
+            .crypto-list li { 
+                font-size: 15px; 
+                margin-bottom: 12px;
+                justify-content: center;
+            }
+            .shield-icon-anim { 
+                font-size: 120px !important; 
+                margin-top: 20px;
+            }
+
+            /* TABLE */
+            .table-wrap { 
+                border-radius: 15px; 
+                font-size: 13px;
+            }
+            th, td { padding: 15px 10px; }
+            th { font-size: 12px; }
+
+            /* CLOUD SECTION */
+            .cloud-section { 
+                border-radius: 25px; 
+                padding: 50px 25px !important; 
+                margin: 0 0px !important;
+            }
+            .cloud-section i { font-size: 50px !important; }
+            .cloud-section h2 { 
+                font-size: 26px !important; 
+                margin-bottom: 15px !important;
+            }
+            .cloud-section p { 
+                font-size: 15px !important; 
+                margin-bottom: 30px !important;
+            }
+
+            /* ECOSYSTEM GRID */
+            .eco-grid { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 15px !important;
+            }
+            .eco-item { padding: 25px 15px; }
+            .eco-item i { font-size: 32px; margin-bottom: 10px; }
+            .eco-item h4 { font-size: 14px; }
+
+            /* CREATORS SECTION */
+            .creator-img-wrapper { 
+                min-width: 100% !important; 
+                margin-bottom: 20px;
+            }
+            .main-svg-anim { 
+                max-width: 280px !important; 
+                transform: none !important;
+            }
+            .creator-content { 
+                min-width: 100% !important; 
+                text-align: center;
+            }
+            .creator-content h2 { font-size: 26px !important; }
+            .creator-content p { 
+                font-size: 15px !important; 
+                margin-bottom: 25px !important;
+            }
+            .creator-content ul { padding: 0 !important; }
+            .creator-content ul li { 
+                justify-content: center !important; 
+                margin-bottom: 15px !important; 
+                border-left: none !important; 
+                border-bottom: 3px solid var(--primary); 
+                padding: 0 0 10px 0 !important;
+            }
+            .creator-content ul li span { 
+                font-size: 16px !important; 
+                padding-left: 0 !important;
+            }
+
+            /* ROADMAP */
+            .roadmap-line { padding-left: 30px; }
+            .roadmap-line::before { width: 3px; }
+            .road-step { margin-bottom: 40px; }
+            .road-step::after { 
+                left: -37px; 
+                width: 12px; 
+                height: 12px;
+            }
+            .road-step h3 { font-size: 18px; }
+            .road-step p { font-size: 14px; }
+
+            /* REVIEWS */
+            .review-card { 
+                padding: 25px 20px; 
+                border-radius: 15px;
+            }
+            .review-card p { font-size: 14px; margin-bottom: 15px; }
+
+            /* FAQ */
+            .faq-item { border-radius: 15px; }
+            .faq-q { 
+                padding: 18px 15px; 
+                font-size: 14px;
+            }
+            .faq-a { 
+                font-size: 13px; 
+                line-height: 1.6;
+            }
+            .faq-item.open .faq-a { padding-bottom: 18px; }
+
+            /* FOOTER */
+            footer { 
+                text-align: center; 
+                padding: 60px 0 120px; 
+            }
+            .footer-grid { 
+                grid-template-columns: 1fr !important; 
+                gap: 35px !important;
+            }
+            .footer-grid > div { margin-bottom: 0; }
+            .footer-grid h4 { margin-bottom: 15px !important; }
+            .footer-grid ul li { margin-bottom: 8px !important; }
+            .social-links { justify-content: center; }
+            .logo { justify-content: center; }
+            footer .logo { font-size: 22px; }
+
+            /* CTA SECTION */
+            section[style*="padding: 150px"] { 
+                padding: 80px 0 !important; 
+            }
+            section[style*="padding: 150px"] h2 { 
+                font-size: 32px !important; 
+                line-height: 1.3 !important; 
+                margin-bottom: 30px !important;
+            }
+
+            /* MOBILE NAV BAR */
+            .mobile-nav-bar {
+                display: flex; 
+                position: fixed; 
+                bottom: 15px; 
+                left: 50%; 
+                transform: translateX(-50%);
+                width: calc(100% - 30px); 
+                max-width: 400px;
+                background: rgba(15, 17, 21, 0.95); 
+                backdrop-filter: blur(20px);
+                border-radius: 20px; 
+                padding: 12px 20px; 
+                justify-content: space-between;
+                align-items: center;
+                z-index: 2000; 
+                border: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            }
+            .mobile-nav-bar a { 
+                color: #fff; 
+                font-size: 20px; 
+                opacity: 0.6; 
+                transition: 0.3s;
+                padding: 8px;
+            }
+            .mobile-nav-bar a.active, 
+            .mobile-nav-bar a:active { 
+                color: var(--primary-light); 
+                opacity: 1; 
+                transform: scale(1.1);
+            }
         }
 
-        /* Дизайн кнопок в стиле Diamond */
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 18px;
-            background: #f1f5f9;
-            border: none;
-            border-radius: 15px;
-            color: var(--text);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 12px;
-            box-sizing: border-box;
+        /* Еще меньше для очень маленьких экранов */
+        @media (max-width: 480px) {
+            .hero-title { font-size: 28px !important; }
+            .section-title { font-size: 24px !important; }
+            .phone-mockup { 
+                width: 200px !important; 
+                height: 400px !important; 
+            }
+            .eco-grid { grid-template-columns: 1fr !important; }
+            .mobile-nav-bar a { font-size: 18px; }
         }
-
-        .menu-item:hover {
-            background: #e2e8f0;
-            transform: scale(1.02);
-        }
-
-        .menu-item i { color: var(--primary); font-size: 18px; }
-
-        .timer-badge {
-            background: #fee2e2;
-            color: var(--error);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 25px;
-        }
-
-        input#link-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px dashed #cbd5e1;
-            border-radius: 10px;
-            background: #f8fafc;
-            color: var(--text-light);
-            font-family: monospace;
-            margin-bottom: 15px;
-        }
-
-        .hidden { display: none !important; }
-        
-        h1 { font-size: 22px; margin-bottom: 10px; }
-        p { color: var(--text-light); font-size: 14px; margin-bottom: 20px; }
-        
-        .error-icon { font-size: 50px; color: var(--error); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="view-generator" class="container animate__animated animate__fadeIn">
-        <i class="fa-solid fa-gem" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-        <h1>Diamond Gen</h1>
-        <p>Создать временную ссылку на настройки аккаунта</p>
-        
-        <button onclick="generateNow()" class="menu-item" style="background: var(--primary); color: white; justify-content: center;">
-            Сгенерировать ссылку
-        </button>
-
-        <div id="output-area" class="hidden">
-            <input type="text" id="link-input" readonly>
-            <p style="font-size: 12px;">Скопируйте и откройте в новой вкладке</p>
-        </div>
+    <div class="mobile-nav-bar">
+        <a href="#about" class="active"><i class="fas fa-home"></i></a>
+        <a href="#security"><i class="fas fa-shield-alt"></i></a>
+        <a href="#cloud"><i class="fas fa-cloud"></i></a>
+        <a href="#faq"><i class="fas fa-question-circle"></i></a>
+        <a href="#download" style="color: var(--primary-light)"><i class="fas fa-download"></i></a>
     </div>
 
-    <div id="view-menu" class="container hidden animate__animated animate__fadeIn">
-        <div class="timer-badge">
-            <i class="fa-solid fa-hourglass-half"></i>
-            <span id="timer-val">10:00</span>
+    <header>
+        <div class="container header-inner">
+            <a href="#" class="logo"><i class="fas fa-gem"></i> DIAMOND SHARE</a>
+            <nav class="nav">
+                <a href="#about">О нас</a>
+                <a href="#security">Безопасность</a>
+                <a href="#comparison">Сравнение</a>
+                <a href="#cloud">Облако</a>
+                <a href="#roadmap">Планы</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+            <a href="#download" class="btn btn-primary" style="padding: 12px 25px; font-size: 14px;">Скачать</a>
         </div>
-        <h1>Настройки профиля</h1>
-        <p>Доступ ограничен по времени</p>
+    </header>
 
-        <div class="menu-list">
-            <button class="menu-item"><i class="fa-solid fa-envelope"></i> Смена почты</button>
-            <button class="menu-item"><i class="fa-solid fa-key"></i> Смена пароля</button>
-            <button class="menu-item"><i class="fa-solid fa-user-shield"></i> Привязать VK</button>
-            <button class="menu-item" style="color: var(--error);"><i class="fa-solid fa-trash" style="color: var(--error);"></i> Удалить сессию</button>
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content" data-aos="fade-right">
+                <span class="section-tag">Будущее уже здесь</span>
+                <h1 class="hero-title">Твоя свобода <br><span class="text-gradient">в каждом бите.</span></h1>
+                <p style="font-size: 20px; color: var(--gray); margin-bottom: 40px;">Единственный мессенджер, где приватность — это не настройка, а фундамент. Без номеров телефонов, без слежки, без границ.</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <a href="https://diamond-share.github.io/2.html" class="btn btn-primary"><i class="fab fa-android"></i> Скачать сейчас</a>
+                    <a href="https://diamond-share.github.io/2.html" class="btn btn-outline">Web-версия</a>
+                </div>
+            </div>
+            <div class="mockup-wrap" data-aos="zoom-in">
+                <div class="phone-mockup"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" id="about">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 70px;">
+                <span class="section-tag">Возможности</span>
+                <h2 class="section-title">Больше, чем просто чаты</h2>
+            </div>
+            <div class="features-grid">
+                <div class="f-card" data-aos="fade-up">
+                    <div class="f-icon-box"><i class="fas fa-bolt"></i></div>
+                    <h3>Турбо-скорость</h3>
+                    <p>Протокол Diamond Share-E2E обеспечивает передачу данных на 40% быстрее любого мессенджера.</p>
+                </div>
+                <div class="f-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="f-icon-box"><i class="fas fa-ghost"></i></div>
+                    <h3>Полный Инкогнито</h3>
+                    <p>Никакой привязки к SIM-карте. Регистрируйся, общайся и оставайся невидимым для системы.</p>
+                </div>
+                <div class="f-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="f-icon-box"><i class="fas fa-layer-group"></i></div>
+                    <h3>Мульти-аккаунты</h3>
+                    <p>Переключайся между неограниченным количеством профилей в один тап. Без лишних пауз.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<div id="yandex_rtb_R-A-18685569-1"></div>
+
+
+
+    <section class="section" id="security" style="background: #fff;">
+        <div class="container">
+            <div class="security-box" data-aos="flip-up">
+                <div>
+                    <span class="section-tag" style="background:rgba(255,255,255,0.1); color:#fff;">Защита</span>
+                    <h2 class="section-title" style="color:#fff;">Шифрование <br>Алмазного уровня</h2>
+                    <p style="color:rgba(255,255,255,0.6); font-size: 18px;">Мы используем комбинированный стек протоколов, который невозможно взломать даже квантовым компьютером.</p>
+                    <ul class="crypto-list">
+                        <li><i class="fas fa-check-circle"></i> Алгоритм E2E-сети</li>
+                        <li><i class="fas fa-check-circle"></i> Протокол BitTorrent</li>
+                        <li><i class="fas fa-check-circle"></i> Хранение ключей на устройстве (HSM)</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
+                    <i class="fas fa-shield-halved shield-icon-anim"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" id="comparison">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 class="section-title">Честное сравнение</h2>
+            </div>
+            <div class="table-wrap" data-aos="fade-up">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Функция</th>
+                            <th>Diamond Share</th>
+                            <th>Telegram</th>
+                            <th>WhatsApp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Без номера телефона</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-times cross"></i></td><td><i class="fas fa-times cross"></i></td></tr>
+                        <tr><td>E2E по умолчанию</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-times cross"></i></td><td><i class="fas fa-check check"></i></td></tr>
+                        <tr><td>Полностью бесплатно</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-times cross"></i></td><td><i class="fas fa-times cross"></i></td></tr>
+                        <tr><td>Защита от скриншотов</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus" style="color:#f39c12"></i></td><td><i class="fas fa-times cross"></i></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="cloud">
+        <div class="container">
+            <div class="cloud-section" data-aos="zoom-in">
+                <i class="fas fa-cloud" style="font-size: 80px; margin-bottom: 30px;"></i>
+                <h2 style="font-size: 42px; font-weight: 900; margin-bottom: 20px;">Твое личное бесконечное хранилище</h2>
+                <p style="font-size: 20px; opacity: 0.8; max-width: 800px; margin: 0 auto 40px;">Забудь про платные подписки. Diamond Share дарит зашифрованное пространства для общения каждому пользователю навсегда.</p>
+                <a href="#" class="btn btn-white" style="background:#fff; color:var(--primary);">Активировать хранилище</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 70px;">
+                <h2 class="section-title">Единая экосистема</h2>
+            </div>
+            <div class="eco-grid">
+                <div class="eco-item" data-aos="fade-up"><i class="fas fa-mobile-alt"></i><h4>Mobile</h4></div>
+                <div class="eco-item" data-aos="fade-up" data-aos-delay="100"><i class="fas fa-desktop"></i><h4>Desktop</h4></div>
+                <div class="eco-item" data-aos="fade-up" data-aos-delay="200"><i class="fas fa-tablet-alt"></i><h4>Tablet</h4></div>
+                <div class="eco-item" data-aos="fade-up" data-aos-delay="300"><i class="fas fa-window-restore"></i><h4>Web Client</h4></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="padding: 100px 0; background: #fff; overflow: hidden;">
+        <div class="container" style="display: flex; align-items: center; gap: 60px; flex-wrap: wrap;">
+            <div class="creator-img-wrapper" style="flex: 1; min-width: 300px; display: flex; justify-content: center; perspective: 1000px;">
+                <img src="ver.svg" alt="Diamond Visual" class="main-svg-anim" style="width: 100%; max-width: 400px; height: auto;">
+            </div>
+            <div class="creator-content" style="flex: 1.2; min-width: 320px;">
+                <span class="section-tag">АВТОРАМ</span>
+                <h2 class="section-title">Твой контент — <span style="color: #2a5cf6;">твой доход</span></h2>
+                <p style="font-size: 19px; color: #5e6c84; margin-bottom: 35px;">Мы создали лучшую платформу для блогеров. С верификацией сообществ, отсутствие теневого бана и отсутствие фейков.</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 20px; display: flex; align-items: center;"><span style="font-weight: 700; font-size: 20px; padding-left: 15px; border-left: 4px solid #2a5cf6;">Умная лента рекомендаций</span></li>
+                    <li style="display: flex; align-items: center;"><span style="font-weight: 700; font-size: 20px; padding-left: 15px; border-left: 4px solid #f1c40f;">Встроенная верификация аккаунта</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" id="roadmap">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 80px;">
+                <span class="section-tag">Путь развития</span>
+                <h2 class="section-title">Наши цели на 2026</h2>
+            </div>
+            <div class="roadmap-line">
+                <div class="road-step" data-aos="fade-left"><h3 class="text-gradient">Q1 — Запуск Desktop</h3><p>Интеграция в систему Desktop версию приложения.</p></div>
+                <div class="road-step" data-aos="fade-left"><h3 class="text-gradient">Q2 — AI-Ассистент</h3><p>Внедрение нейросети для автоматической самаризации.</p></div>
+                <div class="road-step" data-aos="fade-left"><h3 class="text-gradient">Q3 — Децентрализация</h3><p>Переход на полностью распределенную сеть хранения данных.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 70px;"><h2 class="section-title">Что говорят люди</h2></div>
+            <div class="features-grid">
+                <div class="review-card" data-aos="zoom-in"><p>"Лучшая замена всем мессенджерам. Скорость просто поражает."</p><strong>— Алексей М.</strong></div>
+                <div class="review-card" data-aos="zoom-in" data-aos-delay="100"><p>"Конфиденциальность переговоров на высшем уровне."</p><strong>— Елена В.</strong></div>
+                <div class="review-card" data-aos="zoom-in" data-aos-delay="200"><p>"Дизайн будущего. Наконец-то приятно пользоваться."</p><strong>— Марк С.</strong></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" id="faq">
+        <div class="container" style="max-width: 900px;">
+            <div style="text-align: center; margin-bottom: 60px;"><h2 class="section-title">Частые вопросы</h2></div>
+            <div class="faq-item">
+                <div class="faq-q">Нужно ли платить за общение? <i class="fas fa-plus"></i></div>
+                <div class="faq-a">Нет, Мессенджер Diamond Share предоставляетя абсолютно бесплатно.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Можно ли восстановить аккаунт без номера? <i class="fas fa-plus"></i></div>
+                <div class="faq-a">Да, при регистрации вы указываете Email — это ваш единственный ключ доступа.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Где хранятся мои сообщения? <i class="fas fa-plus"></i></div>
+                <div class="faq-a">Ваши сообщения хранятся только на вашем устройстве в зашифрованном виде.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: var(--dark); text-align: center; padding: 150px 0;">
+        <div class="container" data-aos="zoom-out">
+            <h2 style="font-size: 56px; color: #fff; font-weight: 900; margin-bottom: 40px;">Готов стать <br><span class="text-gradient">неуязвимым?</span></h2>
+            <a href="#" class="btn btn-primary" id="download">Присоединиться к Diamond Share</a>
+        </div>
+    </section>
+    
+    <div id="yandex_rtb_R-A-18685569-1"></div>
+
+    <style>
+    /* Унификация стилей ссылок футера */
+    .footer-column ul li a {
+        text-decoration: none; 
+        color: #999; 
+        transition: 0.3s; 
+        font-size: 14px; 
+        display: inline-block;
+    }
+    .footer-column ul li a:hover {
+        color: #fff !important;
+        transform: translateX(5px);
+    }
+    .footer-column h4 {
+        margin-bottom: 25px; 
+        font-weight: 800; 
+        color: #fff; 
+        font-size: 18px;
+    }
+
+    /* Адаптивность для мобилок: в ряд на ПК, в колонку на смартфонах */
+    @media (max-width: 992px) {
+        .footer-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+        .footer-column {
+            margin-bottom: 40px;
+        }
+    }
+</style>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid" style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 30px;">
+
+            <div class="footer-column">
+                <a href="#" class="logo" style="color:#fff;"><i class="fas fa-gem"></i> DIAMOND SHARE</a>
+                <p style="margin-top: 20px; color: #999; font-size: 14px;">Новый стандарт коммуникации в цифровом мире. StarPriks Company, 2026.</p>
+                <div class="social-links">
+                    <a href="https://t.me/Russia_1News"><i class="fab fa-telegram"></i></a>
+                    <a href="https://diamond-share.github.io"><i class="fab icon-image-_1"></i></a>
+                    <a href="https://vk.com/diamond_share"><i class="fab fa-vk"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Продукт</h4>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 12px;"><a href="https://diamond-share.github.io/2.html">Android приложение</a></li>
+                    <li style="margin-bottom: 12px;"><a href="https://diamond-share.github.io/2.html">Desktop Клиент</a></li>
+                    <li><a href="https://diamond-share.github.io/2.html">Security Аккаунт</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Ресурсы</h4>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 12px;"><a href="https://diamond-share.github.io/StarPriksDeveloper.html">Вступить в команду</a></li>
+                    <li style="margin-bottom: 12px;"><a href="https://t.me/Russia_1News">Связь с поддержкой</a></li>
+                    <li><a href="https://diamond-share.github.io/StarPriksDeveloper.html">Для разаботчиков</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Право</h4>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 12px;"><a href="https://diamond-share.github.io/privacy_policy.pdf">Privacy Policy</a></li>
+                    <li><a href="https://diamond-share.github.io/privacy_policy.pdf">Terms of Use</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; text-align: center; color: #777; font-size: 14px; margin-top: 50px;">
+            Diamond Share — Защищено сквозным шифрованием. 2026.
         </div>
     </div>
+    
+    
+</footer>
 
-    <div id="view-404" class="container hidden animate__animated animate__headShake">
-        <div class="error-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-        <h1>Ссылка истекла</h1>
-        <p>Эта одноразовая страница больше недействительна (10 минут прошло).</p>
-        <button onclick="window.location.href = window.location.pathname" class="menu-item" style="justify-content: center;">
-            Вернуться назад
-        </button>
-    </div>
-
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        const EXPIRE_TIME = 10 * 60 * 1000; // 10 минут
-
-        function generateNow() {
-            // Создаем уникальный ID и привязываем к нему время
-            const token = btoa(Date.now() + "_" + Math.random().toString(36).substr(2, 5));
-            const fullUrl = window.location.origin + window.location.pathname + "#" + token;
-            
-            document.getElementById('link-input').value = fullUrl;
-            document.getElementById('output-area').classList.remove('hidden');
-        }
-
-        function checkLogic() {
-            const hash = window.location.hash.substring(1);
-            
-            if (!hash) {
-                // Если хэша нет — показываем генератор
-                document.getElementById('view-generator').classList.remove('hidden');
-                return;
-            }
-
-            // Пытаемся понять, когда была создана ссылка по этому хэшу
-            let startTime = localStorage.getItem('ts_' + hash);
-
-            if (!startTime) {
-                // Если этот хэш открыт впервые — фиксируем время старта
-                startTime = Date.now();
-                localStorage.setItem('ts_' + hash, startTime);
-            }
-
-            const now = Date.now();
-            const diff = now - startTime;
-
-            if (diff > EXPIRE_TIME) {
-                // ВРЕМЯ ВЫШЛО
-                showScreen('view-404');
-            } else {
-                // ВСЁ ОК
-                showScreen('view-menu');
-                runTimer(startTime);
-            }
-        }
-
-        function runTimer(start) {
-            const display = document.getElementById('timer-val');
-            const timerIdx = setInterval(() => {
-                const remaining = EXPIRE_TIME - (Date.now() - start);
-                if (remaining <= 0) {
-                    clearInterval(timerIdx);
-                    showScreen('view-404');
-                } else {
-                    const m = Math.floor(remaining / 60000);
-                    const s = Math.floor((remaining % 60000) / 1000);
-                    display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                }
-            }, 1000);
-        }
-
-        function showScreen(id) {
-            document.getElementById('view-generator').classList.add('hidden');
-            document.getElementById('view-menu').classList.add('hidden');
-            document.getElementById('view-404').classList.add('hidden');
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        // Следим за изменением хэша (если пользователь вставит новую ссылку)
-        window.addEventListener('hashchange', () => location.reload());
-        window.onload = checkLogic;
+        AOS.init({ duration: 800, once: true });
+        // FAQ LOGIC
+        document.querySelectorAll('.faq-q').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                item.classList.toggle('open');
+                const icon = q.querySelector('i');
+                icon.classList.toggle('fa-plus');
+                icon.classList.toggle('fa-minus');
+            });
+        });
     </script>
+
+    <script>window.yaContextCb=window.yaContextCb||[]</script>
+<script src="https://yandex.ru/ads/system/context.js" async></script>
+
+<script>
+window.yaContextCb.push(() => {
+    Ya.Context.AdvManager.render({
+        "blockId": "R-A-18685569-1",
+        "renderTo": "yandex_rtb_R-A-18685569-1",
+        "type": "feed"
+    })
+})
+</script>
 </body>
-</html>
+    </html>
