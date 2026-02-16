@@ -2,111 +2,183 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор секретных страниц</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Настройки доступа | Diamond Share</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #0056b3; }
-        .hidden { display: none; }
-        .expired { color: red; font-weight: bold; }
+        :root {
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --error: #ef4444;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: var(--card);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .header { margin-bottom: 24px; }
+        .header h1 { font-size: 20px; font-weight: 700; margin: 0 0 8px 0; }
+        
+        /* Таймер в стиле Diamond Share */
+        .timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: var(--error);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Кнопки меню */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .menu-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        /* Состояние 404 */
+        .hidden { display: none !important; }
+        .expired-icon { font-size: 64px; color: var(--error); margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="generator-ui" class="card">
-        <h2>Создать секретную ссылку</h2>
-        <p>Ссылка будет жить ровно 10 минут</p>
-        <button onclick="createLink()">Сгенерировать</button>
-        <div id="result" class="hidden">
-            <input type="text" id="linkOutput" readonly>
-            <p style="font-size: 0.8rem; color: #666;">Скопируй и открой в новой вкладке</p>
+    <div id="main-content" class="container animate__animated animate__fadeIn">
+        <div class="header">
+            <h1>Управление аккаунтом</h1>
+            <p style="color: var(--text-light); font-size: 14px;">Безопасная сессия</p>
+        </div>
+
+        <div class="timer-badge">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span id="timer">10:00</span>
+        </div>
+
+        <div class="menu-list">
+            <button class="menu-item">
+                <i class="fa-solid fa-envelope"></i> Смена почты
+            </button>
+            <button class="menu-item">
+                <i class="fa-solid fa-lock"></i> Смена пароля
+            </button>
+            <button class="menu-item">
+                <i class="fa-solid fa-shield-halved"></i> Двухфакторная защита
+            </button>
+            <button class="menu-item" style="color: var(--error);">
+                <i class="fa-solid fa-right-from-bracket" style="color: var(--error);"></i> Выйти
+            </button>
         </div>
     </div>
 
-    <div id="secret-content" class="card hidden">
-        <h2 style="color: #28a745;">🔓 Доступ разрешен</h2>
-        <p>Это твоя уникальная страница с рандомным кодом:</p>
-        <h1 id="random-code" style="letter-spacing: 5px; background: #eee; padding: 10px;"></h1>
-        <p id="timer" style="font-size: 0.9rem; color: #888;"></p>
-    </div>
-
-    <div id="error-404" class="card hidden">
-        <h1 style="font-size: 4rem; margin: 0;">404</h1>
-        <p class="expired">Время жизни ссылки истекло или она неверна.</p>
-        <a href="/">Вернуться назад</a>
+    <div id="error-screen" class="container hidden animate__animated animate__zoomIn">
+        <div class="expired-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <h2>Доступ истек</h2>
+        <p style="color: var(--text-light);">Срок действия этой временной страницы закончился. Пожалуйста, запросите новую ссылку.</p>
+        <button onclick="location.reload()" class="menu-item" style="justify-content: center; width: 100%; margin-top: 20px; background: var(--primary); color: white;">
+            Обновить
+        </button>
     </div>
 
     <script>
-        const LIFETIME = 10 * 60 * 1000; // 10 минут в мс
+        const DURATION = 10 * 60 * 1000; // 10 минут
 
-        // 1. Функция создания ссылки
-        function createLink() {
-            const timestamp = Date.now();
-            const randomPart = Math.random().toString(36).substring(2, 10);
-            // Кодируем время и рандом в строку Base64
-            const secretToken = btoa(`${timestamp}|${randomPart}`);
-            
-            const url = window.location.origin + window.location.pathname + '#' + secretToken;
-            
-            document.getElementById('linkOutput').value = url;
-            document.getElementById('result').classList.remove('hidden');
-        }
-
-        // 2. Логика проверки при загрузке
-        function checkAccess() {
+        function startSession() {
             const hash = window.location.hash.substring(1);
-            
-            if (!hash) return; // Если хэша нет, просто показываем генератор
+            let startTime = localStorage.getItem('session_start_' + hash);
 
-            try {
-                const decoded = atob(hash).split('|');
-                const createdAt = parseInt(decoded[0]);
-                const randomVal = decoded[1];
-                const now = Date.now();
-
-                // Скрываем генератор
-                document.getElementById('generator-ui').classList.add('hidden');
-
-                if (isNaN(createdAt) || (now - createdAt) > LIFETIME) {
-                    // ВРЕМЯ ВЫШЛО
-                    document.getElementById('error-404').classList.remove('hidden');
-                } else {
-                    // ВСЁ ОК - ПОКАЗЫВАЕМ КОНТЕНТ
-                    document.getElementById('secret-content').classList.remove('hidden');
-                    document.getElementById('random-code').innerText = randomVal.toUpperCase();
-                    
-                    // Запускаем тикающий таймер для красоты
-                    updateTimer(createdAt);
-                }
-            } catch (e) {
-                // Если в хэше мусор
-                document.getElementById('generator-ui').classList.add('hidden');
-                document.getElementById('error-404').classList.remove('hidden');
+            if (!startTime && hash) {
+                startTime = Date.now();
+                localStorage.setItem('session_start_' + hash, startTime);
             }
-        }
 
-        function updateTimer(start) {
-            const timerElem = document.getElementById('timer');
+            // Если зашли вообще без хэша (просто на файл)
+            if (!hash) {
+                showExpired();
+                return;
+            }
+
+            const timerDisplay = document.getElementById('timer');
+            
             const interval = setInterval(() => {
-                const remains = LIFETIME - (Date.now() - start);
-                if (remains <= 0) {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const remaining = DURATION - elapsed;
+
+                if (remaining <= 0) {
                     clearInterval(interval);
-                    location.reload(); // Перезагрузим, чтобы сработала 404
+                    showExpired();
                 } else {
-                    const minutes = Math.floor(remains / 60000);
-                    const seconds = Math.floor((remains % 60000) / 1000);
-                    timerElem.innerText = `Эта страница самоничтожится через: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    const mins = Math.floor(remaining / 60000);
+                    const secs = Math.floor((remaining % 60000) / 1000);
+                    timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
                 }
             }, 1000);
         }
 
-        // Запуск проверки при открытии страницы
-        window.addEventListener('load', checkAccess);
-        // Если пользователь вручную меняет хэш в строке - тоже проверяем
-        window.addEventListener('hashchange', () => location.reload());
+        function showExpired() {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('error-screen').classList.remove('hidden');
+            document.title = "404 - Доступ истек";
+        }
+
+        window.onload = startSession;
     </script>
 </body>
 </html>
