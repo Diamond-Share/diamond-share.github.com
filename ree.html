@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Настройки доступа | Diamond Share</title>
+    <title>Diamond Share | Secure Access</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,8 +16,8 @@
             --text: #1e293b;
             --text-light: #64748b;
             --error: #ef4444;
-            --radius: 16px;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 20px;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         body {
@@ -29,156 +29,188 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             width: 90%;
             max-width: 400px;
             background: var(--card);
-            padding: 24px;
+            padding: 30px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             text-align: center;
+            position: relative;
         }
 
-        .header { margin-bottom: 24px; }
-        .header h1 { font-size: 20px; font-weight: 700; margin: 0 0 8px 0; }
-        
-        /* Таймер в стиле Diamond Share */
-        .timer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #fee2e2;
-            color: var(--error);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        /* Кнопки меню */
-        .menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        /* Дизайн кнопок в стиле Diamond */
         .menu-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 16px;
+            padding: 18px;
             background: #f1f5f9;
             border: none;
-            border-radius: 12px;
+            border-radius: 15px;
             color: var(--text);
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 12px;
+            box-sizing: border-box;
         }
 
         .menu-item:hover {
             background: #e2e8f0;
-            transform: translateY(-2px);
+            transform: scale(1.02);
         }
 
-        .menu-item i {
-            width: 20px;
-            color: var(--primary);
+        .menu-item i { color: var(--primary); font-size: 18px; }
+
+        .timer-badge {
+            background: #fee2e2;
+            color: var(--error);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 25px;
         }
 
-        /* Состояние 404 */
+        input#link-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: var(--text-light);
+            font-family: monospace;
+            margin-bottom: 15px;
+        }
+
         .hidden { display: none !important; }
-        .expired-icon { font-size: 64px; color: var(--error); margin-bottom: 20px; }
+        
+        h1 { font-size: 22px; margin-bottom: 10px; }
+        p { color: var(--text-light); font-size: 14px; margin-bottom: 20px; }
+        
+        .error-icon { font-size: 50px; color: var(--error); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="main-content" class="container animate__animated animate__fadeIn">
-        <div class="header">
-            <h1>Управление аккаунтом</h1>
-            <p style="color: var(--text-light); font-size: 14px;">Безопасная сессия</p>
-        </div>
+    <div id="view-generator" class="container animate__animated animate__fadeIn">
+        <i class="fa-solid fa-gem" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+        <h1>Diamond Gen</h1>
+        <p>Создать временную ссылку на настройки аккаунта</p>
+        
+        <button onclick="generateNow()" class="menu-item" style="background: var(--primary); color: white; justify-content: center;">
+            Сгенерировать ссылку
+        </button>
 
-        <div class="timer-badge">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span id="timer">10:00</span>
-        </div>
-
-        <div class="menu-list">
-            <button class="menu-item">
-                <i class="fa-solid fa-envelope"></i> Смена почты
-            </button>
-            <button class="menu-item">
-                <i class="fa-solid fa-lock"></i> Смена пароля
-            </button>
-            <button class="menu-item">
-                <i class="fa-solid fa-shield-halved"></i> Двухфакторная защита
-            </button>
-            <button class="menu-item" style="color: var(--error);">
-                <i class="fa-solid fa-right-from-bracket" style="color: var(--error);"></i> Выйти
-            </button>
+        <div id="output-area" class="hidden">
+            <input type="text" id="link-input" readonly>
+            <p style="font-size: 12px;">Скопируйте и откройте в новой вкладке</p>
         </div>
     </div>
 
-    <div id="error-screen" class="container hidden animate__animated animate__zoomIn">
-        <div class="expired-icon">
-            <i class="fa-solid fa-circle-exclamation"></i>
+    <div id="view-menu" class="container hidden animate__animated animate__fadeIn">
+        <div class="timer-badge">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <span id="timer-val">10:00</span>
         </div>
-        <h2>Доступ истек</h2>
-        <p style="color: var(--text-light);">Срок действия этой временной страницы закончился. Пожалуйста, запросите новую ссылку.</p>
-        <button onclick="location.reload()" class="menu-item" style="justify-content: center; width: 100%; margin-top: 20px; background: var(--primary); color: white;">
-            Обновить
+        <h1>Настройки профиля</h1>
+        <p>Доступ ограничен по времени</p>
+
+        <div class="menu-list">
+            <button class="menu-item"><i class="fa-solid fa-envelope"></i> Смена почты</button>
+            <button class="menu-item"><i class="fa-solid fa-key"></i> Смена пароля</button>
+            <button class="menu-item"><i class="fa-solid fa-user-shield"></i> Привязать VK</button>
+            <button class="menu-item" style="color: var(--error);"><i class="fa-solid fa-trash" style="color: var(--error);"></i> Удалить сессию</button>
+        </div>
+    </div>
+
+    <div id="view-404" class="container hidden animate__animated animate__headShake">
+        <div class="error-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+        <h1>Ссылка истекла</h1>
+        <p>Эта одноразовая страница больше недействительна (10 минут прошло).</p>
+        <button onclick="window.location.href = window.location.pathname" class="menu-item" style="justify-content: center;">
+            Вернуться назад
         </button>
     </div>
 
     <script>
-        const DURATION = 10 * 60 * 1000; // 10 минут
+        const EXPIRE_TIME = 10 * 60 * 1000; // 10 минут
 
-        function startSession() {
+        function generateNow() {
+            // Создаем уникальный ID и привязываем к нему время
+            const token = btoa(Date.now() + "_" + Math.random().toString(36).substr(2, 5));
+            const fullUrl = window.location.origin + window.location.pathname + "#" + token;
+            
+            document.getElementById('link-input').value = fullUrl;
+            document.getElementById('output-area').classList.remove('hidden');
+        }
+
+        function checkLogic() {
             const hash = window.location.hash.substring(1);
-            let startTime = localStorage.getItem('session_start_' + hash);
-
-            if (!startTime && hash) {
-                startTime = Date.now();
-                localStorage.setItem('session_start_' + hash, startTime);
-            }
-
-            // Если зашли вообще без хэша (просто на файл)
+            
             if (!hash) {
-                showExpired();
+                // Если хэша нет — показываем генератор
+                document.getElementById('view-generator').classList.remove('hidden');
                 return;
             }
 
-            const timerDisplay = document.getElementById('timer');
-            
-            const interval = setInterval(() => {
-                const now = Date.now();
-                const elapsed = now - startTime;
-                const remaining = DURATION - elapsed;
+            // Пытаемся понять, когда была создана ссылка по этому хэшу
+            let startTime = localStorage.getItem('ts_' + hash);
 
+            if (!startTime) {
+                // Если этот хэш открыт впервые — фиксируем время старта
+                startTime = Date.now();
+                localStorage.setItem('ts_' + hash, startTime);
+            }
+
+            const now = Date.now();
+            const diff = now - startTime;
+
+            if (diff > EXPIRE_TIME) {
+                // ВРЕМЯ ВЫШЛО
+                showScreen('view-404');
+            } else {
+                // ВСЁ ОК
+                showScreen('view-menu');
+                runTimer(startTime);
+            }
+        }
+
+        function runTimer(start) {
+            const display = document.getElementById('timer-val');
+            const timerIdx = setInterval(() => {
+                const remaining = EXPIRE_TIME - (Date.now() - start);
                 if (remaining <= 0) {
-                    clearInterval(interval);
-                    showExpired();
+                    clearInterval(timerIdx);
+                    showScreen('view-404');
                 } else {
-                    const mins = Math.floor(remaining / 60000);
-                    const secs = Math.floor((remaining % 60000) / 1000);
-                    timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    const m = Math.floor(remaining / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
                 }
             }, 1000);
         }
 
-        function showExpired() {
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('error-screen').classList.remove('hidden');
-            document.title = "404 - Доступ истек";
+        function showScreen(id) {
+            document.getElementById('view-generator').classList.add('hidden');
+            document.getElementById('view-menu').classList.add('hidden');
+            document.getElementById('view-404').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        window.onload = startSession;
+        // Следим за изменением хэша (если пользователь вставит новую ссылку)
+        window.addEventListener('hashchange', () => location.reload());
+        window.onload = checkLogic;
     </script>
 </body>
 </html>
