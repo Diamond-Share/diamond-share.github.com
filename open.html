@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diamond Share</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,8 +14,11 @@
       --blue: #4f8ef7;
       --violet: #8b5cf6;
       --text: #f0f0ff;
-      --muted: rgba(240,240,255,0.38);
-      --border: rgba(255,255,255,0.07);
+      --muted: rgba(240,240,255,0.4);
+      --border: rgba(255,255,255,0.08);
+      --input-bg: rgba(255,255,255,0.05);
+      --input-border: rgba(255,255,255,0.1);
+      --input-border-focus: #4f8ef7;
     }
 
     body {
@@ -31,186 +34,258 @@
     .bg-blob {
       position: fixed;
       border-radius: 50%;
-      filter: blur(90px);
-      opacity: 0.18;
+      filter: blur(100px);
+      opacity: 0.15;
       pointer-events: none;
     }
-    .bg-blob-1 {
-      width: 500px; height: 500px;
-      background: var(--blue);
-      top: -120px; left: -100px;
-      animation: float1 9s ease-in-out infinite;
-    }
-    .bg-blob-2 {
-      width: 400px; height: 400px;
-      background: var(--violet);
-      bottom: -100px; right: -80px;
-      animation: float2 11s ease-in-out infinite;
-    }
-    @keyframes float1 {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50% { transform: translate(30px, 40px) scale(1.05); }
-    }
-    @keyframes float2 {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50% { transform: translate(-25px, -30px) scale(1.08); }
-    }
+    .b1 { width: 500px; height: 500px; background: var(--blue);   top: -150px; left: -100px; animation: f1 10s ease-in-out infinite; }
+    .b2 { width: 400px; height: 400px; background: var(--violet); bottom: -120px; right: -80px; animation: f2 13s ease-in-out infinite; }
+    .b3 { width: 300px; height: 300px; background: #ec4899; top: 40%; left: 60%; animation: f1 8s ease-in-out infinite reverse; }
+    @keyframes f1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px,40px); } }
+    @keyframes f2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-30px,-30px); } }
 
     .card {
       position: relative;
+      z-index: 1;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 28px;
-      padding: 48px 40px 44px;
-      width: min(380px, 92vw);
-      text-align: center;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      padding: 44px 36px 40px;
+      width: min(400px, 94vw);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
       animation: cardIn 0.7s cubic-bezier(.22,1,.36,1) both;
     }
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(32px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to   { opacity: 1; transform: none; }
     }
 
-    .icon-wrap {
-      width: 72px; height: 72px;
-      margin: 0 auto 24px;
-      border-radius: 20px;
+    .logo {
+      width: 64px; height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 18px;
       background: linear-gradient(135deg, var(--blue), var(--violet));
       display: flex; align-items: center; justify-content: center;
-      font-size: 34px;
-      box-shadow: 0 8px 32px rgba(79,142,247,0.3);
-      animation: iconPop 0.6s cubic-bezier(.34,1.56,.64,1) 0.2s both;
+      font-size: 30px;
+      box-shadow: 0 8px 30px rgba(79,142,247,0.35);
+      animation: pop 0.6s cubic-bezier(.34,1.56,.64,1) 0.15s both;
     }
-    @keyframes iconPop {
-      from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
-      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.4) rotate(-15deg); }
+      to   { opacity: 1; transform: none; }
     }
 
     h1 {
       font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
+      font-size: 24px; font-weight: 800;
       color: var(--text);
+      text-align: center;
       letter-spacing: -0.5px;
-      margin-bottom: 10px;
-      animation: fadeUp 0.5s ease 0.3s both;
+      margin-bottom: 6px;
+      animation: up 0.5s ease 0.25s both;
     }
-
-    .desc {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 32px;
-      animation: fadeUp 0.5s ease 0.4s both;
+    .sub {
+      font-size: 13px; color: var(--muted);
+      text-align: center; line-height: 1.5;
+      margin-bottom: 28px;
+      animation: up 0.5s ease 0.3s both;
     }
-
-    @keyframes fadeUp {
+    @keyframes up {
       from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: none; }
     }
 
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+    /* Поле ввода */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+      animation: up 0.5s ease 0.35s both;
+    }
+    .at-sign {
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px; font-weight: 700;
+      color: var(--blue);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    input {
       width: 100%;
-      padding: 16px 24px;
+      padding: 15px 16px 15px 36px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px; font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      caret-color: var(--blue);
+    }
+    input::placeholder { color: rgba(240,240,255,0.25); font-weight: 500; }
+    input:focus {
+      border-color: var(--input-border-focus);
+      background: rgba(79,142,247,0.06);
+      box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+    }
+    input:focus + .at-sign-overlay { color: var(--blue); }
+
+    /* Кнопка */
+    .btn {
+      width: 100%;
+      padding: 15px;
       background: linear-gradient(135deg, var(--blue), var(--violet));
       color: #fff;
       font-family: 'Manrope', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      border: none;
-      border-radius: 16px;
+      font-size: 15px; font-weight: 700;
+      border: none; border-radius: 14px;
       cursor: pointer;
-      text-decoration: none;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 4px 24px rgba(79,142,247,0.35);
-      animation: fadeUp 0.5s ease 0.5s both;
+      position: relative; overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(79,142,247,0.3);
+      animation: up 0.5s ease 0.4s both;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,142,247,0.45); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.12);
-      opacity: 0;
-      transition: opacity 0.2s;
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(79,142,247,0.45); }
     .btn:hover::before { opacity: 1; }
-    .btn:active { transform: translateY(0) scale(0.98); }
 
-    .btn-icon { font-size: 18px; }
-
+    /* Ripple */
     .ripple {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
       transform: scale(0);
-      animation: rippleAnim 0.5s linear;
-      pointer-events: none;
+      animation: rip 0.5s linear; pointer-events: none;
     }
-    @keyframes rippleAnim {
-      to { transform: scale(4); opacity: 0; }
+    @keyframes rip { to { transform: scale(4); opacity: 0; } }
+
+    /* Ошибка */
+    .error {
+      font-size: 12px; color: #f87171;
+      text-align: center; margin-top: 10px;
+      min-height: 18px;
+      animation: up 0.3s ease both;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      margin-top: 20px;
-      letter-spacing: 0.5px;
-      animation: fadeUp 0.5s ease 0.6s both;
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 20px 0 16px;
+      animation: up 0.5s ease 0.45s both;
     }
-    .badge-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 6px #22c55e;
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
     }
+    .divider span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    .footer {
+      text-align: center;
+      font-size: 12px; color: rgba(240,240,255,0.2);
+      margin-top: 22px;
+      animation: up 0.5s ease 0.5s both;
+    }
+    .footer span { color: var(--blue); }
   </style>
 </head>
 <body>
 
-<div class="bg-blob bg-blob-1"></div>
-<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob b1"></div>
+<div class="bg-blob b2"></div>
+<div class="bg-blob b3"></div>
 
 <div class="card">
-  <div class="icon-wrap">💎</div>
+  <div class="logo">💎</div>
+  <h1>Написать в Diamond Share</h1>
+  <p class="sub">Введи имя пользователя и открой чат прямо в приложении</p>
 
-  <h1>Diamond Share</h1>
-  <p class="desc">Нажми кнопку чтобы открыть чат<br>в приложении Diamond Share</p>
-
-  <a class="btn" id="open-btn" href="diamondshare://chat?account=@support">
-    <span class="btn-icon">💬</span>
-    Открыть чат
-  </a>
-
-  <div class="badge">
-    <div class="badge-dot"></div>
-    <span>Diamond Share</span>
+  <div class="input-wrap">
+    <span class="at-sign">@</span>
+    <input
+      type="text"
+      id="username-input"
+      placeholder="username"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />
   </div>
+
+  <button class="btn" id="open-btn" disabled>
+    <span>💬</span>
+    <span id="btn-text">Открыть чат</span>
+  </button>
+
+  <div class="error" id="error-msg"></div>
+
+  <div class="footer">Diamond Share &nbsp;·&nbsp; <span>@<span id="footer-nick">username</span></span></div>
 </div>
 
 <script>
-  document.getElementById('open-btn').addEventListener('click', function(e) {
-    var btn = this;
+  var input   = document.getElementById('username-input');
+  var btn     = document.getElementById('open-btn');
+  var btnText = document.getElementById('btn-text');
+  var errMsg  = document.getElementById('error-msg');
+  var footerNick = document.getElementById('footer-nick');
+
+  // Обновляем кнопку при вводе
+  input.addEventListener('input', function() {
+    var val = this.value.replace(/^@+/, '').trim();
+    errMsg.textContent = '';
+
+    if (val.length > 0) {
+      btn.disabled = false;
+      btnText.textContent = 'Написать @' + val;
+      footerNick.textContent = val;
+    } else {
+      btn.disabled = true;
+      btnText.textContent = 'Открыть чат';
+      footerNick.textContent = 'username';
+    }
+  });
+
+  // Enter
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !btn.disabled) openChat();
+  });
+
+  // Клик по кнопке
+  btn.addEventListener('click', function(e) {
+    // Ripple
     var ripple = document.createElement('span');
     ripple.className = 'ripple';
     var size = Math.max(btn.offsetWidth, btn.offsetHeight);
     var rect = btn.getBoundingClientRect();
-    ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size/2) + 'px;top:' + (e.clientY - rect.top - size/2) + 'px;';
+    ripple.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px';
     btn.appendChild(ripple);
     setTimeout(function() { ripple.remove(); }, 600);
-  });
-</script>
 
+    openChat();
+  });
+
+  function openChat() {
+    var val = input.value.replace(/^@+/, '').trim();
+    if (!val) return;
+
+    // Валидация
+    if (!/^[A-Za-z0-9_]+$/.test(val)) {
+      errMsg.textContent = 'Только буквы, цифры и _';
+      input.focus();
+      return;
+    }
+
+    var deepLink = 'diamondshare://chat?account=@' + encodeURIComponent(val);
+    window.location.href = deepLink;
+  }
+
+  // Фокус на поле при загрузке (не на мобиле — там клавиатура мешает)
+  if (window.innerWidth > 600) input.focus();
+</script>
 </body>
 </html>
