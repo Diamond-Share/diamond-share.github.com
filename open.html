@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diamond Share</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #08080f;
+      --card: #0e0e1a;
+      --blue: #4f8ef7;
+      --violet: #8b5cf6;
+      --text: #f0f0ff;
+      --muted: rgba(240,240,255,0.38);
+      --border: rgba(255,255,255,0.07);
+    }
+
+    body {
+      min-height: 100dvh;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Manrope', sans-serif;
+      overflow: hidden;
+    }
+
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .bg-blob-1 {
+      width: 500px; height: 500px;
+      background: var(--blue);
+      top: -120px; left: -100px;
+      animation: float1 9s ease-in-out infinite;
+    }
+    .bg-blob-2 {
+      width: 400px; height: 400px;
+      background: var(--violet);
+      bottom: -100px; right: -80px;
+      animation: float2 11s ease-in-out infinite;
+    }
+    @keyframes float1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(30px, 40px) scale(1.05); }
+    }
+    @keyframes float2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-25px, -30px) scale(1.08); }
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 48px 40px 44px;
+      width: min(380px, 92vw);
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      animation: cardIn 0.7s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .icon-wrap {
+      width: 72px; height: 72px;
+      margin: 0 auto 24px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 8px 32px rgba(79,142,247,0.3);
+      animation: iconPop 0.6s cubic-bezier(.34,1.56,.64,1) 0.2s both;
+    }
+    @keyframes iconPop {
+      from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+
+    .desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+      animation: fadeUp 0.5s ease 0.4s both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      color: #fff;
+      font-family: 'Manrope', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 24px rgba(79,142,247,0.35);
+      animation: fadeUp 0.5s ease 0.5s both;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.12);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(79,142,247,0.45); }
+    .btn:hover::before { opacity: 1; }
+    .btn:active { transform: translateY(0) scale(0.98); }
+
+    .btn-icon { font-size: 18px; }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: scale(0);
+      animation: rippleAnim 0.5s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 20px;
+      letter-spacing: 0.5px;
+      animation: fadeUp 0.5s ease 0.6s both;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+
+<div class="card">
+  <div class="icon-wrap">💎</div>
+
+  <h1>Diamond Share</h1>
+  <p class="desc">Нажми кнопку чтобы открыть чат<br>в приложении Diamond Share</p>
+
+  <a class="btn" id="open-btn" href="diamondshare://chat?account=@support">
+    <span class="btn-icon">💬</span>
+    Открыть чат
+  </a>
+
+  <div class="badge">
+    <div class="badge-dot"></div>
+    <span>Diamond Share</span>
+  </div>
+</div>
+
+<script>
+  document.getElementById('open-btn').addEventListener('click', function(e) {
+    var btn = this;
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    var size = Math.max(btn.offsetWidth, btn.offsetHeight);
+    var rect = btn.getBoundingClientRect();
+    ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size/2) + 'px;top:' + (e.clientY - rect.top - size/2) + 'px;';
+    btn.appendChild(ripple);
+    setTimeout(function() { ripple.remove(); }, 600);
+  });
+</script>
+
+</body>
+</html>
